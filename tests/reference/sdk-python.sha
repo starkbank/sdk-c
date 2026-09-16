@@ -1,0 +1,7 @@
+# The sdk-python commit the field tables, the goldens and known-drift.json were
+# derived from. Normative source number two, pinned so a drift finding means the
+# tables moved and not that somebody's checkout did. Bumped by an explicit PR,
+# which is the PR that also applies whatever the checker found.
+#
+# starkbank/sdk-python, default branch master.
+575279bfac495aceaa4d5668c1a838377a988a8c

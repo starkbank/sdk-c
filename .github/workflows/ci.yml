@@ -1,0 +1,252 @@
+name: CI
+
+on:
+  push:
+    branches: [development]
+  pull_request:
+
+# sdk-c links libstarkcore and libstarkecdsa from sibling checkouts, the layout
+# the Makefile's CORE_PREFIX and ECDSA_PREFIX defaults already expect on a
+# developer machine. Both are pinned to tags rather than tracking a branch, so
+# a green build names a fixed dependency revision.
+#
+# NOTE: every job here is red until starkinfra/core-c and starkbank/ecdsa-c are
+# reachable. The automatic GITHUB_TOKEN is scoped to this repository and cannot
+# read a different private one, and a fork PR gets an even more restricted
+# token. This is the same note core-c's own workflow carries about ecdsa-c;
+# publish the two siblings before or together with this repository.
+env:
+  CORE_C_REF: v0.1.0
+  ECDSA_C_REF: v0.1.0
+  # The drift checker reads sdk-python at the sha tests/reference/sdk-python.sha
+  # pins and app-docs at its default branch. Neither is imported and neither is
+  # written; both are inputs.
+  SDK_PYTHON_REF: master
+  APP_DOCS_REF: master
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: starkbank/sdk-c
+
+      - uses: actions/checkout@v4
+        with:
+          repository: starkinfra/core-c
+          ref: ${{ env.CORE_C_REF }}
+          path: starkinfra/core-c
+
+      - uses: actions/checkout@v4
+        with:
+          repository: starkbank/ecdsa-c
+          ref: ${{ env.ECDSA_C_REF }}
+          path: starkbank/ecdsa-c
+
+      - name: Install libsecp256k1, libcurl and valgrind
+        run: |
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            sudo apt-get update
+            sudo apt-get install -y libsecp256k1-dev libcurl4-openssl-dev valgrind
+          else
+            brew install secp256k1
+          fi
+
+      - name: Build the siblings
+        run: |
+          make -C starkbank/ecdsa-c
+          make -C starkinfra/core-c
+          make -C starkinfra/core-c curl
+
+      - name: Library, under the full warning set with -Werror
+        run: make -C starkbank/sdk-c CFLAGS="-O2 -Werror"
+
+      - name: Offline suites
+        run: |
+          make -C starkbank/sdk-c test
+          make -C starkbank/sdk-c test-loose
+          make -C starkbank/sdk-c test-abi
+
+      # STARKBANK_GATE_CFFI is what lets the gate create its venv and install
+      # cffi. It is opt-in precisely so no local `make check-header` reaches
+      # PyPI on its own; CI is where that is expected, so CI asks for it.
+      - name: Public header gate - C89, C++98, cffi, emitted artifacts
+        env:
+          STARKBANK_GATE_CFFI: "1"
+        run: make -C starkbank/sdk-c check-header
+
+      - name: Python tool unit cases
+        run: make -C starkbank/sdk-c check-tools
+
+      - name: Exported symbols, shared and static
+        run: |
+          make -C starkbank/sdk-c bundle
+          make -C starkbank/sdk-c check-exports
+
+      - name: The linker-enforced hand-written opt-out
+        run: make -C starkbank/sdk-c check-handwritten
+
+      - name: Docs samples compile with -Werror
+        run: make -C starkbank/sdk-c samples
+
+      - name: Single-artifact bundle, with and without the libcurl transport
+        run: |
+          make -C starkbank/sdk-c bundle
+          make -C starkbank/sdk-c bundle-curl
+
+      - name: Install into a staging prefix
+        run: make -C starkbank/sdk-c install DESTDIR=/tmp/stage PREFIX=/usr/local
+
+      - name: Address and undefined-behaviour sanitizers
+        run: make -C starkbank/sdk-c asan
+
+      - name: Leaks
+        run: make -C starkbank/sdk-c leaks
+
+  # A data race is not a memory error, so the asan job cannot see one, and tsan
+  # cannot be combined with asan in a single binary.
+  thread-sanitizer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: starkbank/sdk-c
+
+      - uses: actions/checkout@v4
+        with:
+          repository: starkinfra/core-c
+          ref: ${{ env.CORE_C_REF }}
+          path: starkinfra/core-c
+
+      - uses: actions/checkout@v4
+        with:
+          repository: starkbank/ecdsa-c
+          ref: ${{ env.ECDSA_C_REF }}
+          path: starkbank/ecdsa-c
+
+      - name: Install libsecp256k1 and clang
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libsecp256k1-dev clang
+
+      - name: Build the siblings
+        run: |
+          make -C starkbank/ecdsa-c
+          make -C starkinfra/core-c
+
+      - name: One client, eight threads
+        run: make -C starkbank/sdk-c tsan CC=clang
+
+  # The tables are derived from sdk-python and are never a source of truth. This
+  # is the job that keeps "derived" true, and a release tag is gated on it: see
+  # make check-drift-pinned. It also re-derives tests/reference/slice.json,
+  # because check-drift reads the tables and the docs only: without the
+  # recorder running here, the goldens that hold every funds-movement request
+  # payload are a frozen file anyone can hand-edit until the slice goes green.
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: starkbank/sdk-c
+
+      - uses: actions/checkout@v4
+        with:
+          repository: starkinfra/core-c
+          ref: ${{ env.CORE_C_REF }}
+          path: starkinfra/core-c
+
+      - uses: actions/checkout@v4
+        with:
+          repository: starkbank/ecdsa-c
+          ref: ${{ env.ECDSA_C_REF }}
+          path: starkbank/ecdsa-c
+
+      - name: Check out sdk-python at the pinned sha
+        run: |
+          git clone --no-checkout https://github.com/starkbank/sdk-python.git starkbank/sdk-python
+          git -C starkbank/sdk-python checkout \
+            "$(grep -v '^#' starkbank/sdk-c/tests/reference/sdk-python.sha | head -1)"
+
+      - uses: actions/checkout@v4
+        with:
+          repository: starkbank/app-docs
+          ref: ${{ env.APP_DOCS_REF }}
+          path: starkbank/app-docs
+
+      # The recorder imports these three and nothing else. No pip install:
+      # they go on sys.path as checkouts, exactly as they do locally.
+      - uses: actions/checkout@v4
+        with:
+          repository: starkinfra/core-python
+          path: starkinfra/core-python
+
+      - uses: actions/checkout@v4
+        with:
+          repository: starkbank/ecdsa-python
+          path: starkbank/ecdsa-python
+
+      - name: Install libsecp256k1
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libsecp256k1-dev
+
+      - name: Build the siblings
+        run: |
+          make -C starkbank/ecdsa-c
+          make -C starkinfra/core-c
+
+      - name: Tables against sdk-python and the docs JSON
+        run: make -C starkbank/sdk-c check-drift-pinned
+
+      - name: Goldens re-recorded from sdk-python at the pin
+        run: make -C starkbank/sdk-c check-goldens
+
+  # Windows is the least-tested surface at launch and gets its own job for that
+  # reason. It compiles only: core-c has no Windows build, so there is nothing
+  # to link against yet, and a compile of every translation unit under
+  # /TC /W4 /permissive- is what catches the C99-isms, the long, and the
+  # declaration-after-statement this header and these sources must not have.
+  #
+  # RED until the sibling repositories are reachable, exactly like every other
+  # job here. It is committed now so the Windows evidence starts accumulating
+  # the day they are, rather than being discovered at release.
+  windows-compile:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: starkbank/sdk-c
+
+      - uses: actions/checkout@v4
+        with:
+          repository: starkinfra/core-c
+          ref: ${{ env.CORE_C_REF }}
+          path: starkinfra/core-c
+
+      - uses: actions/checkout@v4
+        with:
+          repository: starkbank/ecdsa-c
+          ref: ${{ env.ECDSA_C_REF }}
+          path: starkbank/ecdsa-c
+
+      - uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Public header as its own translation unit
+        shell: cmd
+        run: |
+          cd starkbank\sdk-c
+          echo #include "starkbank.h" > %TEMP%\header.c
+          echo int main(void) { return starkbank_abi_version(); } >> %TEMP%\header.c
+          cl /nologo /TC /W4 /permissive- /c /Iinclude /I..\..\starkinfra\core-c\include %TEMP%\header.c /Fo%TEMP%\header.obj
+
+      - name: Every source under /TC /W4 /permissive-
+        shell: cmd
+        run: |
+          cd starkbank\sdk-c
+          cl /nologo /TC /W4 /permissive- /c /Iinclude /Istarkc /Istarkbank /I..\..\starkinfra\core-c\include starkc\*.c starkbank\balance\*.c starkbank\event\*.c starkbank\invoice\*.c starkbank\split\*.c starkbank\transfer\*.c handwritten\*.c /Fo%TEMP%\\

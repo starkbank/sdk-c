@@ -1,0 +1,125 @@
+/*
+ * The verb macros. A resource's .c file is its table plus a dozen of these,
+ * and every one of them expands to a single call into starkc/verb.c.
+ *
+ * That is the whole shape on purpose. A macro body is hostile to a debugger:
+ * -Werror diagnostics and breakpoints land here rather than on the line the
+ * author wrote, so there is nothing in a body worth stopping on. The logic
+ * lives in ordinary functions one step down, where a stack frame has a name
+ * and `make expand R=<resource>` is only needed to read an argument list.
+ *
+ * ident is the public name stem, so STARKBANK_VERB_GET_ID(invoice_log) defines
+ * starkbank_invoice_log_get and reads the table STARKBANK_RESOURCE declared as
+ * starkbankTable_invoice_log. Every definition carries STARKBANK_API, without
+ * which -fvisibility=hidden would hide the entry point from the shared build.
+ */
+
+#ifndef STARKBANK_VERBS_H
+#define STARKBANK_VERBS_H
+
+#include "internal.h"
+#include "table.h"
+
+#define STARKBANK_VERB_NEW(ident)                                                       \
+    STARKBANK_API int STARKBANK_CALL starkbank_##ident##_new(starkbank_entity **out)    \
+    {                                                                                   \
+        return starkbankEntityNew(&starkbankTable_##ident, out);                        \
+    }
+
+#define STARKBANK_VERB_PARAMS(ident)                                                        \
+    STARKBANK_API int STARKBANK_CALL starkbank_##ident##_params_new(starkbank_entity **out) \
+    {                                                                                       \
+        return starkbankEntityNew(&starkbankParams_##ident, out);                           \
+    }
+
+#define STARKBANK_VERB_POST_MULTI(ident)                                                 \
+    STARKBANK_API int STARKBANK_CALL starkbank_##ident##_create(                         \
+        const starkbank_client *client, const starkbank_list *entities,                  \
+        starkbank_list **out, starkbank_errors **errors)                                 \
+    {                                                                                    \
+        return starkbankVerbCreate(client, &starkbankTable_##ident, entities, out, errors); \
+    }
+
+#define STARKBANK_VERB_GET_ID(ident)                                                     \
+    STARKBANK_API int STARKBANK_CALL starkbank_##ident##_get(                            \
+        const starkbank_client *client, const char *id,                                  \
+        starkbank_entity **out, starkbank_errors **errors)                               \
+    {                                                                                    \
+        return starkbankVerbGetId(client, &starkbankTable_##ident, id, out, errors);     \
+    }
+
+/* Balance has no id: python reads the listing endpoint and takes its head. */
+#define STARKBANK_VERB_GET_FIRST(ident)                                                  \
+    STARKBANK_API int STARKBANK_CALL starkbank_##ident##_get(                            \
+        const starkbank_client *client, starkbank_entity **out, starkbank_errors **errors) \
+    {                                                                                    \
+        return starkbankVerbGetFirst(client, &starkbankTable_##ident, out, errors);      \
+    }
+
+#define STARKBANK_VERB_QUERY(ident)                                                      \
+    STARKBANK_API int STARKBANK_CALL starkbank_##ident##_query(                          \
+        const starkbank_client *client, const starkbank_entity *params, int limit,       \
+        starkbank_iter **out)                                                            \
+    {                                                                                    \
+        return starkbankVerbQuery(client, &starkbankTable_##ident, params, limit, out);  \
+    }
+
+#define STARKBANK_VERB_PAGE(ident)                                                       \
+    STARKBANK_API int STARKBANK_CALL starkbank_##ident##_page(                           \
+        const starkbank_client *client, const starkbank_entity *params,                  \
+        starkbank_list **out, char **out_cursor, starkbank_errors **errors)              \
+    {                                                                                    \
+        return starkbankVerbPage(client, &starkbankTable_##ident, params, out,           \
+                                 out_cursor, errors);                                    \
+    }
+
+#define STARKBANK_VERB_PATCH_ID(ident)                                                   \
+    STARKBANK_API int STARKBANK_CALL starkbank_##ident##_update(                         \
+        const starkbank_client *client, const char *id, const starkbank_entity *patch,   \
+        starkbank_entity **out, starkbank_errors **errors)                               \
+    {                                                                                    \
+        return starkbankVerbPatchId(client, &starkbankTable_##ident, id, patch, out, errors); \
+    }
+
+#define STARKBANK_VERB_DELETE_ID(ident)                                                  \
+    STARKBANK_API int STARKBANK_CALL starkbank_##ident##_delete(                         \
+        const starkbank_client *client, const char *id,                                  \
+        starkbank_entity **out, starkbank_errors **errors)                               \
+    {                                                                                    \
+        return starkbankVerbDeleteId(client, &starkbankTable_##ident, id, out, errors);  \
+    }
+
+/* Raw bytes: a PDF, a receipt. The path segment is the verb's own name. */
+#define STARKBANK_VERB_CONTENT(ident, verb)                                              \
+    STARKBANK_API int STARKBANK_CALL starkbank_##ident##_##verb(                         \
+        const starkbank_client *client, const char *id,                                  \
+        unsigned char **out, size_t *out_len, starkbank_errors **errors)                 \
+    {                                                                                    \
+        return starkbankVerbContent(client, &starkbankTable_##ident, id, #verb,          \
+                                    NULL, 0, 0, 0, out, out_len, errors);                \
+    }
+
+/*
+ * The same with one integer query parameter, bounded here rather than by the
+ * API: starkbank_invoice_qrcode's size is 1..50 and 0 sends no size at all, so
+ * the API applies its own default instead of being told a wrong one.
+ */
+#define STARKBANK_VERB_CONTENT_INT(ident, verb, queryKey, minimum, maximum)              \
+    STARKBANK_API int STARKBANK_CALL starkbank_##ident##_##verb(                         \
+        const starkbank_client *client, const char *id, int value,                       \
+        unsigned char **out, size_t *out_len, starkbank_errors **errors)                 \
+    {                                                                                    \
+        return starkbankVerbContent(client, &starkbankTable_##ident, id, #verb,          \
+                                    queryKey, value, minimum, maximum, out, out_len, errors); \
+    }
+
+#define STARKBANK_VERB_SUB_RESOURCE(ident, verb, subResourceName, tagName)               \
+    STARKBANK_API int STARKBANK_CALL starkbank_##ident##_##verb(                         \
+        const starkbank_client *client, const char *id,                                  \
+        starkbank_entity **out, starkbank_errors **errors)                               \
+    {                                                                                    \
+        return starkbankVerbSubResource(client, &starkbankTable_##ident, id,             \
+                                        subResourceName, tagName, out, errors);          \
+    }
+
+#endif /* STARKBANK_VERBS_H */

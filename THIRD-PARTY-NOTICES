@@ -1,0 +1,85 @@
+Third-party notices
+===================
+
+This repository vendors nothing. libstarkbank.a and libstarkbank.dylib /
+libstarkbank.so contain only the original work LICENSE covers, and link the
+libraries below.
+
+The bundle is different, and that is the whole reason this file matters:
+`make bundle` produces libstarkbank_full.a and libstarkbank_full.dylib /
+libstarkbank_full.so with core-c, ecdsa-c and libsecp256k1 statically inside,
+so anyone who receives a bundle artifact receives those works too and these
+notices travel with it. `make bundle-curl` adds core-c's optional libcurl
+transport, which links libcurl dynamically.
+
+--------------------------------------------------------------------------------
+libstarkcore - https://github.com/starkinfra/core-c
+
+Linked in every shape of this library and embedded by `make bundle`. Copyright
+Stark Infra S.A., distributed under the MIT License; the full text is in that
+repository's LICENSE, and its own THIRD-PARTY-NOTICES covers what it in turn
+embeds - notably cJSON 1.7.18 (MIT, Dave Gamble and cJSON contributors), which
+is compiled into libstarkcore with every public symbol renamed to
+starkcore_cJSON_*. This project never links its own copy of cJSON.
+
+--------------------------------------------------------------------------------
+libstarkecdsa - https://github.com/starkbank/ecdsa-c
+
+Reached through libstarkcore and embedded by `make bundle`. Copyright Stark Bank
+S.A., distributed under the MIT License; the full text is in that repository's
+LICENSE.
+
+--------------------------------------------------------------------------------
+libsecp256k1 - https://github.com/bitcoin-core/secp256k1
+
+Linked dynamically in the four-archive shape and statically inside the bundle.
+Reached through libstarkecdsa; this project contains none of its source.
+Distributed under the MIT License:
+
+    Copyright (c) 2013 Pieter Wuille
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
+
+--------------------------------------------------------------------------------
+libcurl - https://curl.se/libcurl/
+
+Linked dynamically by `make bundle-curl` only, through core-c's optional
+transport. Neither libstarkbank nor the default bundle links or requires it.
+Distributed under the curl license, an MIT/X derivative:
+
+    Copyright (c) 1996 - 2024, Daniel Stenberg, <daniel@haxx.se>, and many
+    contributors, see the THANKS file.
+
+    All rights reserved.
+
+    Permission to use, copy, modify, and distribute this software for any purpose
+    with or without fee is hereby granted, provided that the above copyright
+    notice and this permission notice appear in all copies.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS.
+    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+    DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+    OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+    OR OTHER DEALINGS IN THE SOFTWARE.
+
+    Except as contained in this notice, the name of a copyright holder shall not
+    be used in advertising or otherwise to promote the sale, use or other dealings
+    in this Software without prior written authorization of the copyright holder.

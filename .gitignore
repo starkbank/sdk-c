@@ -1,0 +1,45 @@
+__pycache__/
+*.pyc
+
+# Derived from include/starkbank.h by the Makefile; never authored.
+exports.txt
+exports.map
+
+*.o
+*.d
+*.a
+*.so
+*.so.*
+*.dylib
+
+# Built by the Makefile.
+exports.defined
+exports.unexpected
+handwritten.expanded
+handwritten.byhand
+handwritten.declared
+handwritten.missing
+tests/run
+tests/slice
+tests/abi
+tests/asan
+tests/asanslice
+tests/loose
+tests/looseslice
+tests/threads
+tests/tsan
+tools/reflect
+samples/build/
+starkbank.pc
+*.dSYM/
+
+# bindings/ and samples/ are NOT ignored: the emitted artifacts are committed
+# and CI regenerates them and fails on any diff, which is what stops anyone
+# hand-editing one. A vendor building from a source tarball may have no Python.
+#
+# tests/reference/slice.json is NOT ignored: the goldens are committed, and a
+# change to them has to show up in a diff like any other change to what this
+# library is expected to send.
+
+# Left behind only by an interrupted `make check-goldens`.
+tests/reference/slice.json.committed

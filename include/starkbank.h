@@ -1,0 +1,1029 @@
+/*
+ * starkbank - the Stark Bank resource tier in C, over starkcore.
+ *
+ * The behavioural reference is sdk-python's starkbank package: the verb
+ * surface, the field set and the input coercions come from there. Nothing on
+ * the wire is decided here. Casing, endpoint derivation, envelope keys,
+ * pagination arithmetic and status mapping all belong to starkcore and are
+ * called at run time, never reimplemented.
+ *
+ * This header is the ABI, and follows starkcore.h's restrictions exactly:
+ *
+ *   - C89 constructs only: no // comments, no inline, no variadic macros,
+ *     no bool, no stdint, no designated initializers
+ *   - no long anywhere: long is 32 bits on Win64 and 64 bits on LP64
+ *   - every object is an opaque pointer, so layout never crosses the boundary
+ *   - every buffer this library allocates is released with starkbank_free,
+ *     never the caller's free: on Windows the two may be different runtimes
+ *   - no HTTP and no TLS. The host supplies a transport, or links the
+ *     optional curl transport
+ *   - no global mutable state. sdk-python's module-level starkbank.user has no
+ *     equivalent here: the client is the first argument of every verb
+ *   - no entry point aborts, and every out parameter is set to NULL or left
+ *     untouched on failure, so a host that ignores a return code still has a
+ *     pointer it can safely free
+ *
+ * Fields are not part of the ABI
+ * ------------------------------
+ * There is no per-field entry point and no per-resource struct. An entity is
+ * one API object plus a tag naming its resource, and it is read and written
+ * through the generic accessors below, keyed by wire field name and validated
+ * against that resource's field table. Adding a field upstream therefore adds
+ * no exported symbol and breaks no host: a build of this library that predates
+ * the field still returns it through starkbank_entity_json, and a build that
+ * postdates it needs no recompilation of the caller.
+ *
+ * The cost is that starkbank_entity_string(invoice, "brcde", &s) is a run-time
+ * STARKBANK_ERROR_FIELD rather than a compile error. The per-resource field
+ * name constants below (STARKBANK_INVOICE_BRCODE and friends) give the
+ * compiler the typo back for callers who want it.
+ *
+ * Ownership - five rules, no exceptions
+ * -------------------------------------
+ *   1. Accessors never allocate. Every const char * handed back is borrowed
+ *      from the entity's own document and stays valid until that entity is
+ *      freed or mutated. There is nothing to free.
+ *   2. An entity from _new, _get, _update, _payment or _clone is yours:
+ *      release it with starkbank_entity_free.
+ *   3. Entities inside a starkbank_list are borrowed and are freed by
+ *      starkbank_list_free. starkbank_list_append takes ownership of what you
+ *      hand it. To keep one past the list, starkbank_entity_clone.
+ *   4. starkbank_iter_next yields an entity borrowed until the next call -
+ *      deliberately the same rule as starkcore_stream_next, so one rule covers
+ *      both tiers. Clone to keep.
+ *   5. Blobs from _pdf, _qrcode and _dump, and cursor strings, are released
+ *      with starkbank_free. Plain free() is never correct: in the bundled
+ *      build this library and the host may hold different runtimes.
+ *
+ * Threading
+ * ---------
+ * Inherited from starkcore, since the handles wrap its handles. A
+ * starkbank_client is immutable once configured and may be shared across
+ * threads, including concurrent starkbank_parse_and_verify calls. An entity,
+ * list or iterator is single-owner: one thread builds and frees each. Configure
+ * a client fully before publishing it to other threads; the setters are not
+ * locked. A host transport must be reentrant.
+ */
+
+#ifndef STARKBANK_H
+#define STARKBANK_H
+
+#include <stddef.h>
+#include <starkcore.h>
+
+#if defined(_WIN32)
+#  if defined(STARKBANK_BUILD_SHARED)
+#    define STARKBANK_API __declspec(dllexport)
+#  elif defined(STARKBANK_USE_SHARED)
+#    define STARKBANK_API __declspec(dllimport)
+#  else
+#    define STARKBANK_API
+#  endif
+#else
+#  if defined(STARKBANK_BUILD_SHARED)
+#    define STARKBANK_API __attribute__((visibility("default")))
+#  else
+#    define STARKBANK_API
+#  endif
+#endif
+
+/* Spelled explicitly on Win32, where a Delphi host defaults to stdcall and
+   would otherwise corrupt the stack on the first call it makes. */
+#if defined(_WIN32) && !defined(_WIN64)
+#  define STARKBANK_CALL __cdecl
+#else
+#  define STARKBANK_CALL
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* ------------------------------------------------------------ return codes */
+/*
+ * Every starkcore code is returned unchanged, so a caller compares against
+ * STARKCORE_OK and switches on STARKCORE_ERROR_* exactly as it would one tier
+ * down. The codes this tier adds all sit below -100, which is why no value
+ * here can ever collide with a code starkcore adds later.
+ * starkbank_strerror forwards anything it does not recognise to
+ * starkcore_strerror, so one call describes both tiers.
+ */
+#define STARKBANK_OK                 0      /* the same value as STARKCORE_OK */
+#define STARKBANK_ERROR_FIELD    (-101)     /* no such field on this resource, or not writable */
+#define STARKBANK_ERROR_TYPE     (-102)     /* field exists, wrong accessor for its type */
+#define STARKBANK_ERROR_ABSENT   (-103)     /* field is valid, the object does not carry it */
+#define STARKBANK_ERROR_MASKED   (-104)     /* server-redacted value; checks.py:33 */
+#define STARKBANK_ERROR_RESOURCE (-105)     /* entity belongs to another resource */
+#define STARKBANK_ERROR_ABI      (-106)     /* the linked starkcore's ABI is not the one this was built against */
+
+/*
+ * Bumped only when the meaning of a handle, a code or a prototype changes.
+ * Never when a field or a resource is added: that is the point of keeping
+ * fields out of the ABI, and a host that bumps for a new field has lost it.
+ */
+#define STARKBANK_ABI_VERSION 1
+
+/* Release of the library. The Makefile parses this line for the archive
+   version and the soname, so it is the single source. */
+#define STARKBANK_VERSION "0.1.0"
+
+/* ------------------------------------------------------------ enumerations */
+/* Re-declared rather than aliased so a host binds one header and one library.
+   The values are starkcore's and the two are checked equal at build time. */
+
+#define STARKBANK_ENVIRONMENT_PRODUCTION 0
+#define STARKBANK_ENVIRONMENT_SANDBOX    1
+
+#define STARKBANK_LANGUAGE_EN_US 0
+#define STARKBANK_LANGUAGE_PT_BR 1
+
+#define STARKBANK_METHOD_GET    0
+#define STARKBANK_METHOD_POST   1
+#define STARKBANK_METHOD_PUT    2
+#define STARKBANK_METHOD_PATCH  3
+#define STARKBANK_METHOD_DELETE 4
+
+/* ------------------------------------------------------------- field types */
+/*
+ * The type a field's table row declares. It selects the accessor that reads
+ * the field and the wire form a writer produces, and it is what
+ * starkbank_resource_field_type_at reflects so a binding generator can emit a
+ * typed wrapper without reading this header.
+ */
+#define STARKBANK_FIELD_STRING            0
+#define STARKBANK_FIELD_AMOUNT            1   /* integer cents; see the note on doubles below */
+#define STARKBANK_FIELD_RATE              2   /* a percentage, fractional. ex: 2.5 */
+#define STARKBANK_FIELD_SECONDS           3   /* python timedelta, sent as integer seconds */
+#define STARKBANK_FIELD_NUMBER            4
+#define STARKBANK_FIELD_BOOL              5
+#define STARKBANK_FIELD_DATE              6
+#define STARKBANK_FIELD_DATETIME          7
+#define STARKBANK_FIELD_DATE_OR_DATETIME  8   /* Invoice.due: a date means a scheduled invoice */
+#define STARKBANK_FIELD_LIST_STRING       9
+#define STARKBANK_FIELD_LIST_OBJECT      10   /* free-form maps: discounts, descriptions */
+#define STARKBANK_FIELD_LIST_RESOURCE    11   /* rules, splits: entities of a named sub-resource */
+#define STARKBANK_FIELD_RESOURCE         12   /* invoice.Log.invoice, Invoice.Payment */
+#define STARKBANK_FIELD_OBJECT           13   /* Transfer.metadata: an opaque map */
+
+/* ------------------------------------------------------------ field flags */
+/* A field carrying neither CREATE nor PATCH is return-only and no writer will
+   accept it. Writes are strict on purpose: a payload key dropped in silence
+   moves money wrong, and catching it here is the field table's main reason to
+   exist. The one documented way around it is starkbank_entity_set_json_raw. */
+#define STARKBANK_FLAG_REQUIRED  1   /* required on create */
+#define STARKBANK_FLAG_CREATE    2   /* accepted in a create payload */
+#define STARKBANK_FLAG_PATCH     4   /* accepted in an update payload */
+
+/* --------------------------------------------------------- opaque handles */
+
+typedef struct starkbank_user starkbank_user;      /* a project or organization credential */
+typedef struct starkbank_client starkbank_client;  /* owns the user; pins host and sdk version */
+typedef struct starkbank_entity starkbank_entity;  /* one API object, tagged with its resource */
+typedef struct starkbank_list starkbank_list;      /* an owned array of entities: a page, a batch */
+typedef struct starkbank_iter starkbank_iter;      /* a cursor-paged generator over starkcore_stream */
+
+/*
+ * The same object starkcore returns, under this library's name, so a host
+ * binds one header. One lifetime rule, one free.
+ */
+typedef starkcore_errors starkbank_errors;
+
+/*
+ * The transport seam, and the only place starkcore's own handles are named in
+ * a signature. A host that installs its own HTTP stack needs to build the
+ * response it received, so the two builders it needs are re-exported below.
+ */
+typedef starkcore_headers starkbank_headers;
+typedef starkcore_response starkbank_response;
+
+typedef int (STARKBANK_CALL *starkbank_transport_fn)(
+    void *context,
+    int method,
+    const char *url,
+    const starkbank_headers *headers,
+    const char *body,
+    size_t body_len,
+    int timeout_seconds,
+    starkbank_response **out);
+/* Perform exactly one request, build the reply with starkbank_response_new and
+   return STARKBANK_OK. Return STARKCORE_ERROR_TRANSPORT for any network, DNS,
+   TLS or timeout failure. Write body_len bytes of body verbatim: those exact
+   bytes were signed. Must be reentrant if the host calls from several threads. */
+
+/* ----------------------------------------------------------------- library */
+
+STARKBANK_API int STARKBANK_CALL starkbank_abi_version(void);
+/* Refuse to run if this differs from the STARKBANK_ABI_VERSION you built against. */
+
+STARKBANK_API const char * STARKBANK_CALL starkbank_version(void);
+/* Always STARKBANK_VERSION. This is also the sdk_version this library reports
+   to starkcore, so it is the token the User-Agent carries. Never freed. */
+
+STARKBANK_API const char * STARKBANK_CALL starkbank_core_version(void);
+/* The starkcore actually linked in, which in a bundled build a host cannot ask
+   for any other way. Never freed. */
+
+STARKBANK_API const char * STARKBANK_CALL starkbank_strerror(int code);
+/* Static English description of any code from either tier; never NULL, never
+   freed. Codes it does not own are forwarded to starkcore_strerror. */
+
+STARKBANK_API void STARKBANK_CALL starkbank_free(void *pointer);
+/* Releases any buffer or string this library returned through an out
+   parameter: _pdf and _qrcode blobs, _dump text, page cursors. Forwards to
+   starkcore_free. A NULL pointer is accepted and ignored. Calling the C
+   library's free() on one of these is never correct. */
+
+/* -------------------------------------------------------------------- user */
+/*
+ * A user is a credential. Unlike starkcore, where the user is borrowed and
+ * must outlive the client, here the client TAKES OWNERSHIP of the user: that
+ * ordering is the lifetime bug an FFI host reliably writes, and this tier
+ * absorbs it rather than forwarding it. Free a user yourself only if you never
+ * handed it to a client.
+ */
+
+STARKBANK_API int STARKBANK_CALL starkbank_project_new(const char *id, int environment,
+    const char *private_key_pem, starkbank_user **out);
+/* Project credential; the access id is "project/{id}". The PEM is checked here,
+   so a bad key fails at construction and not at the first request. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_organization_new(const char *id, int environment,
+    const char *private_key_pem, const char *workspace_id, starkbank_user **out);
+/* Organization credential; NULL or "" for workspace_id omits the
+   "/workspace/{id}" segment, as python's Organization does. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_organization_replace(const starkbank_user *organization,
+    const char *workspace_id, starkbank_user **out);
+/* A new Organization with the same id, environment and key on another
+   workspace; the original is untouched. python's organization.replace. */
+
+STARKBANK_API const char * STARKBANK_CALL starkbank_user_access_id(const starkbank_user *user);
+/* The exact Access-Id header value, for a host that signs its own requests.
+   Borrowed, valid while the user lives. NULL for a user that carries no id. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_user_environment(const starkbank_user *user);
+/* STARKBANK_ENVIRONMENT_* of this credential; it selects the base URL. */
+
+STARKBANK_API void STARKBANK_CALL starkbank_user_free(starkbank_user *user);
+/* Zeroes the private key material before releasing it. Do NOT call this on a
+   user a client has taken: starkbank_client_free owns it from that point. */
+
+/* ------------------------------------------------------------------ client */
+
+STARKBANK_API int STARKBANK_CALL starkbank_client_new(starkbank_user *user, starkbank_client **out);
+/* TAKES OWNERSHIP of user, on failure as well as on success, so one error path
+   serves both and a host cannot leak the credential by ignoring a code.
+   Returns STARKBANK_ERROR_ABI when starkcore_abi_version() is not the
+   STARKCORE_ABI_VERSION this library was compiled against - the check the
+   frozen headers ask every host to make, made once, here, for free.
+   Defaults follow starkcore: api version "v2", en-US, 15s, fractional
+   Access-Time, and no transport until one is installed. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_client_set_transport(starkbank_client *client,
+    starkbank_transport_fn transport, void *context);
+/* Installs the host's HTTP hook. Without a transport only signing works.
+   A POS terminal keeps its own stack and arrives through here. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_client_set_curl_transport(starkbank_client *client);
+/* Installs the optional libcurl transport. Returns STARKCORE_ERROR_NO_TRANSPORT
+   in a build made without it, so a host can try this and fall back rather than
+   failing to link. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_client_set_language(starkbank_client *client, int language);
+/* STARKBANK_LANGUAGE_*; it is the language API error messages come back in. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_client_set_timeout(starkbank_client *client, int seconds);
+/* Per-request timeout handed to the transport; 15 by default. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_client_set_user_agent_prefix(starkbank_client *client,
+    const char *prefix);
+/* Leading User-Agent token for a host that resells this library; NULL or "" for none. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_client_set_max_response_size(starkbank_client *client,
+    size_t bytes);
+/* Rejects larger bodies with STARKCORE_ERROR_SIZE; 0, the default, is no cap. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_client_set_user(starkbank_client *client, starkbank_user *user);
+/* Swaps the credential for a workspace hop. TAKES OWNERSHIP of the new user and
+   frees the old one. Not locked: do this before other threads see the client. */
+
+STARKBANK_API void STARKBANK_CALL starkbank_client_cache_clear(starkbank_client *client);
+/* Drops the Stark public key this client has cached for signature verification. */
+
+STARKBANK_API void STARKBANK_CALL starkbank_client_free(starkbank_client *client);
+/* Releases the client AND the user it owns. A NULL client is accepted. */
+
+/* ------------------------------------------------------------- transport seam */
+/* Exactly enough of starkcore's response and header API for a host to write a
+   starkbank_transport_fn without binding a second library. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_response_new(int status, const unsigned char *content,
+    size_t content_len, const starkbank_headers *headers, starkbank_response **out);
+/* What a transport builds from what it received; headers may be NULL. Copies
+   content. Ownership passes to this library when the transport returns OK. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_headers_count(const starkbank_headers *headers);
+STARKBANK_API const char * STARKBANK_CALL starkbank_headers_name_at(const starkbank_headers *headers, int index);
+STARKBANK_API const char * STARKBANK_CALL starkbank_headers_value_at(const starkbank_headers *headers, int index);
+/* Iterate the request headers this library built, so the transport can copy
+   them onto its own request object. All borrowed; NULL when out of range. */
+
+/* ------------------------------------------------------------------ errors */
+/* A 400 from the API carries a list of coded errors. Every verb takes an
+   errors out parameter, and every one of them may be NULL if you do not want
+   them. When it is not NULL it is set to NULL on success and on any failure
+   that is not an API error, so the free below is always safe to call. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_errors_count(const starkbank_errors *errors);
+STARKBANK_API const char * STARKBANK_CALL starkbank_errors_code_at(const starkbank_errors *errors, int index);
+/* ex: "invalidAmount". Borrowed; NULL when out of range. */
+STARKBANK_API const char * STARKBANK_CALL starkbank_errors_message_at(const starkbank_errors *errors, int index);
+/* Human-readable, in the client's language. Borrowed; NULL when out of range. */
+STARKBANK_API void STARKBANK_CALL starkbank_errors_free(starkbank_errors *errors);
+/* Errors are the caller's to free. A NULL list is accepted. */
+
+/* ------------------------------------------------------------------ entity */
+/*
+ * One object from the API, or one you are building to send. It carries the
+ * document it came from plus a tag naming its resource, and every accessor
+ * below is validated against that resource's field table.
+ *
+ * Reads are permissive and writes are strict. A read of a key the document
+ * carries and the table does not returns the value and bumps
+ * starkbank_entity_unknown_count, so a field the API added surfaces as a CI
+ * failure in this repo rather than as an error in a caller's production path.
+ * A write to a key the table does not carry, or carries without the right
+ * flag, is STARKBANK_ERROR_FIELD.
+ *
+ * Absent is not zero. STARKBANK_ERROR_ABSENT is returned for a missing key and
+ * for JSON null, and *out is left untouched. This is not pedantry: an Invoice
+ * amount of 0 is legal and means "accept whatever the payer sends", so 0 and
+ * absent must be distinguishable and no sentinel would be safe.
+ *
+ * Amounts are integer cents carried in a double. int overflows at
+ * R$ 21,474,836.47, which is inside normal ledger range; long is banned from
+ * this ABI because it is 32 bits on Win64; long long is not C89. A double is
+ * exact for every integer below 2^53, which is R$ 90 trillion in cents, and it
+ * is already what starkcore_json_number hands over, so nothing is gained or
+ * lost in precision at this tier. If exactness beyond 2^53 is ever needed the
+ * answer is a decimal-string accessor, not a wider integer.
+ */
+
+STARKBANK_API const char * STARKBANK_CALL starkbank_entity_resource(const starkbank_entity *entity);
+/* The resource this entity is tagged with, ex: "Invoice", "InvoiceLog",
+   "Invoice.Rule". Borrowed and static; never freed. NULL for a NULL entity. */
+
+STARKBANK_API const char * STARKBANK_CALL starkbank_entity_id(const starkbank_entity *entity);
+/* Shorthand for the "id" field, which almost every resource has. Borrowed.
+   NULL when the object carries no id, which is normal before a create. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_entity_has(const starkbank_entity *entity, const char *field);
+/* Nonzero when the document carries a non-null value for field. The cheap
+   pre-check that keeps STARKBANK_ERROR_ABSENT out of a hot loop. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_entity_string(const starkbank_entity *entity,
+    const char *field, const char **out);
+/* STRING fields, and the vocabulary constants below are the values to compare
+   against. Enums stay strings deliberately: the docs' list for invoice status
+   omits "registered", which python uses, so an int enum would have no way to
+   express a status the API returns every day. Borrowed; *out is untouched on
+   failure.
+   A redacted value comes back verbatim rather than as STARKBANK_ERROR_MASKED:
+   a masked tax id IS "***.345.678-**" and that is what the API sent, while a
+   description containing an asterisk is nobody's redaction. Masking is
+   reported only where python checks for it, on the datetime reader below. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_entity_amount(const starkbank_entity *entity,
+    const char *field, double *out);
+/* AMOUNT fields, in integer cents. STARKBANK_ERROR_TYPE on any other type. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_entity_number(const starkbank_entity *entity,
+    const char *field, double *out);
+/* NUMBER, RATE and SECONDS fields. A RATE is a percentage: 2.5 means 2.5%. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_entity_bool(const starkbank_entity *entity,
+    const char *field, int *out);
+/* BOOL fields; *out is 0 or 1. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_entity_datetime(const starkbank_entity *entity,
+    const char *field, int *year, int *month, int *day,
+    int *hour, int *minute, int *second, int *out_has_time);
+/* One reader for DATE, DATETIME and DATE_OR_DATETIME, delegating to
+   starkcore_datetime_parse. *out_has_time is 0 for a plain date, and on a
+   DATE_OR_DATETIME field that is the whole distinction: a date in Invoice.due
+   produces a scheduled invoice whose discounts the payer is shown. Every out
+   pointer may be NULL if you do not want that component.
+   STARKBANK_ERROR_MASKED when the server redacted the value, mirroring
+   checks.py:33 - a redaction, not a parse failure. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_entity_list_size(const starkbank_entity *entity,
+    const char *field, int *out);
+/* Element count of any LIST_* field; 0 rather than ABSENT for an empty list. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_entity_list_string_at(const starkbank_entity *entity,
+    const char *field, int index, const char **out);
+/* One element of a LIST_STRING field. Borrowed. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_entity_list_entity_at(const starkbank_entity *entity,
+    const char *field, int index, const starkbank_entity **out);
+/* One element of a LIST_RESOURCE or LIST_OBJECT field. The element is borrowed
+   and carries its own tag, so reading it is validated against the sub-
+   resource's table: starkbank_entity_string(rule, "key", &k) checks against
+   Invoice.Rule, not against Invoice. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_entity_entity(const starkbank_entity *entity,
+    const char *field, const starkbank_entity **out);
+/* A RESOURCE or OBJECT field: invoice.Log.invoice, Transfer.metadata.
+   Borrowed, tagged, and read with these same accessors - which is why
+   Event.log, whose resource varies with the subscription, needs no special
+   case in a caller. */
+
+STARKBANK_API const starkcore_json * STARKBANK_CALL starkbank_entity_json(const starkbank_entity *entity);
+/* The underlying document, for a C or C++ caller that wants starkcore
+   directly. The one starkcore type in this header's signatures, and the escape
+   hatch for anything the tables do not model. Borrowed; never freed here. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_entity_dump(const starkbank_entity *entity,
+    char **out, size_t *out_len);
+/* Table-driven serialization with sorted keys, so two runs and two machines
+   produce the same bytes. This is what the hydration goldens compare against
+   python's json.dumps(api.api_json(obj), sort_keys=True). Free with
+   starkbank_free; *out is NULL on failure. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_entity_unknown_count(const starkbank_entity *entity);
+/* How many keys the document carries that this build's table does not know,
+   counted recursively. The offline goldens and the nightly sandbox job both
+   assert this is 0, which is how a field added upstream becomes a red build
+   here instead of a silent gap. -1 for a NULL entity. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_entity_set_string(starkbank_entity *entity,
+    const char *field, const char *value);
+/* A NULL value writes JSON null, which the outbound cast then drops - the same
+   as leaving a python keyword argument at None. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_entity_set_amount(starkbank_entity *entity,
+    const char *field, double cents);
+/* Integer cents. A fractional value is STARKCORE_ERROR_ARGUMENT: rounding
+   somebody's money silently is worse than refusing it. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_entity_set_number(starkbank_entity *entity,
+    const char *field, double value);
+/* NUMBER and RATE fields. Printed locale-independently by starkcore. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_entity_set_bool(starkbank_entity *entity,
+    const char *field, int value);
+
+STARKBANK_API int STARKBANK_CALL starkbank_entity_set_date(starkbank_entity *entity,
+    const char *field, int year, int month, int day);
+/* "%Y-%m-%d" through starkcore_date_format, never strftime, which is
+   locale-dependent. STARKBANK_ERROR_TYPE on a DATETIME field: on a
+   DATE_OR_DATETIME field the choice of writer is the semantic. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_entity_set_datetime(starkbank_entity *entity,
+    const char *field, int year, int month, int day, int hour, int minute, int second);
+/* "%Y-%m-%dT%H:%M:%S+00:00", UTC, through starkcore_datetime_format.
+   STARKBANK_ERROR_TYPE on a DATE field. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_entity_set_seconds(starkbank_entity *entity,
+    const char *field, int seconds);
+/* A SECONDS field: python's timedelta, on the wire as a whole number of
+   seconds. Invoice.expiration is the one in the first slice. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_entity_append_string(starkbank_entity *entity,
+    const char *field, const char *value);
+/* Appends to a LIST_STRING field, creating it when absent. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_entity_append_entity(starkbank_entity *entity,
+    const char *field, starkbank_entity *value);
+/* Appends to a LIST_RESOURCE or LIST_OBJECT field, creating it when absent.
+   TAKES OWNERSHIP of value on failure as well as on success, so one error path
+   serves both. For a LIST_RESOURCE the value's tag must match the one the
+   table names, or it is STARKBANK_ERROR_RESOURCE. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_entity_set_json_raw(starkbank_entity *entity,
+    const char *field, const char *json_text);
+/* UNVALIDATED. Parses json_text and writes it under field with no table check
+   at all, so a caller can send a key the API grew after this build shipped.
+   The field name is not checked, the type is not checked, and nothing here
+   will tell you it was wrong. Everything else in this header exists so you do
+   not need this. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_entity_clone(const starkbank_entity *entity,
+    starkbank_entity **out);
+/* A deep copy with the same tag, which is how a borrowed entity from a list or
+   an iterator outlives the thing it came from. Yours to free. */
+
+STARKBANK_API void STARKBANK_CALL starkbank_entity_free(starkbank_entity *entity);
+/* Only for an entity you own - see ownership rules 2, 3 and 4 above. NULL is
+   accepted, and so is any pointer that is not an entity this library built:
+   each handle carries a tag word this checks before touching anything, which
+   is the guard an FFI host needs because it has no type system to lean on.
+   It is a guard against a WRONG or STALE handle and not a licence to free
+   twice - reading a block already returned to the allocator is undefined
+   whatever is written in it, and ASan reports it as such. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_object_new(starkbank_entity **out);
+/* An untagged, permissive entity: no table, no strict writes. This is how the
+   free-form maps are built - an Invoice discount is {"percentage": 10.0,
+   "due": "2026-10-28"} and no table can usefully describe it. Append it with
+   starkbank_entity_append_entity, which takes ownership. */
+
+/* -------------------------------------------------------------------- list */
+/* An owned array of entities: a create batch on the way out, a page on the way
+   back. The list owns what it holds. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_list_new(starkbank_list **out);
+STARKBANK_API int STARKBANK_CALL starkbank_list_append(starkbank_list *list, starkbank_entity *entity);
+/* TAKES OWNERSHIP of entity, on failure as well as on success. Do not free it
+   afterwards and do not append the same entity twice. */
+STARKBANK_API int STARKBANK_CALL starkbank_list_count(const starkbank_list *list);
+/* -1 for a NULL list, so a caller cannot mistake an error for an empty page. */
+STARKBANK_API const starkbank_entity * STARKBANK_CALL starkbank_list_at(const starkbank_list *list, int index);
+/* Borrowed, valid while the list lives. NULL when out of range. */
+STARKBANK_API void STARKBANK_CALL starkbank_list_free(starkbank_list *list);
+/* Frees the list and every entity in it. NULL is accepted. */
+
+/* -------------------------------------------------------------------- iter */
+/* python's generator: the cursor-paged walk over a listing endpoint. Network
+   failures surface from _next, not from the _query that built it, exactly as
+   in starkcore_stream. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_iter_next(starkbank_iter *iter,
+    const starkbank_entity **out, starkbank_errors **errors);
+/* Sets *out to the next entity, or to NULL with a return of STARKBANK_OK when
+   the walk is done - so the loop condition is a status check AND a NULL check.
+   The entity is borrowed and valid only until the next call: clone to keep. */
+
+STARKBANK_API const char * STARKBANK_CALL starkbank_iter_cursor(const starkbank_iter *iter);
+/* The cursor that would fetch the next page, so a long walk can be
+   checkpointed and resumed. Borrowed; NULL when there is no next page. */
+
+STARKBANK_API void STARKBANK_CALL starkbank_iter_free(starkbank_iter *iter);
+/* Releases the iterator and the page it is holding. NULL is accepted. */
+
+/* ---------------------------------------------------------------- registry */
+/*
+ * The field tables, reflected through the ABI. This is what lets a host
+ * regenerate its own typed wrappers on its own schedule instead of waiting for
+ * a release of ours, and it is what tools/emit.py reads to produce the Delphi
+ * unit and the C# class shipped in bindings/.
+ */
+
+STARKBANK_API int STARKBANK_CALL starkbank_resource_count(void);
+STARKBANK_API const char * STARKBANK_CALL starkbank_resource_name_at(int index);
+/* ex: "Invoice", "InvoiceLog", "Invoice.Rule". Borrowed and static. */
+STARKBANK_API int STARKBANK_CALL starkbank_resource_field_count(const char *resource);
+/* -1 for an unknown resource. */
+STARKBANK_API const char * STARKBANK_CALL starkbank_resource_field_name_at(const char *resource, int index);
+/* The wire key, ex: "taxId". Borrowed and static. */
+STARKBANK_API int STARKBANK_CALL starkbank_resource_field_type_at(const char *resource, int index);
+/* A STARKBANK_FIELD_* value; -1 when out of range. */
+STARKBANK_API int STARKBANK_CALL starkbank_resource_field_flags_at(const char *resource, int index);
+/* An OR of STARKBANK_FLAG_*; -1 when out of range. 0 means return-only. */
+
+/* ------------------------------------------------------------------- parse */
+
+STARKBANK_API int STARKBANK_CALL starkbank_parse_and_verify(const starkbank_client *client,
+    const char *content, size_t content_len, const char *signature_base64,
+    starkbank_entity **out, starkbank_errors **errors);
+/* Verifies a webhook body against Stark's public key, then hydrates it as an
+   Event - the "event" envelope key is supplied for you. STARKCORE_ERROR_SIGNATURE
+   when it does not check out. Writes the client's public key cache under the
+   client's lock, so concurrent calls on one client are safe. Webhook bodies are
+   untrusted input and this entry point is fuzzed. */
+
+/* =========================================================================
+ *                                 Invoice
+ * =========================================================================
+ *
+ * Fields (wire keys; * = required on create, + = also accepted in an update).
+ * Checked against the field table by tools/drift.py, so this block cannot rot
+ * in silence - a comment is the only documentation a consumer with no compiler
+ * ever reads.
+ *
+ *   amount*+ AMOUNT            taxId* STRING          name* STRING
+ *   due+ DATE_OR_DATETIME      expiration+ SECONDS    fine RATE
+ *   interest RATE              status+ STRING         tags LIST_STRING
+ *   discounts LIST_OBJECT      descriptions LIST_OBJECT
+ *   rules LIST_RESOURCE("Invoice.Rule")               splits LIST_RESOURCE("Split")
+ *   id pdf link brcode STRING (ro)
+ *   nominalAmount fineAmount interestAmount discountAmount fee AMOUNT (ro)
+ *   transactionIds LIST_STRING (ro)                   created updated DATETIME (ro)
+ *
+ * Query keys: limit, after, before, status, tags, ids.
+ *
+ * amount = 0 is legal and means the Invoice accepts any amount the payer
+ * sends. Write a date rather than a datetime into due to produce a scheduled
+ * Invoice, whose discounts and interest the payer's banking interface shows.
+ */
+
+#define STARKBANK_INVOICE_AMOUNT           "amount"
+#define STARKBANK_INVOICE_TAX_ID           "taxId"
+#define STARKBANK_INVOICE_NAME             "name"
+#define STARKBANK_INVOICE_DUE              "due"
+#define STARKBANK_INVOICE_EXPIRATION       "expiration"
+#define STARKBANK_INVOICE_FINE             "fine"
+#define STARKBANK_INVOICE_INTEREST         "interest"
+#define STARKBANK_INVOICE_DISCOUNTS        "discounts"
+#define STARKBANK_INVOICE_DESCRIPTIONS     "descriptions"
+#define STARKBANK_INVOICE_RULES            "rules"
+#define STARKBANK_INVOICE_SPLITS           "splits"
+#define STARKBANK_INVOICE_TAGS             "tags"
+#define STARKBANK_INVOICE_STATUS           "status"
+#define STARKBANK_INVOICE_PDF              "pdf"
+#define STARKBANK_INVOICE_LINK             "link"
+#define STARKBANK_INVOICE_BRCODE           "brcode"
+#define STARKBANK_INVOICE_NOMINAL_AMOUNT   "nominalAmount"
+#define STARKBANK_INVOICE_FINE_AMOUNT      "fineAmount"
+#define STARKBANK_INVOICE_INTEREST_AMOUNT  "interestAmount"
+#define STARKBANK_INVOICE_DISCOUNT_AMOUNT  "discountAmount"
+#define STARKBANK_INVOICE_FEE              "fee"
+#define STARKBANK_INVOICE_TRANSACTION_IDS  "transactionIds"
+#define STARKBANK_INVOICE_ID               "id"
+#define STARKBANK_INVOICE_CREATED          "created"
+#define STARKBANK_INVOICE_UPDATED          "updated"
+
+/* Statuses. Strings, not an enum: "registered" is absent from the docs' own
+   list and the API returns it constantly, and an unknown string is merely
+   unrecognised where an unknown int in an old binary is undefined. */
+#define STARKBANK_INVOICE_STATUS_CREATED    "created"
+#define STARKBANK_INVOICE_STATUS_REGISTERED "registered"
+#define STARKBANK_INVOICE_STATUS_PAID       "paid"
+#define STARKBANK_INVOICE_STATUS_CANCELED   "canceled"
+#define STARKBANK_INVOICE_STATUS_EXPIRED    "expired"
+#define STARKBANK_INVOICE_STATUS_OVERDUE    "overdue"
+#define STARKBANK_INVOICE_STATUS_REVERSED   "reversed"
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_new(starkbank_entity **out);
+/* An empty Invoice to fill in for a create batch. Free it with
+   starkbank_entity_free, or hand it to starkbank_list_append, which takes it. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_params_new(starkbank_entity **out);
+/* A query or patch bag, tagged "Invoice.Params" and validated against the same
+   table, so a mistyped filter fails here instead of being quietly ignored by
+   the API. Build it with the same setters, free it with starkbank_entity_free.
+   Build with -DSTARKBANK_LOOSE_QUERY to accept a filter this build's table has
+   not learned yet: a wrong filter costs a retry where a wrong write costs
+   money, so this loosening exists and the one on writes does not. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_create(const starkbank_client *client,
+    const starkbank_list *invoices, starkbank_list **out, starkbank_errors **errors);
+/* Up to 100 per call. Every entity is checked against the REQUIRED flags
+   before anything is sent: a missing one returns STARKBANK_ERROR_FIELD and no
+   request is made, rather than costing a round trip for a 400. Which key is
+   missing is not reported back - this ABI has no channel to carry a name, and
+   adding one is a decision deferred rather than a detail forgotten. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+/* python's generator. limit <= 0 walks every page. params may be NULL for no
+   filters. Network and API failures surface from starkbank_iter_next. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+/* One page, the (list, cursor) pair python returns. *out_cursor is NULL on the
+   last page; when it is not, free it with starkbank_free and pass it back in
+   params under "cursor" for the next call. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_update(const starkbank_client *client,
+    const char *id, const starkbank_entity *patch, starkbank_entity **out,
+    starkbank_errors **errors);
+/* Every key in patch must carry STARKBANK_FLAG_PATCH: amount, due, expiration,
+   status. Build patch with starkbank_invoice_params_new. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pdf(const starkbank_client *client,
+    const char *id, unsigned char **out, size_t *out_len, starkbank_errors **errors);
+/* Raw PDF bytes. Free with starkbank_free; *out is NULL on failure. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_qrcode(const starkbank_client *client,
+    const char *id, int size, unsigned char **out, size_t *out_len, starkbank_errors **errors);
+/* Raw PNG bytes. size is pixels per box, 1..50; pass 0 to send no size at all
+   and let the API apply its own default of 7. Free with starkbank_free. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_payment(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+/* Available once the Invoice is paid; the entity is tagged "Invoice.Payment".
+   Yours to free. */
+
+/* --------------------------------------------------------- Invoice.Payment */
+/* Return-only, reached through starkbank_invoice_payment.
+ * Fields: amount AMOUNT (ro); name taxId bankCode branchCode accountNumber
+ * accountType endToEndId method STRING (ro). */
+#define STARKBANK_INVOICE_PAYMENT_AMOUNT          "amount"
+#define STARKBANK_INVOICE_PAYMENT_NAME            "name"
+#define STARKBANK_INVOICE_PAYMENT_TAX_ID          "taxId"
+#define STARKBANK_INVOICE_PAYMENT_BANK_CODE       "bankCode"
+#define STARKBANK_INVOICE_PAYMENT_BRANCH_CODE     "branchCode"
+#define STARKBANK_INVOICE_PAYMENT_ACCOUNT_NUMBER  "accountNumber"
+#define STARKBANK_INVOICE_PAYMENT_ACCOUNT_TYPE    "accountType"
+#define STARKBANK_INVOICE_PAYMENT_END_TO_END_ID   "endToEndId"
+#define STARKBANK_INVOICE_PAYMENT_METHOD          "method"
+
+/* ------------------------------------------------------------ Invoice.Rule */
+/* Modifies an Invoice's behaviour; passed in the "rules" list at create.
+ * Fields: key* STRING, value* LIST_STRING.
+ * ex: key "allowedTaxIds", value ["012.345.678-90", "45.059.493/0001-73"]. */
+#define STARKBANK_INVOICE_RULE_KEY    "key"
+#define STARKBANK_INVOICE_RULE_VALUE  "value"
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_rule_new(starkbank_entity **out);
+/* Free it, or append it to an Invoice's "rules", which takes ownership. */
+
+/* ---------------------------------------------------------------- Split */
+/* Passed in an Invoice's "splits" list to name the payment's receivers.
+ * Fields: amount* AMOUNT, receiverId* STRING, externalId STRING,
+ * tags LIST_STRING, scheduled DATETIME; id source status STRING (ro),
+ * created updated DATETIME (ro). */
+#define STARKBANK_SPLIT_AMOUNT       "amount"
+#define STARKBANK_SPLIT_RECEIVER_ID  "receiverId"
+#define STARKBANK_SPLIT_EXTERNAL_ID  "externalId"
+#define STARKBANK_SPLIT_TAGS         "tags"
+#define STARKBANK_SPLIT_SCHEDULED    "scheduled"
+#define STARKBANK_SPLIT_SOURCE       "source"
+#define STARKBANK_SPLIT_STATUS       "status"
+#define STARKBANK_SPLIT_ID           "id"
+#define STARKBANK_SPLIT_CREATED      "created"
+#define STARKBANK_SPLIT_UPDATED      "updated"
+
+STARKBANK_API int STARKBANK_CALL starkbank_split_new(starkbank_entity **out);
+
+/* ------------------------------------------------------------- invoice.Log */
+/*
+ * Resource "InvoiceLog"; the endpoint "invoice/log" is derived at run time by
+ * starkcore_api_endpoint, never spelled here.
+ * Fields: id STRING (ro), created DATETIME (ro), type STRING (ro),
+ *         errors LIST_STRING (ro), invoice RESOURCE("Invoice") (ro).
+ * Query keys: limit, after, before, types, invoiceIds.
+ *
+ * The invoice field is a whole tagged Invoice read with the same accessors,
+ * which is the clearest argument for there being exactly one entity type.
+ */
+#define STARKBANK_INVOICE_LOG_ID       "id"
+#define STARKBANK_INVOICE_LOG_CREATED  "created"
+#define STARKBANK_INVOICE_LOG_TYPE     "type"
+#define STARKBANK_INVOICE_LOG_ERRORS   "errors"
+#define STARKBANK_INVOICE_LOG_INVOICE  "invoice"
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_log_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_log_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_log_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_log_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_log_pdf(const starkbank_client *client,
+    const char *id, unsigned char **out, size_t *out_len, starkbank_errors **errors);
+/* A PDF of the Invoice as it stood at this log entry. Free with starkbank_free. */
+
+/* =========================================================================
+ *                                 Transfer
+ * =========================================================================
+ *
+ * Fields (wire keys; * = required on create). Transfer has no update verb, so
+ * nothing here is patchable.
+ *
+ *   amount* AMOUNT             name* STRING           taxId* STRING
+ *   bankCode* STRING           branchCode* STRING     accountNumber* STRING
+ *   accountType STRING         externalId STRING      scheduled DATE_OR_DATETIME
+ *   description STRING         displayDescription STRING
+ *   tags LIST_STRING           rules LIST_RESOURCE("Transfer.Rule")
+ *   id status STRING (ro)      fee AMOUNT (ro)        transactionIds LIST_STRING (ro)
+ *   metadata OBJECT (ro)       created updated DATETIME (ro)
+ *
+ * Query keys: limit, after, before, transactionIds, status, taxId, sort, tags, ids.
+ *
+ * bankCode decides the rail: an 8-digit ISPB makes a Pix transfer, anything
+ * else a TED. accountType only has an effect on Pix.
+ *
+ * externalId is the idempotency key, and it is the one every caller should
+ * set: a url-safe string unique across all your transfers. Without it the API
+ * blocks any transfer repeating the same amount and receiver on the same day,
+ * which is a duplicate guard rather than idempotency, and a retried request
+ * whose reply you never saw is indistinguishable from a second payment.
+ */
+
+#define STARKBANK_TRANSFER_AMOUNT               "amount"
+#define STARKBANK_TRANSFER_NAME                 "name"
+#define STARKBANK_TRANSFER_TAX_ID               "taxId"
+#define STARKBANK_TRANSFER_BANK_CODE            "bankCode"
+#define STARKBANK_TRANSFER_BRANCH_CODE          "branchCode"
+#define STARKBANK_TRANSFER_ACCOUNT_NUMBER       "accountNumber"
+#define STARKBANK_TRANSFER_ACCOUNT_TYPE         "accountType"
+#define STARKBANK_TRANSFER_EXTERNAL_ID          "externalId"
+#define STARKBANK_TRANSFER_SCHEDULED            "scheduled"
+#define STARKBANK_TRANSFER_DESCRIPTION          "description"
+#define STARKBANK_TRANSFER_DISPLAY_DESCRIPTION  "displayDescription"
+#define STARKBANK_TRANSFER_TAGS                 "tags"
+#define STARKBANK_TRANSFER_RULES                "rules"
+#define STARKBANK_TRANSFER_FEE                  "fee"
+#define STARKBANK_TRANSFER_STATUS               "status"
+#define STARKBANK_TRANSFER_TRANSACTION_IDS      "transactionIds"
+#define STARKBANK_TRANSFER_METADATA             "metadata"
+#define STARKBANK_TRANSFER_ID                   "id"
+#define STARKBANK_TRANSFER_CREATED              "created"
+#define STARKBANK_TRANSFER_UPDATED              "updated"
+
+#define STARKBANK_TRANSFER_ACCOUNT_TYPE_CHECKING  "checking"
+#define STARKBANK_TRANSFER_ACCOUNT_TYPE_SAVINGS   "savings"
+#define STARKBANK_TRANSFER_ACCOUNT_TYPE_SALARY    "salary"
+#define STARKBANK_TRANSFER_ACCOUNT_TYPE_PAYMENT   "payment"
+
+#define STARKBANK_TRANSFER_STATUS_CREATED    "created"
+#define STARKBANK_TRANSFER_STATUS_PROCESSING "processing"
+#define STARKBANK_TRANSFER_STATUS_SUCCESS    "success"
+#define STARKBANK_TRANSFER_STATUS_FAILED     "failed"
+#define STARKBANK_TRANSFER_STATUS_CANCELED   "canceled"
+
+STARKBANK_API int STARKBANK_CALL starkbank_transfer_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_transfer_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_transfer_create(const starkbank_client *client,
+    const starkbank_list *transfers, starkbank_list **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_transfer_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_transfer_delete(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+/* Cancels a Transfer that has not been processed yet and returns it as it
+   stands. Yours to free. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_transfer_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_transfer_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_transfer_pdf(const starkbank_client *client,
+    const char *id, unsigned char **out, size_t *out_len, starkbank_errors **errors);
+/* The receipt, available only once the Transfer has succeeded. Free with
+   starkbank_free. */
+
+/* ----------------------------------------------------------- Transfer.Rule */
+/* Fields: key* STRING, value* NUMBER. ex: key "resendingLimit", value 5.
+   Note the value type: an Invoice.Rule value is a list of strings and a
+   Transfer.Rule value is a number, which is why each sub-resource carries its
+   own table and its own tag rather than sharing one "Rule". */
+#define STARKBANK_TRANSFER_RULE_KEY    "key"
+#define STARKBANK_TRANSFER_RULE_VALUE  "value"
+
+STARKBANK_API int STARKBANK_CALL starkbank_transfer_rule_new(starkbank_entity **out);
+
+/* ------------------------------------------------------------ transfer.Log */
+/*
+ * Resource "TransferLog"; endpoint "transfer/log", derived at run time.
+ * Fields: id STRING (ro), created DATETIME (ro), type STRING (ro),
+ *         errors LIST_STRING (ro), transfer RESOURCE("Transfer") (ro).
+ * Query keys: limit, after, before, types, transferIds.
+ *
+ * There is no transfer.Log pdf: sdk-python does not have one, and python is
+ * normative for the verb surface. The receipt is starkbank_transfer_pdf.
+ */
+#define STARKBANK_TRANSFER_LOG_ID        "id"
+#define STARKBANK_TRANSFER_LOG_CREATED   "created"
+#define STARKBANK_TRANSFER_LOG_TYPE      "type"
+#define STARKBANK_TRANSFER_LOG_ERRORS    "errors"
+#define STARKBANK_TRANSFER_LOG_TRANSFER  "transfer"
+
+STARKBANK_API int STARKBANK_CALL starkbank_transfer_log_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_transfer_log_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_transfer_log_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_transfer_log_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+/* =========================================================================
+ *                                  Event
+ * =========================================================================
+ *
+ * A webhook notification. Events are never created by a caller.
+ *
+ * Fields (wire keys; + = accepted in an update):
+ *   id STRING (ro)             created DATETIME (ro)  subscription STRING (ro)
+ *   workspaceId STRING (ro)    isDelivered+ BOOL      log RESOURCE (ro)
+ *
+ * Query keys: limit, after, before, isDelivered.
+ *
+ * log is polymorphic: the resource it hydrates as is chosen by subscription -
+ * "invoice" gives an InvoiceLog, "transfer" a TransferLog, and so on for the
+ * ten subscriptions sdk-python maps. The tag on the entity you get back says
+ * which, so read it with starkbank_entity_resource before reaching inside:
+ *
+ *     starkbank_entity_entity(event, STARKBANK_EVENT_LOG, &log);
+ *     if (strcmp(starkbank_entity_resource(log), "InvoiceLog") == 0) {
+ *         starkbank_entity_entity(log, STARKBANK_INVOICE_LOG_INVOICE, &invoice);
+ *     }
+ *
+ * A subscription this build does not know still hydrates: the log entity is
+ * untagged and permissive, everything in it is reachable, and the unknown
+ * counter goes up so the gap shows in CI rather than in a caller's log.
+ */
+
+#define STARKBANK_EVENT_ID            "id"
+#define STARKBANK_EVENT_LOG           "log"
+#define STARKBANK_EVENT_CREATED       "created"
+#define STARKBANK_EVENT_IS_DELIVERED  "isDelivered"
+#define STARKBANK_EVENT_SUBSCRIPTION  "subscription"
+#define STARKBANK_EVENT_WORKSPACE_ID  "workspaceId"
+
+#define STARKBANK_EVENT_SUBSCRIPTION_TRANSFER        "transfer"
+#define STARKBANK_EVENT_SUBSCRIPTION_INVOICE         "invoice"
+#define STARKBANK_EVENT_SUBSCRIPTION_DEPOSIT         "deposit"
+#define STARKBANK_EVENT_SUBSCRIPTION_BOLETO          "boleto"
+#define STARKBANK_EVENT_SUBSCRIPTION_BRCODE_PAYMENT  "brcode-payment"
+#define STARKBANK_EVENT_SUBSCRIPTION_BOLETO_PAYMENT  "boleto-payment"
+#define STARKBANK_EVENT_SUBSCRIPTION_UTILITY_PAYMENT "utility-payment"
+#define STARKBANK_EVENT_SUBSCRIPTION_DARF_PAYMENT    "darf-payment"
+#define STARKBANK_EVENT_SUBSCRIPTION_TAX_PAYMENT     "tax-payment"
+#define STARKBANK_EVENT_SUBSCRIPTION_HOLMES          "holmes"
+
+STARKBANK_API int STARKBANK_CALL starkbank_event_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_event_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_event_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_event_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_event_update(const starkbank_client *client,
+    const char *id, const starkbank_entity *patch, starkbank_entity **out,
+    starkbank_errors **errors);
+/* isDelivered is the only patchable key; setting it to 1 stops redelivery. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_event_delete(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_event_parse(const starkbank_client *client,
+    const char *content, size_t content_len, const char *signature_base64,
+    starkbank_entity **out, starkbank_errors **errors);
+/*
+ * The one verb in this slice with judgement in it, and therefore the one no
+ * macro expands: it is declared here and defined by hand in handwritten/. If
+ * nobody writes that file the link fails with an undefined symbol, which is
+ * the only marker for "this needs a human" that cannot be ignored.
+ *
+ * Verifies the body against Stark's public key and hydrates the Event inside
+ * the "event" envelope. STARKCORE_ERROR_SIGNATURE when it does not check out;
+ * do not trust the body in that case. Untrusted input, and fuzzed as such.
+ */
+
+/* --------------------------------------------------------- event.Attempt */
+/*
+ * A failed delivery of an Event, recorded so a caller can debug their own
+ * endpoint. Resource "EventAttempt"; endpoint "event/attempt".
+ * Fields: id code message eventId webhookId STRING (ro), created DATETIME (ro).
+ * Query keys: limit, after, before, eventIds, webhookIds.
+ */
+#define STARKBANK_EVENT_ATTEMPT_ID          "id"
+#define STARKBANK_EVENT_ATTEMPT_CODE        "code"
+#define STARKBANK_EVENT_ATTEMPT_MESSAGE     "message"
+#define STARKBANK_EVENT_ATTEMPT_EVENT_ID    "eventId"
+#define STARKBANK_EVENT_ATTEMPT_WEBHOOK_ID  "webhookId"
+#define STARKBANK_EVENT_ATTEMPT_CREATED     "created"
+
+STARKBANK_API int STARKBANK_CALL starkbank_event_attempt_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_event_attempt_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_event_attempt_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_event_attempt_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+/* =========================================================================
+ *                                 Balance
+ * =========================================================================
+ *
+ * The degenerate shape, and worth having in the first slice for exactly that:
+ * a single object with no id, no filters and no verbs but one.
+ *
+ * Fields: id STRING (ro), amount AMOUNT (ro), currency STRING (ro),
+ *         updated DATETIME (ro).
+ */
+#define STARKBANK_BALANCE_ID        "id"
+#define STARKBANK_BALANCE_AMOUNT    "amount"
+#define STARKBANK_BALANCE_CURRENCY  "currency"
+#define STARKBANK_BALANCE_UPDATED   "updated"
+
+STARKBANK_API int STARKBANK_CALL starkbank_balance_get(const starkbank_client *client,
+    starkbank_entity **out, starkbank_errors **errors);
+/* The workspace's balance. There is no id: python takes the first element of
+   the listing endpoint, and so does this. Yours to free. */
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* STARKBANK_H */

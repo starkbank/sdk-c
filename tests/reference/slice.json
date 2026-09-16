@@ -1,0 +1,917 @@
+{
+  "cases": {
+    "balance.get": {
+      "hydrated": "{\"amount\":1234567,\"currency\":\"BRL\",\"id\":\"5155165527080960\",\"updated\":\"2026-09-16T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/balance"
+        }
+      ]
+    },
+    "event.attempt.get": {
+      "hydrated": "{\"code\":\"500\",\"created\":\"2026-09-16T12:00:00+00:00\",\"eventId\":\"5764898044149760\",\"id\":\"1616161616161616\",\"message\":\"Internal Server Error\",\"webhookId\":\"6178044066660352\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/event/attempt/1616161616161616"
+        }
+      ]
+    },
+    "event.attempt.page": {
+      "hydrated": [
+        "{\"code\":\"500\",\"created\":\"2026-09-16T12:00:00+00:00\",\"eventId\":\"5764898044149760\",\"id\":\"1616161616161616\",\"message\":\"Internal Server Error\",\"webhookId\":\"6178044066660352\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/event/attempt"
+        }
+      ]
+    },
+    "event.attempt.query": {
+      "hydrated": [
+        "{\"code\":\"500\",\"created\":\"2026-09-16T12:00:00+00:00\",\"eventId\":\"5764898044149760\",\"id\":\"1616161616161616\",\"message\":\"Internal Server Error\",\"webhookId\":\"6178044066660352\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "eventIds=5764898044149760&limit=5",
+          "queryRaw": "limit=5&eventIds=5764898044149760",
+          "url": "https://sandbox.api.starkbank.com/v2/event/attempt"
+        }
+      ]
+    },
+    "event.delete": {
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"5764898044149760\",\"isDelivered\":false,\"log\":{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482496\",\"invoice\":{\"amount\":0,\"brcode\":\"00020101021226800014br.gov.bcb.pix\",\"created\":\"2026-09-16T12:00:00+00:00\",\"descriptions\":[{\"key\":\"service\",\"value\":\"swords\"}],\"discountAmount\":3000,\"discounts\":[{\"due\":\"2026-10-01\",\"percentage\":10}],\"due\":\"2026-10-28\",\"expiration\":123456789,\"fine\":2.5,\"fineAmount\":20000,\"id\":\"5155165527080960\",\"interest\":1.3,\"interestAmount\":10000,\"link\":\"https://my-workspace.sandbox.starkbank.com/invoicelink/d454fa4e\",\"name\":\"Iron Bank S.A.\",\"nominalAmount\":400000,\"pdf\":\"https://invoice.starkbank.com/pdf/d454fa4e\",\"rules\":[{\"key\":\"allowedTaxIds\",\"value\":[\"012.345.678-90\",\"45.059.493/0001-73\"]}],\"splits\":[{\"amount\":141,\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6\",\"receiverId\":\"5706627130851328\",\"status\":\"created\"}],\"status\":\"registered\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"paid\"},\"subscription\":\"invoice\",\"workspaceId\":\"4545454545454545\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "DELETE",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/event/5764898044149760"
+        }
+      ]
+    },
+    "event.get": {
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"5764898044149760\",\"isDelivered\":false,\"log\":{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482496\",\"invoice\":{\"amount\":0,\"brcode\":\"00020101021226800014br.gov.bcb.pix\",\"created\":\"2026-09-16T12:00:00+00:00\",\"descriptions\":[{\"key\":\"service\",\"value\":\"swords\"}],\"discountAmount\":3000,\"discounts\":[{\"due\":\"2026-10-01\",\"percentage\":10}],\"due\":\"2026-10-28\",\"expiration\":123456789,\"fine\":2.5,\"fineAmount\":20000,\"id\":\"5155165527080960\",\"interest\":1.3,\"interestAmount\":10000,\"link\":\"https://my-workspace.sandbox.starkbank.com/invoicelink/d454fa4e\",\"name\":\"Iron Bank S.A.\",\"nominalAmount\":400000,\"pdf\":\"https://invoice.starkbank.com/pdf/d454fa4e\",\"rules\":[{\"key\":\"allowedTaxIds\",\"value\":[\"012.345.678-90\",\"45.059.493/0001-73\"]}],\"splits\":[{\"amount\":141,\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6\",\"receiverId\":\"5706627130851328\",\"status\":\"created\"}],\"status\":\"registered\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"paid\"},\"subscription\":\"invoice\",\"workspaceId\":\"4545454545454545\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/event/5764898044149760"
+        }
+      ]
+    },
+    "event.page": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"5764898044149760\",\"isDelivered\":false,\"log\":{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482496\",\"invoice\":{\"amount\":0,\"brcode\":\"00020101021226800014br.gov.bcb.pix\",\"created\":\"2026-09-16T12:00:00+00:00\",\"descriptions\":[{\"key\":\"service\",\"value\":\"swords\"}],\"discountAmount\":3000,\"discounts\":[{\"due\":\"2026-10-01\",\"percentage\":10}],\"due\":\"2026-10-28\",\"expiration\":123456789,\"fine\":2.5,\"fineAmount\":20000,\"id\":\"5155165527080960\",\"interest\":1.3,\"interestAmount\":10000,\"link\":\"https://my-workspace.sandbox.starkbank.com/invoicelink/d454fa4e\",\"name\":\"Iron Bank S.A.\",\"nominalAmount\":400000,\"pdf\":\"https://invoice.starkbank.com/pdf/d454fa4e\",\"rules\":[{\"key\":\"allowedTaxIds\",\"value\":[\"012.345.678-90\",\"45.059.493/0001-73\"]}],\"splits\":[{\"amount\":141,\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6\",\"receiverId\":\"5706627130851328\",\"status\":\"created\"}],\"status\":\"registered\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"paid\"},\"subscription\":\"invoice\",\"workspaceId\":\"4545454545454545\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/event"
+        }
+      ]
+    },
+    "event.query": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"5764898044149760\",\"isDelivered\":false,\"log\":{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482496\",\"invoice\":{\"amount\":0,\"brcode\":\"00020101021226800014br.gov.bcb.pix\",\"created\":\"2026-09-16T12:00:00+00:00\",\"descriptions\":[{\"key\":\"service\",\"value\":\"swords\"}],\"discountAmount\":3000,\"discounts\":[{\"due\":\"2026-10-01\",\"percentage\":10}],\"due\":\"2026-10-28\",\"expiration\":123456789,\"fine\":2.5,\"fineAmount\":20000,\"id\":\"5155165527080960\",\"interest\":1.3,\"interestAmount\":10000,\"link\":\"https://my-workspace.sandbox.starkbank.com/invoicelink/d454fa4e\",\"name\":\"Iron Bank S.A.\",\"nominalAmount\":400000,\"pdf\":\"https://invoice.starkbank.com/pdf/d454fa4e\",\"rules\":[{\"key\":\"allowedTaxIds\",\"value\":[\"012.345.678-90\",\"45.059.493/0001-73\"]}],\"splits\":[{\"amount\":141,\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6\",\"receiverId\":\"5706627130851328\",\"status\":\"created\"}],\"status\":\"registered\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"paid\"},\"subscription\":\"invoice\",\"workspaceId\":\"4545454545454545\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "isDelivered=False&limit=5",
+          "queryRaw": "limit=5&isDelivered=False",
+          "url": "https://sandbox.api.starkbank.com/v2/event"
+        }
+      ]
+    },
+    "event.transfer": {
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"4823\",\"isDelivered\":false,\"log\":{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482496\",\"transfer\":{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"amount\":1000,\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Payment for service #1234\",\"displayDescription\":\"Sword sharpening\",\"externalId\":\"my-internal-id-123456\",\"fee\":200,\"id\":\"5155165527080960\",\"metadata\":{\"attempt\":2,\"tracker\":\"abc\"},\"name\":\"Daenerys Targaryen Stormborn\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28T17:59:26+00:00\",\"status\":\"processing\",\"tags\":[\"daenerys\",\"invoice/1234\"],\"taxId\":\"594.739.480-42\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"success\"},\"subscription\":\"transfer\",\"workspaceId\":\"4545454545454545\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/event/4823"
+        }
+      ]
+    },
+    "event.unknown": {
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"4824\",\"isDelivered\":false,\"log\":{\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"1\"},\"subscription\":\"pix-request\",\"workspaceId\":\"4545454545454545\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/event/4824"
+        }
+      ]
+    },
+    "event.update": {
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"5764898044149760\",\"isDelivered\":false,\"log\":{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482496\",\"invoice\":{\"amount\":0,\"brcode\":\"00020101021226800014br.gov.bcb.pix\",\"created\":\"2026-09-16T12:00:00+00:00\",\"descriptions\":[{\"key\":\"service\",\"value\":\"swords\"}],\"discountAmount\":3000,\"discounts\":[{\"due\":\"2026-10-01\",\"percentage\":10}],\"due\":\"2026-10-28\",\"expiration\":123456789,\"fine\":2.5,\"fineAmount\":20000,\"id\":\"5155165527080960\",\"interest\":1.3,\"interestAmount\":10000,\"link\":\"https://my-workspace.sandbox.starkbank.com/invoicelink/d454fa4e\",\"name\":\"Iron Bank S.A.\",\"nominalAmount\":400000,\"pdf\":\"https://invoice.starkbank.com/pdf/d454fa4e\",\"rules\":[{\"key\":\"allowedTaxIds\",\"value\":[\"012.345.678-90\",\"45.059.493/0001-73\"]}],\"splits\":[{\"amount\":141,\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6\",\"receiverId\":\"5706627130851328\",\"status\":\"created\"}],\"status\":\"registered\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"paid\"},\"subscription\":\"invoice\",\"workspaceId\":\"4545454545454545\"}",
+      "requests": [
+        {
+          "body": "{\"isDelivered\":true}",
+          "bodyRaw": "{\"isDelivered\": true}",
+          "method": "PATCH",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/event/5764898044149760"
+        }
+      ]
+    },
+    "invoice.create": {
+      "hydrated": [
+        "{\"amount\":0,\"brcode\":\"00020101021226800014br.gov.bcb.pix\",\"created\":\"2026-09-16T12:00:00+00:00\",\"descriptions\":[{\"key\":\"service\",\"value\":\"swords\"}],\"discountAmount\":3000,\"discounts\":[{\"due\":\"2026-10-01\",\"percentage\":10}],\"due\":\"2026-10-28\",\"expiration\":123456789,\"fine\":2.5,\"fineAmount\":20000,\"id\":\"5155165527080960\",\"interest\":1.3,\"interestAmount\":10000,\"link\":\"https://my-workspace.sandbox.starkbank.com/invoicelink/d454fa4e\",\"name\":\"Iron Bank S.A.\",\"nominalAmount\":400000,\"pdf\":\"https://invoice.starkbank.com/pdf/d454fa4e\",\"rules\":[{\"key\":\"allowedTaxIds\",\"value\":[\"012.345.678-90\",\"45.059.493/0001-73\"]}],\"splits\":[{\"amount\":141,\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6\",\"receiverId\":\"5706627130851328\",\"status\":\"created\"}],\"status\":\"registered\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "{\"invoices\":[{\"amount\":400000,\"descriptions\":[{\"key\":\"service\",\"value\":\"swords\"}],\"discounts\":[{\"due\":\"2026-10-01\",\"percentage\":10}],\"due\":\"2026-10-28\",\"expiration\":123456789,\"fine\":2.5,\"interest\":1.3,\"name\":\"Iron Bank S.A.\",\"rules\":[{\"key\":\"allowedTaxIds\",\"value\":[\"012.345.678-90\",\"45.059.493/0001-73\"]}],\"splits\":[{\"amount\":141,\"receiverId\":\"5706627130851328\"}],\"tags\":[\"war\",\"supply\"],\"taxId\":\"012.345.678-90\"}]}",
+          "bodyRaw": "{\"invoices\": [{\"amount\": 400000, \"descriptions\": [{\"key\": \"service\", \"value\": \"swords\"}], \"discounts\": [{\"percentage\": 10.0, \"due\": \"2026-10-01\"}], \"due\": \"2026-10-28\", \"expiration\": 123456789, \"fine\": 2.5, \"interest\": 1.3, \"name\": \"Iron Bank S.A.\", \"rules\": [{\"key\": \"allowedTaxIds\", \"value\": [\"012.345.678-90\", \"45.059.493/0001-73\"]}], \"splits\": [{\"amount\": 141, \"receiverId\": \"5706627130851328\"}], \"tags\": [\"war\", \"supply\"], \"taxId\": \"012.345.678-90\"}]}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice"
+        }
+      ]
+    },
+    "invoice.get": {
+      "hydrated": "{\"amount\":0,\"brcode\":\"00020101021226800014br.gov.bcb.pix\",\"created\":\"2026-09-16T12:00:00+00:00\",\"descriptions\":[{\"key\":\"service\",\"value\":\"swords\"}],\"discountAmount\":3000,\"discounts\":[{\"due\":\"2026-10-01\",\"percentage\":10}],\"due\":\"2026-10-28\",\"expiration\":123456789,\"fine\":2.5,\"fineAmount\":20000,\"id\":\"5155165527080960\",\"interest\":1.3,\"interestAmount\":10000,\"link\":\"https://my-workspace.sandbox.starkbank.com/invoicelink/d454fa4e\",\"name\":\"Iron Bank S.A.\",\"nominalAmount\":400000,\"pdf\":\"https://invoice.starkbank.com/pdf/d454fa4e\",\"rules\":[{\"key\":\"allowedTaxIds\",\"value\":[\"012.345.678-90\",\"45.059.493/0001-73\"]}],\"splits\":[{\"amount\":141,\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6\",\"receiverId\":\"5706627130851328\",\"status\":\"created\"}],\"status\":\"registered\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice/5155165527080960"
+        }
+      ]
+    },
+    "invoice.log.get": {
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482496\",\"invoice\":{\"amount\":0,\"brcode\":\"00020101021226800014br.gov.bcb.pix\",\"created\":\"2026-09-16T12:00:00+00:00\",\"descriptions\":[{\"key\":\"service\",\"value\":\"swords\"}],\"discountAmount\":3000,\"discounts\":[{\"due\":\"2026-10-01\",\"percentage\":10}],\"due\":\"2026-10-28\",\"expiration\":123456789,\"fine\":2.5,\"fineAmount\":20000,\"id\":\"5155165527080960\",\"interest\":1.3,\"interestAmount\":10000,\"link\":\"https://my-workspace.sandbox.starkbank.com/invoicelink/d454fa4e\",\"name\":\"Iron Bank S.A.\",\"nominalAmount\":400000,\"pdf\":\"https://invoice.starkbank.com/pdf/d454fa4e\",\"rules\":[{\"key\":\"allowedTaxIds\",\"value\":[\"012.345.678-90\",\"45.059.493/0001-73\"]}],\"splits\":[{\"amount\":141,\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6\",\"receiverId\":\"5706627130851328\",\"status\":\"created\"}],\"status\":\"registered\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"paid\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice/log/6341320293482496"
+        }
+      ]
+    },
+    "invoice.log.page": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482496\",\"invoice\":{\"amount\":0,\"brcode\":\"00020101021226800014br.gov.bcb.pix\",\"created\":\"2026-09-16T12:00:00+00:00\",\"descriptions\":[{\"key\":\"service\",\"value\":\"swords\"}],\"discountAmount\":3000,\"discounts\":[{\"due\":\"2026-10-01\",\"percentage\":10}],\"due\":\"2026-10-28\",\"expiration\":123456789,\"fine\":2.5,\"fineAmount\":20000,\"id\":\"5155165527080960\",\"interest\":1.3,\"interestAmount\":10000,\"link\":\"https://my-workspace.sandbox.starkbank.com/invoicelink/d454fa4e\",\"name\":\"Iron Bank S.A.\",\"nominalAmount\":400000,\"pdf\":\"https://invoice.starkbank.com/pdf/d454fa4e\",\"rules\":[{\"key\":\"allowedTaxIds\",\"value\":[\"012.345.678-90\",\"45.059.493/0001-73\"]}],\"splits\":[{\"amount\":141,\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6\",\"receiverId\":\"5706627130851328\",\"status\":\"created\"}],\"status\":\"registered\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"paid\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice/log"
+        }
+      ]
+    },
+    "invoice.log.pdf": {
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice/log/6341320293482496/pdf"
+        }
+      ]
+    },
+    "invoice.log.query": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482496\",\"invoice\":{\"amount\":0,\"brcode\":\"00020101021226800014br.gov.bcb.pix\",\"created\":\"2026-09-16T12:00:00+00:00\",\"descriptions\":[{\"key\":\"service\",\"value\":\"swords\"}],\"discountAmount\":3000,\"discounts\":[{\"due\":\"2026-10-01\",\"percentage\":10}],\"due\":\"2026-10-28\",\"expiration\":123456789,\"fine\":2.5,\"fineAmount\":20000,\"id\":\"5155165527080960\",\"interest\":1.3,\"interestAmount\":10000,\"link\":\"https://my-workspace.sandbox.starkbank.com/invoicelink/d454fa4e\",\"name\":\"Iron Bank S.A.\",\"nominalAmount\":400000,\"pdf\":\"https://invoice.starkbank.com/pdf/d454fa4e\",\"rules\":[{\"key\":\"allowedTaxIds\",\"value\":[\"012.345.678-90\",\"45.059.493/0001-73\"]}],\"splits\":[{\"amount\":141,\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6\",\"receiverId\":\"5706627130851328\",\"status\":\"created\"}],\"status\":\"registered\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"paid\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "invoiceIds=5155165527080960&limit=5&types=paid",
+          "queryRaw": "limit=5&types=paid&invoiceIds=5155165527080960",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice/log"
+        }
+      ]
+    },
+    "invoice.page": {
+      "hydrated": [
+        "{\"amount\":0,\"brcode\":\"00020101021226800014br.gov.bcb.pix\",\"created\":\"2026-09-16T12:00:00+00:00\",\"descriptions\":[{\"key\":\"service\",\"value\":\"swords\"}],\"discountAmount\":3000,\"discounts\":[{\"due\":\"2026-10-01\",\"percentage\":10}],\"due\":\"2026-10-28\",\"expiration\":123456789,\"fine\":2.5,\"fineAmount\":20000,\"id\":\"5155165527080960\",\"interest\":1.3,\"interestAmount\":10000,\"link\":\"https://my-workspace.sandbox.starkbank.com/invoicelink/d454fa4e\",\"name\":\"Iron Bank S.A.\",\"nominalAmount\":400000,\"pdf\":\"https://invoice.starkbank.com/pdf/d454fa4e\",\"rules\":[{\"key\":\"allowedTaxIds\",\"value\":[\"012.345.678-90\",\"45.059.493/0001-73\"]}],\"splits\":[{\"amount\":141,\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6\",\"receiverId\":\"5706627130851328\",\"status\":\"created\"}],\"status\":\"registered\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "cursor=c1&limit=10&status=paid",
+          "queryRaw": "cursor=c1&limit=10&status=paid",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice"
+        }
+      ]
+    },
+    "invoice.payment": {
+      "hydrated": "{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"amount\":1234,\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"endToEndId\":\"E79457883202101262140HHX553UPqeq\",\"method\":\"pix\",\"name\":\"Anthony Edward Stark\",\"taxId\":\"20.018.183/0001-80\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice/5155165527080960/payment"
+        }
+      ]
+    },
+    "invoice.pdf": {
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice/5155165527080960/pdf"
+        }
+      ]
+    },
+    "invoice.qrcode": {
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "size=12",
+          "queryRaw": "size=12",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice/5155165527080960/qrcode"
+        }
+      ]
+    },
+    "invoice.query": {
+      "hydrated": [
+        "{\"amount\":0,\"brcode\":\"00020101021226800014br.gov.bcb.pix\",\"created\":\"2026-09-16T12:00:00+00:00\",\"descriptions\":[{\"key\":\"service\",\"value\":\"swords\"}],\"discountAmount\":3000,\"discounts\":[{\"due\":\"2026-10-01\",\"percentage\":10}],\"due\":\"2026-10-28\",\"expiration\":123456789,\"fine\":2.5,\"fineAmount\":20000,\"id\":\"5155165527080960\",\"interest\":1.3,\"interestAmount\":10000,\"link\":\"https://my-workspace.sandbox.starkbank.com/invoicelink/d454fa4e\",\"name\":\"Iron Bank S.A.\",\"nominalAmount\":400000,\"pdf\":\"https://invoice.starkbank.com/pdf/d454fa4e\",\"rules\":[{\"key\":\"allowedTaxIds\",\"value\":[\"012.345.678-90\",\"45.059.493/0001-73\"]}],\"splits\":[{\"amount\":141,\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6\",\"receiverId\":\"5706627130851328\",\"status\":\"created\"}],\"status\":\"registered\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+        "{\"amount\":0,\"brcode\":\"00020101021226800014br.gov.bcb.pix\",\"created\":\"2026-09-16T12:00:00+00:00\",\"descriptions\":[{\"key\":\"service\",\"value\":\"swords\"}],\"discountAmount\":3000,\"discounts\":[{\"due\":\"2026-10-01\",\"percentage\":10}],\"due\":\"2026-10-28\",\"expiration\":123456789,\"fine\":2.5,\"fineAmount\":20000,\"id\":\"5155165527080960\",\"interest\":1.3,\"interestAmount\":10000,\"link\":\"https://my-workspace.sandbox.starkbank.com/invoicelink/d454fa4e\",\"name\":\"Iron Bank S.A.\",\"nominalAmount\":400000,\"pdf\":\"https://invoice.starkbank.com/pdf/d454fa4e\",\"rules\":[{\"key\":\"allowedTaxIds\",\"value\":[\"012.345.678-90\",\"45.059.493/0001-73\"]}],\"splits\":[{\"amount\":141,\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6\",\"receiverId\":\"5706627130851328\",\"status\":\"created\"}],\"status\":\"registered\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "after=2026-01-01&before=2026-12-31&limit=100&status=paid&tags=war%2Csupply",
+          "queryRaw": "limit=100&after=2026-01-01&before=2026-12-31&status=paid&tags=war%2Csupply",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice"
+        },
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "after=2026-01-01&before=2026-12-31&cursor=c1&limit=50&status=paid&tags=war%2Csupply",
+          "queryRaw": "limit=50&after=2026-01-01&before=2026-12-31&status=paid&tags=war%2Csupply&cursor=c1",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice"
+        }
+      ]
+    },
+    "invoice.update": {
+      "hydrated": "{\"amount\":0,\"brcode\":\"00020101021226800014br.gov.bcb.pix\",\"created\":\"2026-09-16T12:00:00+00:00\",\"descriptions\":[{\"key\":\"service\",\"value\":\"swords\"}],\"discountAmount\":3000,\"discounts\":[{\"due\":\"2026-10-01\",\"percentage\":10}],\"due\":\"2026-10-28\",\"expiration\":123456789,\"fine\":2.5,\"fineAmount\":20000,\"id\":\"5155165527080960\",\"interest\":1.3,\"interestAmount\":10000,\"link\":\"https://my-workspace.sandbox.starkbank.com/invoicelink/d454fa4e\",\"name\":\"Iron Bank S.A.\",\"nominalAmount\":400000,\"pdf\":\"https://invoice.starkbank.com/pdf/d454fa4e\",\"rules\":[{\"key\":\"allowedTaxIds\",\"value\":[\"012.345.678-90\",\"45.059.493/0001-73\"]}],\"splits\":[{\"amount\":141,\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6\",\"receiverId\":\"5706627130851328\",\"status\":\"created\"}],\"status\":\"registered\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "{\"amount\":123,\"due\":\"2026-11-01T12:00:00+00:00\",\"expiration\":7200,\"status\":\"canceled\"}",
+          "bodyRaw": "{\"status\": \"canceled\", \"amount\": 123, \"due\": \"2026-11-01T12:00:00+00:00\", \"expiration\": 7200}",
+          "method": "PATCH",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice/5155165527080960"
+        }
+      ]
+    },
+    "transfer.create": {
+      "hydrated": [
+        "{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"amount\":1000,\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Payment for service #1234\",\"displayDescription\":\"Sword sharpening\",\"externalId\":\"my-internal-id-123456\",\"fee\":200,\"id\":\"5155165527080960\",\"metadata\":{\"attempt\":2,\"tracker\":\"abc\"},\"name\":\"Daenerys Targaryen Stormborn\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28T17:59:26+00:00\",\"status\":\"processing\",\"tags\":[\"daenerys\",\"invoice/1234\"],\"taxId\":\"594.739.480-42\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "{\"transfers\":[{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"amount\":1000,\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"description\":\"Payment for service #1234\",\"displayDescription\":\"Sword sharpening\",\"externalId\":\"my-internal-id-123456\",\"name\":\"Daenerys Targaryen Stormborn\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28T17:59:26+00:00\",\"tags\":[\"daenerys\",\"invoice/1234\"],\"taxId\":\"594.739.480-42\"}]}",
+          "bodyRaw": "{\"transfers\": [{\"accountNumber\": \"876543-2\", \"accountType\": \"checking\", \"amount\": 1000, \"bankCode\": \"20018183\", \"branchCode\": \"1357-9\", \"description\": \"Payment for service #1234\", \"displayDescription\": \"Sword sharpening\", \"externalId\": \"my-internal-id-123456\", \"name\": \"Daenerys Targaryen Stormborn\", \"rules\": [{\"key\": \"resendingLimit\", \"value\": 5}], \"scheduled\": \"2026-10-28T17:59:26+00:00\", \"tags\": [\"daenerys\", \"invoice/1234\"], \"taxId\": \"594.739.480-42\"}]}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/transfer"
+        }
+      ]
+    },
+    "transfer.delete": {
+      "hydrated": "{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"amount\":1000,\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Payment for service #1234\",\"displayDescription\":\"Sword sharpening\",\"externalId\":\"my-internal-id-123456\",\"fee\":200,\"id\":\"5155165527080960\",\"metadata\":{\"attempt\":2,\"tracker\":\"abc\"},\"name\":\"Daenerys Targaryen Stormborn\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28T17:59:26+00:00\",\"status\":\"processing\",\"tags\":[\"daenerys\",\"invoice/1234\"],\"taxId\":\"594.739.480-42\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "DELETE",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/transfer/5155165527080960"
+        }
+      ]
+    },
+    "transfer.get": {
+      "hydrated": "{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"amount\":1000,\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Payment for service #1234\",\"displayDescription\":\"Sword sharpening\",\"externalId\":\"my-internal-id-123456\",\"fee\":200,\"id\":\"5155165527080960\",\"metadata\":{\"attempt\":2,\"tracker\":\"abc\"},\"name\":\"Daenerys Targaryen Stormborn\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28T17:59:26+00:00\",\"status\":\"processing\",\"tags\":[\"daenerys\",\"invoice/1234\"],\"taxId\":\"594.739.480-42\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/transfer/5155165527080960"
+        }
+      ]
+    },
+    "transfer.log.get": {
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482496\",\"transfer\":{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"amount\":1000,\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Payment for service #1234\",\"displayDescription\":\"Sword sharpening\",\"externalId\":\"my-internal-id-123456\",\"fee\":200,\"id\":\"5155165527080960\",\"metadata\":{\"attempt\":2,\"tracker\":\"abc\"},\"name\":\"Daenerys Targaryen Stormborn\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28T17:59:26+00:00\",\"status\":\"processing\",\"tags\":[\"daenerys\",\"invoice/1234\"],\"taxId\":\"594.739.480-42\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"success\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/transfer/log/6341320293482496"
+        }
+      ]
+    },
+    "transfer.log.query": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482496\",\"transfer\":{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"amount\":1000,\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Payment for service #1234\",\"displayDescription\":\"Sword sharpening\",\"externalId\":\"my-internal-id-123456\",\"fee\":200,\"id\":\"5155165527080960\",\"metadata\":{\"attempt\":2,\"tracker\":\"abc\"},\"name\":\"Daenerys Targaryen Stormborn\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28T17:59:26+00:00\",\"status\":\"processing\",\"tags\":[\"daenerys\",\"invoice/1234\"],\"taxId\":\"594.739.480-42\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"success\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&transferIds=5155165527080960&types=success",
+          "queryRaw": "limit=5&types=success&transferIds=5155165527080960",
+          "url": "https://sandbox.api.starkbank.com/v2/transfer/log"
+        }
+      ]
+    },
+    "transfer.page": {
+      "hydrated": [
+        "{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"amount\":1000,\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Payment for service #1234\",\"displayDescription\":\"Sword sharpening\",\"externalId\":\"my-internal-id-123456\",\"fee\":200,\"id\":\"5155165527080960\",\"metadata\":{\"attempt\":2,\"tracker\":\"abc\"},\"name\":\"Daenerys Targaryen Stormborn\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28T17:59:26+00:00\",\"status\":\"processing\",\"tags\":[\"daenerys\",\"invoice/1234\"],\"taxId\":\"594.739.480-42\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/transfer"
+        }
+      ]
+    },
+    "transfer.pdf": {
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/transfer/5155165527080960/pdf"
+        }
+      ]
+    },
+    "transfer.query": {
+      "hydrated": [
+        "{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"amount\":1000,\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Payment for service #1234\",\"displayDescription\":\"Sword sharpening\",\"externalId\":\"my-internal-id-123456\",\"fee\":200,\"id\":\"5155165527080960\",\"metadata\":{\"attempt\":2,\"tracker\":\"abc\"},\"name\":\"Daenerys Targaryen Stormborn\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28T17:59:26+00:00\",\"status\":\"processing\",\"tags\":[\"daenerys\",\"invoice/1234\"],\"taxId\":\"594.739.480-42\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&sort=-created&status=processing&taxId=594.739.480-42",
+          "queryRaw": "limit=5&status=processing&taxId=594.739.480-42&sort=-created",
+          "url": "https://sandbox.api.starkbank.com/v2/transfer"
+        }
+      ]
+    }
+  },
+  "responses": {
+    "balances": {
+      "balances": [
+        {
+          "amount": 1234567,
+          "currency": "BRL",
+          "id": "5155165527080960",
+          "updated": "2026-09-16T12:00:00+00:00"
+        }
+      ],
+      "cursor": ""
+    },
+    "event": {
+      "event": {
+        "created": "2026-09-16T12:00:00+00:00",
+        "id": "5764898044149760",
+        "isDelivered": false,
+        "log": {
+          "created": "2026-09-16T12:00:00+00:00",
+          "errors": [],
+          "id": "6341320293482496",
+          "invoice": {
+            "amount": 0,
+            "brcode": "00020101021226800014br.gov.bcb.pix",
+            "created": "2026-09-16T12:00:00+00:00",
+            "descriptions": [
+              {
+                "key": "service",
+                "value": "swords"
+              }
+            ],
+            "discountAmount": 3000,
+            "discounts": [
+              {
+                "due": "2026-10-01",
+                "percentage": 10.0
+              }
+            ],
+            "due": "2026-10-28",
+            "expiration": 123456789,
+            "fee": null,
+            "fine": 2.5,
+            "fineAmount": 20000,
+            "id": "5155165527080960",
+            "interest": 1.3,
+            "interestAmount": 10000,
+            "link": "https://my-workspace.sandbox.starkbank.com/invoicelink/d454fa4e",
+            "name": "Iron Bank S.A.",
+            "nominalAmount": 400000,
+            "pdf": "https://invoice.starkbank.com/pdf/d454fa4e",
+            "rules": [
+              {
+                "key": "allowedTaxIds",
+                "value": [
+                  "012.345.678-90",
+                  "45.059.493/0001-73"
+                ]
+              }
+            ],
+            "splits": [
+              {
+                "amount": 141,
+                "created": "2026-09-16T12:00:00+00:00",
+                "id": "6",
+                "receiverId": "5706627130851328",
+                "status": "created"
+              }
+            ],
+            "status": "registered",
+            "tags": [
+              "war",
+              "supply"
+            ],
+            "taxId": "20.018.183/0001-80",
+            "transactionIds": [
+              "19827356981273"
+            ],
+            "updated": "2026-09-17T12:00:00+00:00"
+          },
+          "type": "paid"
+        },
+        "subscription": "invoice",
+        "workspaceId": "4545454545454545"
+      }
+    },
+    "eventAttempt": {
+      "attempt": {
+        "code": "500",
+        "created": "2026-09-16T12:00:00+00:00",
+        "eventId": "5764898044149760",
+        "id": "1616161616161616",
+        "message": "Internal Server Error",
+        "webhookId": "6178044066660352"
+      }
+    },
+    "eventTransfer": {
+      "event": {
+        "created": "2026-09-16T12:00:00+00:00",
+        "id": "4823",
+        "isDelivered": false,
+        "log": {
+          "created": "2026-09-16T12:00:00+00:00",
+          "errors": [],
+          "id": "6341320293482496",
+          "transfer": {
+            "accountNumber": "876543-2",
+            "accountType": "checking",
+            "amount": 1000,
+            "bankCode": "20018183",
+            "branchCode": "1357-9",
+            "created": "2026-09-16T12:00:00+00:00",
+            "description": "Payment for service #1234",
+            "displayDescription": "Sword sharpening",
+            "externalId": "my-internal-id-123456",
+            "fee": 200,
+            "id": "5155165527080960",
+            "metadata": {
+              "attempt": 2,
+              "tracker": "abc"
+            },
+            "name": "Daenerys Targaryen Stormborn",
+            "rules": [
+              {
+                "key": "resendingLimit",
+                "value": 5
+              }
+            ],
+            "scheduled": "2026-10-28T17:59:26+00:00",
+            "status": "processing",
+            "tags": [
+              "daenerys",
+              "invoice/1234"
+            ],
+            "taxId": "594.739.480-42",
+            "transactionIds": [
+              "19827356981273"
+            ],
+            "updated": "2026-09-17T12:00:00+00:00"
+          },
+          "type": "success"
+        },
+        "subscription": "transfer",
+        "workspaceId": "4545454545454545"
+      }
+    },
+    "eventUnknown": {
+      "event": {
+        "created": "2026-09-16T12:00:00+00:00",
+        "id": "4824",
+        "isDelivered": false,
+        "log": {
+          "created": "2026-09-16T12:00:00+00:00",
+          "id": "1"
+        },
+        "subscription": "pix-request",
+        "workspaceId": "4545454545454545"
+      }
+    },
+    "invoice": {
+      "invoice": {
+        "amount": 0,
+        "brcode": "00020101021226800014br.gov.bcb.pix",
+        "created": "2026-09-16T12:00:00+00:00",
+        "descriptions": [
+          {
+            "key": "service",
+            "value": "swords"
+          }
+        ],
+        "discountAmount": 3000,
+        "discounts": [
+          {
+            "due": "2026-10-01",
+            "percentage": 10.0
+          }
+        ],
+        "due": "2026-10-28",
+        "expiration": 123456789,
+        "fee": null,
+        "fine": 2.5,
+        "fineAmount": 20000,
+        "id": "5155165527080960",
+        "interest": 1.3,
+        "interestAmount": 10000,
+        "link": "https://my-workspace.sandbox.starkbank.com/invoicelink/d454fa4e",
+        "name": "Iron Bank S.A.",
+        "nominalAmount": 400000,
+        "pdf": "https://invoice.starkbank.com/pdf/d454fa4e",
+        "rules": [
+          {
+            "key": "allowedTaxIds",
+            "value": [
+              "012.345.678-90",
+              "45.059.493/0001-73"
+            ]
+          }
+        ],
+        "splits": [
+          {
+            "amount": 141,
+            "created": "2026-09-16T12:00:00+00:00",
+            "id": "6",
+            "receiverId": "5706627130851328",
+            "status": "created"
+          }
+        ],
+        "status": "registered",
+        "tags": [
+          "war",
+          "supply"
+        ],
+        "taxId": "20.018.183/0001-80",
+        "transactionIds": [
+          "19827356981273"
+        ],
+        "updated": "2026-09-17T12:00:00+00:00"
+      }
+    },
+    "invoiceLog": {
+      "log": {
+        "created": "2026-09-16T12:00:00+00:00",
+        "errors": [],
+        "id": "6341320293482496",
+        "invoice": {
+          "amount": 0,
+          "brcode": "00020101021226800014br.gov.bcb.pix",
+          "created": "2026-09-16T12:00:00+00:00",
+          "descriptions": [
+            {
+              "key": "service",
+              "value": "swords"
+            }
+          ],
+          "discountAmount": 3000,
+          "discounts": [
+            {
+              "due": "2026-10-01",
+              "percentage": 10.0
+            }
+          ],
+          "due": "2026-10-28",
+          "expiration": 123456789,
+          "fee": null,
+          "fine": 2.5,
+          "fineAmount": 20000,
+          "id": "5155165527080960",
+          "interest": 1.3,
+          "interestAmount": 10000,
+          "link": "https://my-workspace.sandbox.starkbank.com/invoicelink/d454fa4e",
+          "name": "Iron Bank S.A.",
+          "nominalAmount": 400000,
+          "pdf": "https://invoice.starkbank.com/pdf/d454fa4e",
+          "rules": [
+            {
+              "key": "allowedTaxIds",
+              "value": [
+                "012.345.678-90",
+                "45.059.493/0001-73"
+              ]
+            }
+          ],
+          "splits": [
+            {
+              "amount": 141,
+              "created": "2026-09-16T12:00:00+00:00",
+              "id": "6",
+              "receiverId": "5706627130851328",
+              "status": "created"
+            }
+          ],
+          "status": "registered",
+          "tags": [
+            "war",
+            "supply"
+          ],
+          "taxId": "20.018.183/0001-80",
+          "transactionIds": [
+            "19827356981273"
+          ],
+          "updated": "2026-09-17T12:00:00+00:00"
+        },
+        "type": "paid"
+      }
+    },
+    "invoicePayment": {
+      "payment": {
+        "accountNumber": "876543-2",
+        "accountType": "checking",
+        "amount": 1234,
+        "bankCode": "20018183",
+        "branchCode": "1357-9",
+        "endToEndId": "E79457883202101262140HHX553UPqeq",
+        "method": "pix",
+        "name": "Anthony Edward Stark",
+        "taxId": "20.018.183/0001-80"
+      }
+    },
+    "invoices": {
+      "invoices": [
+        {
+          "amount": 0,
+          "brcode": "00020101021226800014br.gov.bcb.pix",
+          "created": "2026-09-16T12:00:00+00:00",
+          "descriptions": [
+            {
+              "key": "service",
+              "value": "swords"
+            }
+          ],
+          "discountAmount": 3000,
+          "discounts": [
+            {
+              "due": "2026-10-01",
+              "percentage": 10.0
+            }
+          ],
+          "due": "2026-10-28",
+          "expiration": 123456789,
+          "fee": null,
+          "fine": 2.5,
+          "fineAmount": 20000,
+          "id": "5155165527080960",
+          "interest": 1.3,
+          "interestAmount": 10000,
+          "link": "https://my-workspace.sandbox.starkbank.com/invoicelink/d454fa4e",
+          "name": "Iron Bank S.A.",
+          "nominalAmount": 400000,
+          "pdf": "https://invoice.starkbank.com/pdf/d454fa4e",
+          "rules": [
+            {
+              "key": "allowedTaxIds",
+              "value": [
+                "012.345.678-90",
+                "45.059.493/0001-73"
+              ]
+            }
+          ],
+          "splits": [
+            {
+              "amount": 141,
+              "created": "2026-09-16T12:00:00+00:00",
+              "id": "6",
+              "receiverId": "5706627130851328",
+              "status": "created"
+            }
+          ],
+          "status": "registered",
+          "tags": [
+            "war",
+            "supply"
+          ],
+          "taxId": "20.018.183/0001-80",
+          "transactionIds": [
+            "19827356981273"
+          ],
+          "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ]
+    },
+    "transfer": {
+      "transfer": {
+        "accountNumber": "876543-2",
+        "accountType": "checking",
+        "amount": 1000,
+        "bankCode": "20018183",
+        "branchCode": "1357-9",
+        "created": "2026-09-16T12:00:00+00:00",
+        "description": "Payment for service #1234",
+        "displayDescription": "Sword sharpening",
+        "externalId": "my-internal-id-123456",
+        "fee": 200,
+        "id": "5155165527080960",
+        "metadata": {
+          "attempt": 2,
+          "tracker": "abc"
+        },
+        "name": "Daenerys Targaryen Stormborn",
+        "rules": [
+          {
+            "key": "resendingLimit",
+            "value": 5
+          }
+        ],
+        "scheduled": "2026-10-28T17:59:26+00:00",
+        "status": "processing",
+        "tags": [
+          "daenerys",
+          "invoice/1234"
+        ],
+        "taxId": "594.739.480-42",
+        "transactionIds": [
+          "19827356981273"
+        ],
+        "updated": "2026-09-17T12:00:00+00:00"
+      }
+    },
+    "transferLog": {
+      "log": {
+        "created": "2026-09-16T12:00:00+00:00",
+        "errors": [],
+        "id": "6341320293482496",
+        "transfer": {
+          "accountNumber": "876543-2",
+          "accountType": "checking",
+          "amount": 1000,
+          "bankCode": "20018183",
+          "branchCode": "1357-9",
+          "created": "2026-09-16T12:00:00+00:00",
+          "description": "Payment for service #1234",
+          "displayDescription": "Sword sharpening",
+          "externalId": "my-internal-id-123456",
+          "fee": 200,
+          "id": "5155165527080960",
+          "metadata": {
+            "attempt": 2,
+            "tracker": "abc"
+          },
+          "name": "Daenerys Targaryen Stormborn",
+          "rules": [
+            {
+              "key": "resendingLimit",
+              "value": 5
+            }
+          ],
+          "scheduled": "2026-10-28T17:59:26+00:00",
+          "status": "processing",
+          "tags": [
+            "daenerys",
+            "invoice/1234"
+          ],
+          "taxId": "594.739.480-42",
+          "transactionIds": [
+            "19827356981273"
+          ],
+          "updated": "2026-09-17T12:00:00+00:00"
+        },
+        "type": "success"
+      }
+    },
+    "transfers": {
+      "transfers": [
+        {
+          "accountNumber": "876543-2",
+          "accountType": "checking",
+          "amount": 1000,
+          "bankCode": "20018183",
+          "branchCode": "1357-9",
+          "created": "2026-09-16T12:00:00+00:00",
+          "description": "Payment for service #1234",
+          "displayDescription": "Sword sharpening",
+          "externalId": "my-internal-id-123456",
+          "fee": 200,
+          "id": "5155165527080960",
+          "metadata": {
+            "attempt": 2,
+            "tracker": "abc"
+          },
+          "name": "Daenerys Targaryen Stormborn",
+          "rules": [
+            {
+              "key": "resendingLimit",
+              "value": 5
+            }
+          ],
+          "scheduled": "2026-10-28T17:59:26+00:00",
+          "status": "processing",
+          "tags": [
+            "daenerys",
+            "invoice/1234"
+          ],
+          "taxId": "594.739.480-42",
+          "transactionIds": [
+            "19827356981273"
+          ],
+          "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ]
+    }
+  }
+}

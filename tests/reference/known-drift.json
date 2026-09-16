@@ -1,0 +1,92 @@
+{
+  "comment": [
+    "Divergences between the field tables, sdk-python and the docs JSON that a human has",
+    "looked at and accepted. tools/drift.py fails when this SET CHANGES - a new finding",
+    "that is not here, or an entry here that no longer fires - and never merely because it",
+    "is non-empty. A checker that is red on day one is a checker nobody reads by week two.",
+    "",
+    "Every entry carries an owner and a reason. A type.conflict or a flag.conflict",
+    "additionally needs a resolution naming which input won: those two say the sources of",
+    "truth disagree about a type or about whether a field may be sent on a create, and",
+    "those are the findings an exemption must not be able to wave through.",
+    "",
+    "sdk-python is pinned in tests/reference/sdk-python.sha and bumped by an explicit PR."
+  ],
+  "accepted": [
+    {
+      "key": "verb.new:Split:get",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "Split is in this build only because an Invoice hydrates one out of its splits list. Its own verbs arrive with the rest of the bank surface; the table is complete so the nested hydration matches python byte for byte."
+    },
+    {
+      "key": "verb.new:Split:query",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "As verb.new:Split:get - Split's verbs are deferred, not missed."
+    },
+    {
+      "key": "verb.new:Split:page",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "As verb.new:Split:get - Split's verbs are deferred, not missed."
+    },
+    {
+      "key": "query.new:Invoice:transactionIds",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "The docs list transactionIds as an Invoice filter and sdk-python's query() does not accept it. python is normative for the verb surface, and a filter no SDK has ever sent is not one this tier should be the first to prove against the API. Add the key when python does; -DSTARKBANK_LOOSE_QUERY sends it today."
+    },
+    {
+      "key": "resource.unjoined:event-attempt:python",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "The docs give event-attempt its own slug; sdk-python nests it as event/attempt. Both are right - the doc slug is a page and the python path is a package. sdk-c follows python and registers the resource EventAttempt, whose endpoint event/attempt core-c derives and the endpoint check confirms."
+    },
+    {
+      "key": "resource.unjoined:institutions:python",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "The docs slug is plural and sdk-python's package is institution. A naming divergence in the docs, not a missing resource."
+    },
+    {
+      "key": "resource.unjoined:institution:docs",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "The other half of resource.unjoined:institutions:python."
+    },
+    {
+      "key": "resource.unjoined:public-key:python",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "public-key is documented and has no sdk-python package: the key is fetched inside starkcore for signature verification, not modelled as a resource. sdk-c reaches it the same way, through starkbank_parse_and_verify."
+    },
+    {
+      "key": "resource.unjoined:request:docs",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "sdk-python's request package is the raw escape hatch (get/post/patch/put/delete against any path), not an API resource, so the docs have no page for it. sdk-c has no equivalent yet; if one is added it is hand-written, never a table."
+    },
+    {
+      "key": "type.conflict:Event:isDelivered",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "The docs tag Event.isDelivered STRING. sdk-python's Event carries a bool, its query() sends is_delivered through the api-cast that spells a bool True/False, and the recorded golden in tests/reference/slice.json shows isDelivered=False on the wire. The docs tag is the lossy input here.",
+      "resolution": "python"
+    },
+    {
+      "key": "flag.conflict:Split:externalId",
+      "owner": "eduardo.santos@starkbank.com",
+      "resolution": "table",
+      "reason": "sdk-python files external_id under '## Attributes (return-only)' and then accepts it as a Split.__init__ parameter, so api_json sends it on a create; the docstring's own wording for tags and scheduled ('default None', 'default now') is create-parameter language under the wrong heading. The table is right and python's prose is the bug. Split rides inside an Invoice's splits list in this slice, which is exactly where a caller sets these."
+    },
+    {
+      "key": "flag.conflict:Split:tags",
+      "owner": "eduardo.santos@starkbank.com",
+      "resolution": "table",
+      "reason": "sdk-python files tags under '## Attributes (return-only)' and then accepts it as a Split.__init__ parameter, so api_json sends it on a create; the docstring's own wording for tags and scheduled ('default None', 'default now') is create-parameter language under the wrong heading. The table is right and python's prose is the bug. Split rides inside an Invoice's splits list in this slice, which is exactly where a caller sets these."
+    },
+    {
+      "key": "flag.conflict:Split:scheduled",
+      "owner": "eduardo.santos@starkbank.com",
+      "resolution": "table",
+      "reason": "sdk-python files scheduled under '## Attributes (return-only)' and then accepts it as a Split.__init__ parameter, so api_json sends it on a create; the docstring's own wording for tags and scheduled ('default None', 'default now') is create-parameter language under the wrong heading. The table is right and python's prose is the bug. Split rides inside an Invoice's splits list in this slice, which is exactly where a caller sets these."
+    },
+    {
+      "key": "flag.conflict:Transfer:accountType",
+      "owner": "eduardo.santos@starkbank.com",
+      "resolution": "python",
+      "reason": "sdk-python contradicts itself: Transfer.__init__ takes account_type positionally with no default, while its docstring lists it under '## Parameters (optional)' with default 'checking'. The table follows the docstring and leaves REQUIRED off, because the API defaults it and refusing a create locally that the API would accept is the worse failure. Revisit if python ever makes the two halves agree."
+    }
+  ]
+}
