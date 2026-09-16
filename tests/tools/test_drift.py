@@ -107,6 +107,18 @@ STARKBANK_VERB_SUB_RESOURCE(widget, payment, "Payment", "Widget.Payment")
         source = 'STARKBANK_RESOURCE_FULL(widget, "Widget", F, q, refFn);\nSTARKBANK_VERB_GET_ID(widget)\n'
         self.assertEqual(drift.parseVerbs(source)["Widget"]["verbs"], {"get": "GET_ID"})
 
+    def testPostSingleIsPythonsCreateToo(self):
+        """Webhook's create is post_single and python still calls it create.
+
+        Without the mapping the checker raises on an unknown macro rather than
+        comparing anything, which is how a whole resource can go unchecked.
+        """
+        source = ('STARKBANK_RESOURCE(webhook, "Webhook", F, q);\n'
+                  'STARKBANK_VERB_POST_SINGLE(webhook)\n')
+        self.assertEqual(drift.parseVerbs(source)["Webhook"]["verbs"], {"create": "POST_SINGLE"})
+        self.assertEqual(drift.verbEndpoint("POST_SINGLE", "webhook", "create"),
+                         ("POST", "/v2/webhook"))
+
     def testGetFirstIsPythonsGet(self):
         source = 'STARKBANK_RESOURCE(balance, "Balance", F, NULL);\nSTARKBANK_VERB_GET_FIRST(balance)\n'
         self.assertEqual(drift.parseVerbs(source)["Balance"]["verbs"], {"get": "GET_FIRST"})

@@ -46,8 +46,23 @@ class Samples(unittest.TestCase):
         self.assertNotIn("\"status\"", source)      # PATCH only
         self.assertNotIn("set_string(widget, \"id\"", source)   # return-only
 
+    def testAPostSingleSampleHandsOverAnEntityAndFreesBoth(self):
+        """The shape differs from POST_MULTI in the one way that matters to a
+        caller: no list, and the entity stays theirs to free."""
+        source = emit.sampleSource("widget", TABLE, "create", "POST_SINGLE", None)
+        self.assertIn("starkbank_widget_create(client, widget, &created, &errors)", source)
+        self.assertNotIn("starkbank_list_", source)
+        self.assertIn("starkbank_entity_free(widget)", source)
+        self.assertIn("starkbank_entity_free(created)", source)
+
+    def testAListOfVocabularyValuesGetsAValueFromThatVocabulary(self):
+        """A Webhook sample that subscribes to "war" is a sample nobody pastes."""
+        setter, value = emit.sampleValue({"key": "subscriptions", "type": 9, "flags": 3})
+        self.assertEqual((setter, value), ("append_string", "\"invoice\""))
+
     def testEverySampleFreesWhatItAllocates(self):
-        for verb, shape in (("create", "POST_MULTI"), ("get", "GET_ID"), ("query", "QUERY"),
+        for verb, shape in (("create", "POST_MULTI"), ("create", "POST_SINGLE"),
+                            ("get", "GET_ID"), ("query", "QUERY"),
                             ("page", "PAGE"), ("update", "PATCH_ID"), ("delete", "DELETE_ID"),
                             ("pdf", "CONTENT"), ("qrcode", "CONTENT_INT"),
                             ("payment", "SUB_RESOURCE"), ("get", "GET_FIRST")):

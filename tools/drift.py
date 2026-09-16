@@ -74,6 +74,7 @@ FLAG_PATCH = 4
 # the API - so they have no python counterpart and are not compared.
 VERB_PYTHON_NAME = {
     "POST_MULTI": "create",
+    "POST_SINGLE": "create",
     "GET_ID": "get",
     "GET_FIRST": "get",
     "QUERY": "query",

@@ -481,8 +481,10 @@ static void testRegistry(void)
 {
     static const char *const expected[] = {
         "Balance", "Event", "EventAttempt", "Invoice", "InvoiceLog",
-        "Invoice.Payment", "Invoice.Rule", "Split", "Transfer", "TransferLog",
-        "Transfer.Rule"
+        "Invoice.Payment", "Invoice.Rule", "PaymentPreview",
+        "PaymentPreview.BoletoPreview", "PaymentPreview.BrcodePreview",
+        "PaymentPreview.TaxPreview", "PaymentPreview.UtilityPreview",
+        "Split", "Transfer", "TransferLog", "Transfer.Rule", "Webhook"
     };
     char label[160];
     size_t index;
@@ -1166,6 +1168,250 @@ static void testBalance(void)
     starkbank_client_free(client);
 }
 
+/* ============================================================== Webhook */
+
+/*
+ * post_single, the last starkcore_rest_* write shape the bank SDK uses.
+ *
+ * The case that matters is webhook.create's body. python's rest.post_single
+ * sends api_json(entity) as the whole body - no plural list, and no singular
+ * wrapper either - and the golden beside this suite carries python's own
+ * bytes for it. The assertions below therefore prove two different things:
+ * checkRequests proves we send what python sends, and the explicit check
+ * proves what that is, so a reader does not have to open slice.json to learn
+ * that {"webhooks": [...]} is wrong here.
+ */
+static void testWebhook(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *webhook = NULL;
+    starkbank_entity *created = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_list *page = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const char *text = NULL;
+    int seen = 0;
+
+    startGroup("Webhook, and the post_single shape");
+    starkbank_client_free(client);
+    client = newClient(&fake);
+
+    replies(&fake, responseBody("webhook"), NULL);
+    starkbank_webhook_new(&webhook);
+    starkbank_entity_set_string(webhook, STARKBANK_WEBHOOK_URL,
+                                "https://webhook.site/60e9c18e-4b5c-4369-bda1-ab5fcd8e1b29");
+    starkbank_entity_append_string(webhook, STARKBANK_WEBHOOK_SUBSCRIPTIONS,
+                                   STARKBANK_WEBHOOK_SUBSCRIPTION_TRANSFER);
+    starkbank_entity_append_string(webhook, STARKBANK_WEBHOOK_SUBSCRIPTIONS,
+                                   STARKBANK_WEBHOOK_SUBSCRIPTION_INVOICE);
+    check("create takes one entity and returns one entity",
+          starkbank_webhook_create(client, webhook, &created, NULL) == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(created), "Webhook"), NULL);
+    checkRequests("webhook.create", &fake);
+    checkHydration("webhook.create", 0, created);
+    check("the body is one object, not a list and not an envelope",
+          strstr(fake.body[0], "\"webhooks\"") == NULL
+          && strstr(fake.body[0], "\"webhook\"") == NULL
+          && strstr(fake.body[0], "\"subscriptions\":[\"transfer\",\"invoice\"]") != NULL,
+          fake.body[0]);
+    check("a created Webhook carries no unknown key: the table is complete",
+          starkbank_entity_unknown_count(created) == 0, NULL);
+    check("and the entity handed to create is still the caller's",
+          starkbank_entity_string(webhook, STARKBANK_WEBHOOK_URL, &text) == STARKBANK_OK, NULL);
+    starkbank_entity_free(webhook);
+    webhook = NULL;
+    starkbank_entity_free(created);
+    created = NULL;
+
+    /* A required key missing costs a local error and no round trip, exactly
+       as it does for the batch shape. */
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("webhook"), NULL);
+    starkbank_webhook_new(&webhook);
+    starkbank_entity_set_string(webhook, STARKBANK_WEBHOOK_URL, "https://example.test/hook");
+    check("a Webhook with no subscriptions fails here, with nothing sent",
+          starkbank_webhook_create(client, webhook, &created, NULL) == STARKBANK_ERROR_FIELD
+          && fake.calls == 0 && created == NULL, NULL);
+    starkbank_entity_free(webhook);
+    webhook = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("webhook"), NULL);
+    check("get hydrates one Webhook",
+          starkbank_webhook_get(client, "6178044066660352", &webhook, NULL) == STARKBANK_OK,
+          NULL);
+    checkRequests("webhook.get", &fake);
+    checkHydration("webhook.get", 0, webhook);
+    check("subscriptions reads as a list of strings",
+          starkbank_entity_list_string_at(webhook, STARKBANK_WEBHOOK_SUBSCRIPTIONS, 1, &text)
+              == STARKBANK_OK && equalStrings(text, "invoice"), NULL);
+    starkbank_entity_free(webhook);
+    webhook = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("webhooks"), NULL);
+    starkbank_webhook_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_webhook_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        seen++;
+    }
+    check("query streams the page", seen == 1, NULL);
+    checkRequests("webhook.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("webhooks"), NULL);
+    starkbank_webhook_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_webhook_page(client, params, &page, NULL, NULL);
+    checkRequests("webhook.page", &fake);
+    checkHydration("webhook.page", 0, starkbank_list_at(page, 0));
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("webhook"), NULL);
+    check("delete returns the deleted subscription",
+          starkbank_webhook_delete(client, "6178044066660352", &webhook, NULL) == STARKBANK_OK,
+          NULL);
+    checkRequests("webhook.delete", &fake);
+    starkbank_entity_free(webhook);
+    starkbank_client_free(client);
+}
+
+/* ======================================================= PaymentPreview */
+
+static starkbank_entity * buildPreview(const char *code)
+{
+    starkbank_entity *preview = NULL;
+
+    if (starkbank_payment_preview_new(&preview) != STARKBANK_OK) {
+        return NULL;
+    }
+    starkbank_entity_set_string(preview, STARKBANK_PAYMENT_PREVIEW_ID, code);
+    starkbank_entity_set_date(preview, STARKBANK_PAYMENT_PREVIEW_SCHEDULED, 2026, 10, 28);
+    return preview;
+}
+
+/*
+ * The polymorphic response, and the reason it is a mixed batch: resolution is
+ * per item, off each item's own type, so four single-type calls would pass
+ * against an engine that resolved once for the whole reply.
+ */
+static void testPaymentPreview(void)
+{
+    static const char *const tags[] = {
+        "PaymentPreview.BrcodePreview", "PaymentPreview.BoletoPreview",
+        "PaymentPreview.TaxPreview", "PaymentPreview.UtilityPreview"
+    };
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_list *batch = NULL;
+    starkbank_list *created = NULL;
+    starkbank_entity *bare = NULL;
+    const starkbank_entity *preview = NULL;
+    const starkbank_entity *payment = NULL;
+    char label[160];
+    const char *text = NULL;
+    double amount = 0.0;
+    int delivered = 0;
+    int index;
+
+    startGroup("PaymentPreview, and a table chosen by a sibling field");
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("previews"), NULL);
+
+    starkbank_list_new(&batch);
+    starkbank_list_append(batch, buildPreview(
+        "00020126580014br.gov.bcb.pix0136a629532e-7693-4846-852d-1bbff817b5a8"
+        "520400005303986540510.005802BR5908T'Challa6009Sao Paulo62090505123456304B14A"));
+    starkbank_list_append(batch, buildPreview(
+        "34191.09008 63571.277308 71444.640008 5 81960000000062"));
+    starkbank_list_append(batch, buildPreview(
+        "85660000006 6 67940064007 5 41190025511 7 00010601813 8"));
+    starkbank_list_append(batch, buildPreview(
+        "82660000002 8 44361143007 7 41190025511 7 00010601813 8"));
+    check("create posts the batch and returns one preview per code",
+          starkbank_payment_preview_create(client, batch, &created, NULL) == STARKBANK_OK
+          && starkbank_list_count(created) == 4, NULL);
+    checkRequests("paymentpreview.create", &fake);
+    starkbank_list_free(batch);
+
+    for (index = 0; index < starkbank_list_count(created); index++) {
+        preview = starkbank_list_at(created, index);
+        checkHydration("paymentpreview.create", index, preview);
+        snprintf(label, sizeof(label), "item %d hydrates payment as %s", index, tags[index]);
+        check(label, starkbank_entity_entity(preview, STARKBANK_PAYMENT_PREVIEW_PAYMENT,
+                                             &payment) == STARKBANK_OK
+              && equalStrings(starkbank_entity_resource(payment), tags[index]), NULL);
+        snprintf(label, sizeof(label), "item %d carries no unknown key, preview included", index);
+        check(label, starkbank_entity_unknown_count(preview) == 0, NULL);
+    }
+
+    preview = starkbank_list_at(created, 0);
+    starkbank_entity_entity(preview, STARKBANK_PAYMENT_PREVIEW_PAYMENT, &payment);
+    check("a BrcodePreview is read with the same accessors as any resource",
+          starkbank_entity_bool(payment, STARKBANK_BRCODE_PREVIEW_ALLOW_CHANGE, &delivered)
+              == STARKBANK_OK && delivered == 1
+          && starkbank_entity_amount(payment, STARKBANK_BRCODE_PREVIEW_NOMINAL_AMOUNT, &amount)
+              == STARKBANK_OK && amount == 900.0, NULL);
+    check("a zero amount is a value and not an absence",
+          starkbank_entity_amount(payment, STARKBANK_BRCODE_PREVIEW_DISCOUNT_AMOUNT, &amount)
+              == STARKBANK_OK && amount == 0.0, NULL);
+
+    preview = starkbank_list_at(created, 1);
+    starkbank_entity_entity(preview, STARKBANK_PAYMENT_PREVIEW_PAYMENT, &payment);
+    check("a BoletoPreview's due is the string the API sent, as in python",
+          starkbank_entity_string(payment, STARKBANK_BOLETO_PREVIEW_DUE, &text) == STARKBANK_OK
+          && equalStrings(text, "2026-10-28"), NULL);
+    check("and a table that declared DATE here would be a type the reader cannot use",
+          starkbank_entity_datetime(payment, STARKBANK_BOLETO_PREVIEW_DUE, NULL, NULL, NULL,
+                                    NULL, NULL, NULL, NULL) == STARKBANK_ERROR_TYPE, NULL);
+
+    preview = starkbank_list_at(created, 3);
+    starkbank_entity_entity(preview, STARKBANK_PAYMENT_PREVIEW_PAYMENT, &payment);
+    check("a UtilityPreview and a TaxPreview are separate tags, not one shape",
+          starkbank_entity_string(payment, STARKBANK_UTILITY_PREVIEW_NAME, &text)
+              == STARKBANK_OK && equalStrings(text, "Light Company"), NULL);
+    starkbank_list_free(created);
+    created = NULL;
+
+    /* The case the design cares about: a type this build predates. Built
+       without scheduled, because python's case is, and an optional key left
+       unset must not appear on the wire. */
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("previewUnknown"), NULL);
+    starkbank_list_new(&batch);
+    starkbank_payment_preview_new(&bare);
+    starkbank_entity_set_string(bare, STARKBANK_PAYMENT_PREVIEW_ID, "5656565656565656");
+    starkbank_list_append(batch, bare);
+    starkbank_payment_preview_create(client, batch, &created, NULL);
+    checkRequests("paymentpreview.unknown", &fake);
+    preview = starkbank_list_at(created, 0);
+    checkHydration("paymentpreview.unknown", 0, preview);
+    check("an unknown type leaves payment untagged and permissive",
+          starkbank_entity_entity(preview, STARKBANK_PAYMENT_PREVIEW_PAYMENT, &payment)
+              == STARKBANK_OK && starkbank_entity_resource(payment) == NULL
+          && starkbank_entity_string(payment, "id", &text) == STARKBANK_OK
+          && equalStrings(text, "1"), NULL);
+    check("and the gap is one unknown, not one per key inside it",
+          starkbank_entity_unknown_count(preview) == 1, NULL);
+    starkbank_list_free(batch);
+    starkbank_list_free(created);
+    starkbank_client_free(client);
+}
+
 /* ============================================================ negatives */
 
 static void testNegatives(void)
@@ -1349,6 +1595,8 @@ int main(void)
     testEvent();
     testEventAttempt();
     testEventParse();
+    testWebhook();
+    testPaymentPreview();
     testBalance();
     testNegatives();
     testErrorsAndAbi();

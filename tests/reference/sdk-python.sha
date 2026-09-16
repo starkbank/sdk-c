@@ -4,4 +4,11 @@
 # which is the PR that also applies whatever the checker found.
 #
 # starkbank/sdk-python, default branch master.
-575279bfac495aceaa4d5668c1a838377a988a8c
+#
+# Bumped in step 5 (Webhook, PaymentPreview): those two tables are derived from
+# webhook/__webhook.py and paymentpreview/*.py as master carries them, and the
+# goldens are recorded from the same tree. The move from 575279bf is two commits
+# of docstring grammar and CI, neither of which changes a wire shape, and
+# re-recording slice.json across the bump reproduced every existing case byte
+# for byte.
+be7755a5185244d3ba7bb65492e1c415a6380ac5

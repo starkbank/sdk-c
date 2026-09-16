@@ -59,6 +59,16 @@
       "reason": "sdk-python's request package is the raw escape hatch (get/post/patch/put/delete against any path), not an API resource, so the docs have no page for it. sdk-c has no equivalent yet; if one is added it is hand-written, never a table."
     },
     {
+      "key": "resource.unjoined:verified-account:python",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "app-docs documents VerifiedAccount (POST/GET/DELETE /v2/verified-account plus its log) and sdk-python has no package for it yet. python is normative for the surface, so sdk-c does not model a resource the reference implementation has not: this fires until sdk-python ships one, and then it goes stale and the entry is removed in the PR that adds the table. Surfaced by app-docs moving, not by anything in this repo."
+    },
+    {
+      "key": "resource.unjoined:verified-transfer:python",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "The other half of resource.unjoined:verified-account:python - VerifiedTransfer is documented (POST /v2/verified-transfer) and sdk-python has no package for it."
+    },
+    {
       "key": "type.conflict:Event:isDelivered",
       "owner": "eduardo.santos@starkbank.com",
       "reason": "The docs tag Event.isDelivered STRING. sdk-python's Event carries a bool, its query() sends is_delivered through the api-cast that spells a bool True/False, and the recorded golden in tests/reference/slice.json shows isDelivered=False on the wire. The docs tag is the lossy input here.",

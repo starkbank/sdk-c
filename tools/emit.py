@@ -27,7 +27,7 @@ import headerabi
 import drift
 
 
-GENSTAMP = "emit.py 2"
+GENSTAMP = "emit.py 3"
 
 # Filled from the public header rather than duplicated here: the emitter must
 # not be a second place that believes it knows what type 8 is.
@@ -333,6 +333,10 @@ def csharpDeclaration(function):
 # implementations.
 
 SAMPLE_VALUES = {
+    # PaymentPreview is the one resource where id is a create parameter: it is
+    # the payment code being previewed, not an object's identifier.
+    "id": "\"34191.09008 63571.277308 71444.640008 5 81960000000062\"",
+    "url": "\"https://webhook.site/60e9c18e-4b5c-4369-bda1-ab5fcd8e1b29\"",
     "taxId": "\"012.345.678-90\"",
     "name": "\"Arya Stark\"",
     "bankCode": "\"20018183\"",
@@ -347,6 +351,12 @@ SAMPLE_VALUES = {
 
 SAMPLE_FILTERS = {
     "status": "\"paid\"",
+}
+
+# A LIST_STRING whose members are a vocabulary rather than free text. A
+# Webhook sample that subscribes to "war" would be a sample nobody can paste.
+SAMPLE_LIST_VALUES = {
+    "subscriptions": "\"invoice\"",
 }
 
 PROLOGUE = """#include <stdio.h>
@@ -421,7 +431,7 @@ def sampleValue(field):
     if typeName == "DATETIME":
         return ("set_datetime", "2026, 10, 28, 17, 59, 26")
     if typeName == "LIST_STRING":
-        return ("append_string", "\"war\"")
+        return ("append_string", SAMPLE_LIST_VALUES.get(key, "\"war\""))
     if typeName == "STRING":
         return ("set_string", "\"example\"")
     return (None, None)
@@ -485,6 +495,24 @@ def sampleBody(ident, table, verb, shape):
     starkbank_entity_string(starkbank_list_at(created, 0), "id", &id);
     printf("created %%s\\n", id);
     starkbank_list_free(created);
+""" % {"ident": ident, "setters": setters, "call": call})
+    if shape == "POST_SINGLE":
+        setters = "\n".join(requiredSetters(ident, table))
+        return ("""    starkbank_entity *%(ident)s = NULL;
+    starkbank_entity *created = NULL;
+    starkbank_errors *errors = NULL;
+    int status;
+
+    starkbank_%(ident)s_new(&%(ident)s);
+%(setters)s
+    status = %(call)s(client, %(ident)s, &created, &errors);
+    starkbank_entity_free(%(ident)s);       /* post_single borrows it, unlike a list */
+    if (status != STARKBANK_OK) {
+        starkbank_client_free(client);
+        return report(status, errors);
+    }
+    printf("created %%s\\n", starkbank_entity_id(created));
+    starkbank_entity_free(created);
 """ % {"ident": ident, "setters": setters, "call": call})
     if shape == "GET_ID":
         return ("""    starkbank_entity *%(ident)s = NULL;

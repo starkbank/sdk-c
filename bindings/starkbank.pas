@@ -26,6 +26,35 @@ const
   STARKBANK_BALANCE_CURRENCY = 'currency';
   STARKBANK_BALANCE_ID = 'id';
   STARKBANK_BALANCE_UPDATED = 'updated';
+  STARKBANK_BOLETO_PREVIEW_AMOUNT = 'amount';
+  STARKBANK_BOLETO_PREVIEW_BAR_CODE = 'barCode';
+  STARKBANK_BOLETO_PREVIEW_DISCOUNT_AMOUNT = 'discountAmount';
+  STARKBANK_BOLETO_PREVIEW_DUE = 'due';
+  STARKBANK_BOLETO_PREVIEW_EXPIRATION = 'expiration';
+  STARKBANK_BOLETO_PREVIEW_FINE_AMOUNT = 'fineAmount';
+  STARKBANK_BOLETO_PREVIEW_INTEREST_AMOUNT = 'interestAmount';
+  STARKBANK_BOLETO_PREVIEW_LINE = 'line';
+  STARKBANK_BOLETO_PREVIEW_NAME = 'name';
+  STARKBANK_BOLETO_PREVIEW_PAYER_NAME = 'payerName';
+  STARKBANK_BOLETO_PREVIEW_PAYER_TAX_ID = 'payerTaxId';
+  STARKBANK_BOLETO_PREVIEW_RECEIVER_NAME = 'receiverName';
+  STARKBANK_BOLETO_PREVIEW_RECEIVER_TAX_ID = 'receiverTaxId';
+  STARKBANK_BOLETO_PREVIEW_STATUS = 'status';
+  STARKBANK_BOLETO_PREVIEW_TAX_ID = 'taxId';
+  STARKBANK_BRCODE_PREVIEW_ACCOUNT_TYPE = 'accountType';
+  STARKBANK_BRCODE_PREVIEW_ALLOW_CHANGE = 'allowChange';
+  STARKBANK_BRCODE_PREVIEW_AMOUNT = 'amount';
+  STARKBANK_BRCODE_PREVIEW_BANK_CODE = 'bankCode';
+  STARKBANK_BRCODE_PREVIEW_DESCRIPTION = 'description';
+  STARKBANK_BRCODE_PREVIEW_DISCOUNT_AMOUNT = 'discountAmount';
+  STARKBANK_BRCODE_PREVIEW_FINE_AMOUNT = 'fineAmount';
+  STARKBANK_BRCODE_PREVIEW_INTEREST_AMOUNT = 'interestAmount';
+  STARKBANK_BRCODE_PREVIEW_NAME = 'name';
+  STARKBANK_BRCODE_PREVIEW_NOMINAL_AMOUNT = 'nominalAmount';
+  STARKBANK_BRCODE_PREVIEW_RECONCILIATION_ID = 'reconciliationId';
+  STARKBANK_BRCODE_PREVIEW_REDUCTION_AMOUNT = 'reductionAmount';
+  STARKBANK_BRCODE_PREVIEW_STATUS = 'status';
+  STARKBANK_BRCODE_PREVIEW_TAX_ID = 'taxId';
   STARKBANK_ENVIRONMENT_PRODUCTION = 0;
   STARKBANK_ENVIRONMENT_SANDBOX = 1;
   STARKBANK_ERROR_ABI = -106;
@@ -129,6 +158,14 @@ const
   STARKBANK_METHOD_POST = 1;
   STARKBANK_METHOD_PUT = 2;
   STARKBANK_OK = 0;
+  STARKBANK_PAYMENT_PREVIEW_ID = 'id';
+  STARKBANK_PAYMENT_PREVIEW_PAYMENT = 'payment';
+  STARKBANK_PAYMENT_PREVIEW_SCHEDULED = 'scheduled';
+  STARKBANK_PAYMENT_PREVIEW_TYPE = 'type';
+  STARKBANK_PAYMENT_PREVIEW_TYPE_BOLETO_PAYMENT = 'boleto-payment';
+  STARKBANK_PAYMENT_PREVIEW_TYPE_BRCODE_PAYMENT = 'brcode-payment';
+  STARKBANK_PAYMENT_PREVIEW_TYPE_TAX_PAYMENT = 'tax-payment';
+  STARKBANK_PAYMENT_PREVIEW_TYPE_UTILITY_PAYMENT = 'utility-payment';
   STARKBANK_SPLIT_AMOUNT = 'amount';
   STARKBANK_SPLIT_CREATED = 'created';
   STARKBANK_SPLIT_EXTERNAL_ID = 'externalId';
@@ -139,6 +176,11 @@ const
   STARKBANK_SPLIT_STATUS = 'status';
   STARKBANK_SPLIT_TAGS = 'tags';
   STARKBANK_SPLIT_UPDATED = 'updated';
+  STARKBANK_TAX_PREVIEW_AMOUNT = 'amount';
+  STARKBANK_TAX_PREVIEW_BAR_CODE = 'barCode';
+  STARKBANK_TAX_PREVIEW_DESCRIPTION = 'description';
+  STARKBANK_TAX_PREVIEW_LINE = 'line';
+  STARKBANK_TAX_PREVIEW_NAME = 'name';
   STARKBANK_TRANSFER_ACCOUNT_NUMBER = 'accountNumber';
   STARKBANK_TRANSFER_ACCOUNT_TYPE = 'accountType';
   STARKBANK_TRANSFER_ACCOUNT_TYPE_CHECKING = 'checking';
@@ -175,7 +217,26 @@ const
   STARKBANK_TRANSFER_TAX_ID = 'taxId';
   STARKBANK_TRANSFER_TRANSACTION_IDS = 'transactionIds';
   STARKBANK_TRANSFER_UPDATED = 'updated';
+  STARKBANK_UTILITY_PREVIEW_AMOUNT = 'amount';
+  STARKBANK_UTILITY_PREVIEW_BAR_CODE = 'barCode';
+  STARKBANK_UTILITY_PREVIEW_DESCRIPTION = 'description';
+  STARKBANK_UTILITY_PREVIEW_LINE = 'line';
+  STARKBANK_UTILITY_PREVIEW_NAME = 'name';
   STARKBANK_VERSION = '0.1.0';
+  STARKBANK_WEBHOOK_ID = 'id';
+  STARKBANK_WEBHOOK_SUBSCRIPTIONS = 'subscriptions';
+  STARKBANK_WEBHOOK_SUBSCRIPTION_BOLETO = 'boleto';
+  STARKBANK_WEBHOOK_SUBSCRIPTION_BOLETO_HOLMES = 'boleto-holmes';
+  STARKBANK_WEBHOOK_SUBSCRIPTION_BOLETO_PAYMENT = 'boleto-payment';
+  STARKBANK_WEBHOOK_SUBSCRIPTION_BRCODE_PAYMENT = 'brcode-payment';
+  STARKBANK_WEBHOOK_SUBSCRIPTION_DARF_PAYMENT = 'darf-payment';
+  STARKBANK_WEBHOOK_SUBSCRIPTION_DEPOSIT = 'deposit';
+  STARKBANK_WEBHOOK_SUBSCRIPTION_INVOICE = 'invoice';
+  STARKBANK_WEBHOOK_SUBSCRIPTION_PAYMENT_REQUEST = 'payment-request';
+  STARKBANK_WEBHOOK_SUBSCRIPTION_TAX_PAYMENT = 'tax-payment';
+  STARKBANK_WEBHOOK_SUBSCRIPTION_TRANSFER = 'transfer';
+  STARKBANK_WEBHOOK_SUBSCRIPTION_UTILITY_PAYMENT = 'utility-payment';
+  STARKBANK_WEBHOOK_URL = 'url';
 
 type
   { One machine word. Declared distinctly so a Transfer handle cannot be
@@ -378,6 +439,10 @@ function starkbank_organization_replace(organization: Pstarkbank_user; workspace
 
 function starkbank_parse_and_verify(client: Pstarkbank_client; content: PAnsiChar; content_len: NativeUInt; signature_base64: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_parse_and_verify';
 
+function starkbank_payment_preview_create(client: Pstarkbank_client; previews: Pstarkbank_list; &out: PPstarkbank_list; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_payment_preview_create';
+
+function starkbank_payment_preview_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_payment_preview_new';
+
 function starkbank_project_new(id: PAnsiChar; environment: Integer; private_key_pem: PAnsiChar; &out: PPstarkbank_user): Integer; cdecl; external StarkbankLib name 'starkbank_project_new';
 
 function starkbank_resource_count: Integer; cdecl; external StarkbankLib name 'starkbank_resource_count';
@@ -431,6 +496,20 @@ function starkbank_user_environment(user: Pstarkbank_user): Integer; cdecl; exte
 procedure starkbank_user_free(user: Pstarkbank_user); cdecl; external StarkbankLib name 'starkbank_user_free';
 
 function starkbank_version: PAnsiChar; cdecl; external StarkbankLib name 'starkbank_version';
+
+function starkbank_webhook_create(client: Pstarkbank_client; webhook: Pstarkbank_entity; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_webhook_create';
+
+function starkbank_webhook_delete(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_webhook_delete';
+
+function starkbank_webhook_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_webhook_get';
+
+function starkbank_webhook_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_webhook_new';
+
+function starkbank_webhook_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_webhook_page';
+
+function starkbank_webhook_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_webhook_params_new';
+
+function starkbank_webhook_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_webhook_query';
 
 
 implementation

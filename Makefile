@@ -109,10 +109,16 @@ RESOURCE_SOURCES = \
 	starkbank/invoice/log.c \
 	starkbank/invoice/payment.c \
 	starkbank/invoice/rule.c \
+	starkbank/paymentpreview/boletopreview.c \
+	starkbank/paymentpreview/brcodepreview.c \
+	starkbank/paymentpreview/paymentpreview.c \
+	starkbank/paymentpreview/taxpreview.c \
+	starkbank/paymentpreview/utilitypreview.c \
 	starkbank/split/split.c \
 	starkbank/transfer/log.c \
 	starkbank/transfer/rule.c \
-	starkbank/transfer/transfer.c
+	starkbank/transfer/transfer.c \
+	starkbank/webhook/webhook.c
 
 # The judgement methods. A symbol declared in the public header that no macro
 # expands must have exactly one definition here, and check-handwritten proves

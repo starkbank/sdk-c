@@ -5,8 +5,6 @@
 
 #define STARKBANK_TEST_RESOURCE_PROTOTYPES
 
-#include <string.h>
-
 #include "../../starkc/verbs.h"
 
 #include "testresources.h"
@@ -46,12 +44,18 @@
     F("errors",        LIST_STRING,      NULL,  RO)                      \
     F("widget",        RESOURCE,         "Widget", RO)
 
-/* The polymorphic case: log's table is named by the sibling subscription. */
+/* The polymorphic case: log's table is named by the sibling subscription.
+   Gadget also carries the post_single shape, so both live on a resource the
+   suite owns rather than being provable only through a real one. */
 #define STARKBANK_GADGET_FIELDS(F)                                       \
     F("id",            STRING,           NULL,  RO)                      \
     F("subscription",  STRING,           NULL,  RO)                      \
     F("isDelivered",   BOOL,             NULL,  PATCH)                   \
+    F("url",           STRING,           NULL,  REQUIRED | CREATE)       \
     F("log",           RESOURCE,         NULL,  RO)
+
+#define STARKBANK_GADGET_LOG_VARIANTS(V)                                 \
+    V("widget",        "WidgetLog")
 
 #define STARKBANK_LEDGER_FIELDS(F)                                       \
     F("id",            STRING,           NULL,  RO)                      \
@@ -67,34 +71,18 @@ static const char *const gadgetQuery[] = { "limit", "after", "before", NULL };
 
 /*
  * Event.log in miniature: the nested table is chosen by the document, not by
- * the field row. An unknown subscription returns NULL, which leaves the nested
- * entity untagged and permissive rather than failing to hydrate.
+ * the field row, and the map is data. An unknown subscription resolves to
+ * NULL, which leaves the nested entity untagged and permissive rather than
+ * failing to hydrate.
  */
-static const starkbankResource * gadgetLogResource(const starkcore_json *object,
-                                                   const char *field)
-{
-    const starkcore_json *subscription;
-    const char *value;
-
-    if (strcmp(field, "log") != 0) {
-        return NULL;
-    }
-    subscription = starkcore_json_get(object, "subscription");
-    value = subscription != NULL ? starkcore_json_string(subscription) : NULL;
-    if (value == NULL) {
-        return NULL;
-    }
-    if (strcmp(value, "widget") == 0) {
-        return starkbankRegistryFind("WidgetLog");
-    }
-    return NULL;
-}
+STARKBANK_POLYMORPH(gadget, "log", "subscription", STARKBANK_GADGET_LOG_VARIANTS);
 
 STARKBANK_RESOURCE(widget, "Widget", STARKBANK_WIDGET_FIELDS, widgetQuery);
 STARKBANK_RESOURCE(widget_rule, "Widget.Rule", STARKBANK_WIDGET_RULE_FIELDS, NULL);
 STARKBANK_RESOURCE(widget_payment, "Widget.Payment", STARKBANK_WIDGET_PAYMENT_FIELDS, NULL);
 STARKBANK_RESOURCE(widget_log, "WidgetLog", STARKBANK_WIDGET_LOG_FIELDS, widgetLogQuery);
-STARKBANK_RESOURCE_FULL(gadget, "Gadget", STARKBANK_GADGET_FIELDS, gadgetQuery, gadgetLogResource);
+STARKBANK_RESOURCE_FULL(gadget, "Gadget", STARKBANK_GADGET_FIELDS, gadgetQuery,
+                        starkbankPolymorph_gadget);
 STARKBANK_RESOURCE(ledger, "Ledger", STARKBANK_LEDGER_FIELDS, NULL);
 
 STARKBANK_VERB_NEW(widget)
@@ -115,6 +103,8 @@ STARKBANK_VERB_PARAMS(widget_log)
 STARKBANK_VERB_GET_ID(widget_log)
 STARKBANK_VERB_QUERY(widget_log)
 
+STARKBANK_VERB_NEW(gadget)
+STARKBANK_VERB_POST_SINGLE(gadget)
 STARKBANK_VERB_GET_ID(gadget)
 
 STARKBANK_VERB_GET_FIRST(ledger)

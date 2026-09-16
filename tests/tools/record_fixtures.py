@@ -362,6 +362,95 @@ EVENT_ATTEMPT = {
     "created": "2026-09-16T12:00:00+00:00",
 }
 
+WEBHOOK = {
+    "id": "6178044066660352",
+    "url": "https://webhook.site/60e9c18e-4b5c-4369-bda1-ab5fcd8e1b29",
+    "subscriptions": ["transfer", "invoice"],
+}
+
+# The four previews sdk-python's _sub_resource_by_type names, and nothing else:
+# a fifth type is the "this build predates it" case PAYMENT_PREVIEW_UNKNOWN
+# covers. Zeroes are deliberate here too - a discount of 0 is a real answer.
+BRCODE_PREVIEW = {
+    "status": "created",
+    "name": "Tony Stark",
+    "taxId": "012.345.678-90",
+    "bankCode": "20018183",
+    "accountType": "checking",
+    "allowChange": True,
+    "amount": 1000,
+    "nominalAmount": 900,
+    "interestAmount": 50,
+    "fineAmount": 50,
+    "reductionAmount": 0,
+    "discountAmount": 0,
+    "reconciliationId": "tx-123",
+    "description": "Payment for service #1234",
+}
+
+BOLETO_PREVIEW = {
+    "status": "active",
+    "amount": 23456,
+    "discountAmount": 0,
+    "fineAmount": 0,
+    "interestAmount": 0,
+    "due": "2026-10-28",
+    "expiration": "2026-11-27",
+    "name": "Anthony Edward Stark",
+    "taxId": "20.018.183/0001-80",
+    "receiverName": "Iron Bank S.A.",
+    "receiverTaxId": "20.018.183/0001-80",
+    "payerName": "Arya Stark",
+    "payerTaxId": "012.345.678-90",
+    "line": "34191.09008 63571.277308 71444.640008 5 81960000000062",
+    "barCode": "34195819600000000621090063571277307144464000",
+}
+
+TAX_PREVIEW = {
+    "amount": 23456,
+    "name": "Iron Throne",
+    "description": "ISS Payment - Iron Throne",
+    "line": "85660000006 6 67940064007 5 41190025511 7 00010601813 8",
+    "barCode": "85660000006679400640074119002551100010601813",
+}
+
+UTILITY_PREVIEW = {
+    "amount": 23456,
+    "name": "Light Company",
+    "description": "Utility Payment - Light Company",
+    "line": "82660000002 8 44361143007 7 41190025511 7 00010601813 8",
+    "barCode": "82660000002443611430074119002551100010601813",
+}
+
+BRCODE = ("00020126580014br.gov.bcb.pix0136a629532e-7693-4846-852d-1bbff817b5a8"
+          "520400005303986540510.005802BR5908T'Challa6009Sao Paulo62090505123456304B14A")
+BOLETO_LINE = "34191.09008 63571.277308 71444.640008 5 81960000000062"
+TAX_LINE = "85660000006 6 67940064007 5 41190025511 7 00010601813 8"
+UTILITY_LINE = "82660000002 8 44361143007 7 41190025511 7 00010601813 8"
+
+PAYMENT_PREVIEW_BRCODE = {
+    "id": BRCODE, "scheduled": "2026-10-28",
+    "type": "brcode-payment", "payment": BRCODE_PREVIEW,
+}
+PAYMENT_PREVIEW_BOLETO = {
+    "id": BOLETO_LINE, "scheduled": "2026-10-28",
+    "type": "boleto-payment", "payment": BOLETO_PREVIEW,
+}
+PAYMENT_PREVIEW_TAX = {
+    "id": TAX_LINE, "scheduled": "2026-10-28",
+    "type": "tax-payment", "payment": TAX_PREVIEW,
+}
+PAYMENT_PREVIEW_UTILITY = {
+    "id": UTILITY_LINE, "scheduled": "2026-10-28",
+    "type": "utility-payment", "payment": UTILITY_PREVIEW,
+}
+# A type this build predates: python leaves payment a plain dict and sdk-c
+# leaves it untagged and permissive. Same path, both tiers.
+PAYMENT_PREVIEW_UNKNOWN = {
+    "id": "5656565656565656", "scheduled": "2026-10-28",
+    "type": "pix-reversal", "payment": {"id": "1", "amount": 42},
+}
+
 BALANCE = {
     "id": "5155165527080960",
     "amount": 1234567,
@@ -478,6 +567,41 @@ def main():
     record("event.attempt.page", [{"attempts": [EVENT_ATTEMPT], "cursor": ""}],
            lambda: starkbank.event.attempt.page(limit=5)[0])
 
+    # post_single, and the reason this case exists: python sends the entity
+    # itself as the body, NOT wrapped under "webhook" and NOT a one-element
+    # list under "webhooks". The envelope key is on the RESPONSE only. The
+    # recorded bodyRaw beside this case is the evidence.
+    record("webhook.create", [{"webhook": WEBHOOK}],
+           lambda: starkbank.webhook.create(
+               url="https://webhook.site/60e9c18e-4b5c-4369-bda1-ab5fcd8e1b29",
+               subscriptions=["transfer", "invoice"]))
+    record("webhook.get", [{"webhook": WEBHOOK}],
+           lambda: starkbank.webhook.get("6178044066660352"))
+    record("webhook.query", [{"webhooks": [WEBHOOK], "cursor": ""}],
+           lambda: list(starkbank.webhook.query(limit=5)))
+    record("webhook.page", [{"webhooks": [WEBHOOK], "cursor": ""}],
+           lambda: starkbank.webhook.page(limit=5)[0])
+    record("webhook.delete", [{"webhook": WEBHOOK}],
+           lambda: starkbank.webhook.delete("6178044066660352"))
+
+    # post_multi with a response whose sub-object's class is chosen by a
+    # sibling field. One call, four types, so the mixed batch is what the
+    # golden drives rather than four single-type calls that never prove the
+    # resolution happens per item.
+    previews = [
+        starkbank.PaymentPreview(id=BRCODE, scheduled="2026-10-28"),
+        starkbank.PaymentPreview(id=BOLETO_LINE, scheduled="2026-10-28"),
+        starkbank.PaymentPreview(id=TAX_LINE, scheduled="2026-10-28"),
+        starkbank.PaymentPreview(id=UTILITY_LINE, scheduled="2026-10-28"),
+    ]
+    record("paymentpreview.create",
+           [{"previews": [PAYMENT_PREVIEW_BRCODE, PAYMENT_PREVIEW_BOLETO,
+                          PAYMENT_PREVIEW_TAX, PAYMENT_PREVIEW_UTILITY]}],
+           lambda: starkbank.paymentpreview.create(previews))
+    record("paymentpreview.unknown", [{"previews": [PAYMENT_PREVIEW_UNKNOWN]}],
+           lambda: starkbank.paymentpreview.create(
+               [starkbank.PaymentPreview(id="5656565656565656")]))
+
     record("balance.get", [{"balances": [BALANCE], "cursor": ""}],
            lambda: starkbank.balance.get())
 
@@ -495,6 +619,11 @@ def main():
             "eventTransfer": {"event": EVENT_TRANSFER},
             "eventUnknown": {"event": EVENT_UNKNOWN},
             "eventAttempt": {"attempt": EVENT_ATTEMPT},
+            "webhook": {"webhook": WEBHOOK},
+            "webhooks": {"webhooks": [WEBHOOK], "cursor": ""},
+            "previews": {"previews": [PAYMENT_PREVIEW_BRCODE, PAYMENT_PREVIEW_BOLETO,
+                                      PAYMENT_PREVIEW_TAX, PAYMENT_PREVIEW_UTILITY]},
+            "previewUnknown": {"previews": [PAYMENT_PREVIEW_UNKNOWN]},
             "balances": {"balances": [BALANCE], "cursor": ""},
         },
     }
