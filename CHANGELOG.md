@@ -80,6 +80,24 @@ name-keyed accessors.
   `hiddenFields` (a comma-joined list; core-c encodes a list the same way, so
   the wire bytes match sdk-python's) rather than hand-writing a per-resource
   function
+- Deposit (+ Log): no create at all - every field but `amount` is return-only,
+  and `amount` reaches the wire only through `update`'s reversal (full or
+  partial, `amount=0` fully reverses). `deposit.Log` carries a `pdf` verb none
+  of the other logs have
+- DictKey: query/get only, no create and no update, exactly as sdk-python has
+  none either. `id` is the PIX key itself
+- Institution: no id, no create. `page` is python's `query()` under the shape
+  it actually is - `rest.get_page(...)[0]`, one call, cursor discarded - so
+  sdk-c names the verb for what it does rather than inventing an iterator
+  python's own code never builds
+- Transaction: read-only end to end. sdk-python's `create()` is deprecated
+  since v2.31.0 and unconditionally raises `StarkError`; sdk-c adds no create
+  verb rather than letting a C caller do what python refuses to do at all
+- Workspace: `create` is `post_single`, like Webhook. `picture` needed no new
+  engine shape: sdk-python base64-encodes the bytes itself into one
+  `data:<mime>;base64,<...>` wire string, so the existing generic
+  `starkbank_entity_set_string` already covers it - the caller builds the same
+  string sdk-python builds
 
 ### Changed
 - `tests/reference/sdk-python.sha` moved to `be7755a5`, the sdk-python master

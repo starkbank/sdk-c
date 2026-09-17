@@ -49,10 +49,15 @@ an FFI generator and MSVC can all read it. `make check-header` proves that.
 | Boleto | create get delete query page pdf | + `boleto.Log` (get query page). `pdf` takes an optional `layout` and an optional comma-joined `hiddenFields` string, both sent only when set |
 | BoletoPayment | create get delete query page pdf | + `boletopayment.Log` (get query page) |
 | BrcodePayment | create get query page update pdf | + `brcodepayment.Log` (get query page), `BrcodePayment.Rule`. `update` is status-only, to cancel before payment |
+| Deposit | get query page update | + `deposit.Log` (get query page pdf). No create: passive cash-in only. `update` is amount-only, to fully or partially reverse |
+| DictKey | get query page | No create, no update: query/get only, mirroring sdk-python exactly |
 | Event | get query page update delete parse | `log` is polymorphic: the table comes from `subscription` |
+| Institution | page | No id, no create: `page` is python's `query()` under the engine shape it actually is - one page call, cursor discarded |
 | Balance | get | no id: the head of the listing endpoint |
 | UtilityPayment | create get delete query page pdf | + `utilitypayment.Log` (get query page). Same conditionally-required `line`/`barCode` pair as TaxPayment; `scheduled` is a plain DATE |
+| Transaction | get query page | No create: sdk-python's `create()` is deprecated and always raises |
 | Webhook | create get query page delete | `create` is `post_single` and takes one entity, not a list |
+| Workspace | create get query page update | `create` is `post_single`, like Webhook. `picture` is one wire string: the caller base64-encodes the bytes into the same `data:<mime>;base64,<...>` string sdk-python builds |
 | PaymentPreview | create | `payment` is polymorphic: the table comes from `type`, into `BrcodePreview`, `BoletoPreview`, `TaxPreview` or `UtilityPreview` |
 
 Those six between them use every `starkcore_rest_*` shape the bank SDK needs:
