@@ -22,6 +22,8 @@
     R(brcode_payment_log)      \
     R(brcode_payment_rule)     \
     R(brcode_preview)          \
+    R(darf_payment)            \
+    R(darf_payment_log)        \
     R(event)                   \
     R(event_attempt)           \
     R(invoice)                 \

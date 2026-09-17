@@ -110,6 +110,8 @@ RESOURCE_SOURCES = \
 	starkbank/brcodepayment/brcodepayment.c \
 	starkbank/brcodepayment/log.c \
 	starkbank/brcodepayment/rule.c \
+	starkbank/darfpayment/darfpayment.c \
+	starkbank/darfpayment/log.c \
 	starkbank/event/attempt.c \
 	starkbank/event/event.c \
 	starkbank/invoice/invoice.c \
