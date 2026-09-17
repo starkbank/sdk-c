@@ -353,6 +353,67 @@ int starkbankVerbContent(const starkbank_client *client, const starkbankResource
     return status;
 }
 
+/*
+ * The same shape as starkbankVerbContent, generalised to two optional string
+ * query keys instead of one bounded integer: boleto.pdf's layout ("default"/
+ * "booklet") and hiddenFields are why this exists, each omitted from the
+ * request exactly like size 0 is - "send nothing and let the API default"
+ * rather than a sentinel value. hiddenFields takes a caller-joined
+ * comma-separated string rather than a list: core-c's own query encoder
+ * (starkcore/utils/url.c) joins a JSON array with "," before percent-encoding
+ * the whole value, so "a,b" here and ["a","b"] on sdk-python's side reach the
+ * wire as the same bytes, and this keeps every parameter a plain const char *
+ * that a binding generator already knows how to translate.
+ */
+int starkbankVerbContentQuery(const starkbank_client *client, const starkbankResource *resource,
+                              const char *id, const char *subResourceName,
+                              const char *stringKey1, const char *stringValue1,
+                              const char *stringKey2, const char *stringValue2,
+                              unsigned char **out, size_t *outLen, starkbank_errors **errors)
+{
+    starkcore_json *query = NULL;
+    int status;
+    int have1 = stringValue1 != NULL && stringValue1[0] != '\0';
+    int have2 = stringValue2 != NULL && stringValue2[0] != '\0';
+
+    if (out == NULL || outLen == NULL) {
+        return STARKCORE_ERROR_ARGUMENT;
+    }
+    *out = NULL;
+    *outLen = 0;
+    status = checkVerb(client, errors);
+    if (status != STARKCORE_OK) {
+        return status;
+    }
+    if (id == NULL) {
+        return STARKCORE_ERROR_ARGUMENT;
+    }
+    if (have1 || have2) {
+        status = starkcore_json_new_object(&query);
+        if (status != STARKCORE_OK) {
+            return status;
+        }
+    }
+    if (have1) {
+        status = starkcore_json_set_string(query, stringKey1, stringValue1);
+        if (status != STARKCORE_OK) {
+            starkcore_json_free(query);
+            return status;
+        }
+    }
+    if (have2) {
+        status = starkcore_json_set_string(query, stringKey2, stringValue2);
+        if (status != STARKCORE_OK) {
+            starkcore_json_free(query);
+            return status;
+        }
+    }
+    status = starkcore_rest_get_content(starkbankClientCore(client), resource->name, id,
+                                        subResourceName, query, out, outLen, errors);
+    starkcore_json_free(query);
+    return status;
+}
+
 int starkbankVerbSubResource(const starkbank_client *client, const starkbankResource *resource,
                              const char *id, const char *subResourceName, const char *tagName,
                              starkbank_entity **out, starkbank_errors **errors)

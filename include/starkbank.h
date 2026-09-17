@@ -1201,6 +1201,129 @@ STARKBANK_API int STARKBANK_CALL starkbank_payment_preview_create(
 #define STARKBANK_UTILITY_PREVIEW_LINE         "line"
 #define STARKBANK_UTILITY_PREVIEW_BAR_CODE     "barCode"
 
+/* =========================================================================
+ *                                 Boleto
+ * =========================================================================
+ *
+ * Fields (wire keys; * = required on create). Boleto has no update verb, so
+ * nothing here is patchable.
+ *
+ *   amount* AMOUNT
+ *   name* taxId* streetLine1* streetLine2* district* city* stateCode*
+ *   zipCode* STRING
+ *   due DATE                fine interest RATE          overdueLimit NUMBER
+ *   descriptions discounts LIST_OBJECT                  tags LIST_STRING
+ *   receiverName receiverTaxId STRING
+ *   fee AMOUNT (ro)
+ *   line barCode status STRING (ro)
+ *   transactionIds LIST_STRING (ro)
+ *   workspaceId ourNumber id STRING (ro)                created DATETIME (ro)
+ *
+ * Query keys: limit, after, before, status, tags, ids.
+ *
+ * due is a plain DATE: unlike Invoice.due, sdk-python calls check_date, never
+ * check_datetime_or_date, and there is no scheduled-boleto equivalent. pdf
+ * takes an optional layout ("default"/"booklet") and an optional list of
+ * field names to hide, both sent only when non-empty.
+ */
+
+#define STARKBANK_BOLETO_AMOUNT           "amount"
+#define STARKBANK_BOLETO_NAME             "name"
+#define STARKBANK_BOLETO_TAX_ID           "taxId"
+#define STARKBANK_BOLETO_STREET_LINE_1    "streetLine1"
+#define STARKBANK_BOLETO_STREET_LINE_2    "streetLine2"
+#define STARKBANK_BOLETO_DISTRICT         "district"
+#define STARKBANK_BOLETO_CITY             "city"
+#define STARKBANK_BOLETO_STATE_CODE       "stateCode"
+#define STARKBANK_BOLETO_ZIP_CODE         "zipCode"
+#define STARKBANK_BOLETO_DUE              "due"
+#define STARKBANK_BOLETO_FINE             "fine"
+#define STARKBANK_BOLETO_INTEREST         "interest"
+#define STARKBANK_BOLETO_OVERDUE_LIMIT    "overdueLimit"
+#define STARKBANK_BOLETO_DESCRIPTIONS     "descriptions"
+#define STARKBANK_BOLETO_DISCOUNTS        "discounts"
+#define STARKBANK_BOLETO_TAGS             "tags"
+#define STARKBANK_BOLETO_RECEIVER_NAME    "receiverName"
+#define STARKBANK_BOLETO_RECEIVER_TAX_ID  "receiverTaxId"
+#define STARKBANK_BOLETO_FEE              "fee"
+#define STARKBANK_BOLETO_LINE             "line"
+#define STARKBANK_BOLETO_BAR_CODE         "barCode"
+#define STARKBANK_BOLETO_STATUS           "status"
+#define STARKBANK_BOLETO_TRANSACTION_IDS  "transactionIds"
+#define STARKBANK_BOLETO_WORKSPACE_ID     "workspaceId"
+#define STARKBANK_BOLETO_OUR_NUMBER       "ourNumber"
+#define STARKBANK_BOLETO_ID               "id"
+#define STARKBANK_BOLETO_CREATED          "created"
+
+/* app-docs' list; sdk-python's own docstring example also shows "registered",
+   which the docs list omits - the same gap design.md records for Invoice. */
+#define STARKBANK_BOLETO_STATUS_CREATED     "created"
+#define STARKBANK_BOLETO_STATUS_REGISTERED  "registered"
+#define STARKBANK_BOLETO_STATUS_OVERDUE     "overdue"
+#define STARKBANK_BOLETO_STATUS_PAID        "paid"
+#define STARKBANK_BOLETO_STATUS_CANCELED    "canceled"
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_create(const starkbank_client *client,
+    const starkbank_list *boletos, starkbank_list **out, starkbank_errors **errors);
+/* Up to 100 per call. If a Boleto is paid after its due date with a fine, an
+   interest or a discount applied, the returned amount reflects what was
+   actually paid, not what was requested. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_delete(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+/* Sends a cancellation request to CIP; once canceled a Boleto can no longer be
+   paid. This cannot be undone. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_pdf(const starkbank_client *client,
+    const char *id, const char *layout, const char *hidden_fields,
+    unsigned char **out, size_t *out_len, starkbank_errors **errors);
+/* layout is "default" or "booklet"; pass NULL to send neither. hidden_fields
+   names fields to omit from the rendered PDF, comma-joined, ex:
+   "customerAddress,customerTaxId"; pass NULL to send none - core-c's query
+   encoder percent-encodes the whole value, so a caller-joined string and
+   sdk-python's list of the same names reach the wire as the same bytes. This
+   route is public and needs no authentication, but the API blocks the
+   caller's IP after repeated requests for invalid ids. Free the bytes with
+   starkbank_free. */
+
+/* --------------------------------------------------------------- BoletoLog */
+/*
+ * Resource "BoletoLog"; endpoint "boleto/log", derived at run time.
+ * Fields: id STRING (ro), created DATETIME (ro), type STRING (ro),
+ *         errors LIST_STRING (ro), boleto RESOURCE("Boleto") (ro).
+ * Query keys: limit, after, before, types, boletoIds.
+ *
+ * There is no boleto.Log pdf: sdk-python does not have one, and python is
+ * normative for the verb surface. The receipt is starkbank_boleto_pdf.
+ */
+#define STARKBANK_BOLETO_LOG_ID       "id"
+#define STARKBANK_BOLETO_LOG_CREATED  "created"
+#define STARKBANK_BOLETO_LOG_TYPE     "type"
+#define STARKBANK_BOLETO_LOG_ERRORS   "errors"
+#define STARKBANK_BOLETO_LOG_BOLETO   "boleto"
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_log_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_log_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_log_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_log_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
 #ifdef __cplusplus
 }
 #endif

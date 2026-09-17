@@ -103,6 +103,8 @@ ENGINE_SOURCES = \
 # registry is starkbank/resources.h and the verbs are in the file itself.
 RESOURCE_SOURCES = \
 	starkbank/balance/balance.c \
+	starkbank/boleto/boleto.c \
+	starkbank/boleto/log.c \
 	starkbank/event/attempt.c \
 	starkbank/event/event.c \
 	starkbank/invoice/invoice.c \

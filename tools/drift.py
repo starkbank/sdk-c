@@ -82,7 +82,7 @@ VERB_PYTHON_NAME = {
     "PATCH_ID": "update",
     "DELETE_ID": "delete",
 }
-VERB_NAMED = ("CONTENT", "CONTENT_INT", "SUB_RESOURCE")
+VERB_NAMED = ("CONTENT", "CONTENT_INT", "CONTENT_QUERY", "SUB_RESOURCE")
 VERB_LOCAL = ("NEW", "PARAMS")
 
 # The docs' prose tags are lossy by construction: they have no date-vs-datetime,
@@ -547,7 +547,7 @@ def verbEndpoint(shape, endpoint, verbName):
         return ("PATCH", base + "/:id")
     if shape == "DELETE_ID":
         return ("DELETE", base + "/:id")
-    if shape in ("CONTENT", "CONTENT_INT", "SUB_RESOURCE"):
+    if shape in ("CONTENT", "CONTENT_INT", "CONTENT_QUERY", "SUB_RESOURCE"):
         return ("GET", base + "/:id/" + verbName)
     return None
 

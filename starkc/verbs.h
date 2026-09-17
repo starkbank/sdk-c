@@ -128,6 +128,32 @@
                                     queryKey, value, minimum, maximum, out, out_len, errors); \
     }
 
+/*
+ * The same with two optional string query keys instead of one bounded
+ * integer, each sent only when non-empty. boleto.pdf's layout and
+ * hiddenFields are the shape this exists for: sdk-python takes them as
+ * ordinary keyword arguments and rest.get_content forwards them as query
+ * params exactly like CONTENT_INT's size.
+ *
+ * hiddenFields is a comma-joined list on the wire either way - core-c's own
+ * query encoder (starkcore/utils/url.c) joins a JSON array with "," and then
+ * percent-encodes the whole value, so a caller-joined "a,b" string percent-
+ * encodes to the identical bytes a two-element array would. A second string
+ * parameter is therefore both the simplest ABI shape and the one every
+ * binding generator already knows how to translate - no new pointer-array
+ * parameter type, no per-resource hand-written function.
+ */
+#define STARKBANK_VERB_CONTENT_QUERY(ident, verb, stringKey1, stringKey2)                \
+    STARKBANK_API int STARKBANK_CALL starkbank_##ident##_##verb(                         \
+        const starkbank_client *client, const char *id,                                  \
+        const char *stringValue1, const char *stringValue2,                              \
+        unsigned char **out, size_t *out_len, starkbank_errors **errors)                 \
+    {                                                                                    \
+        return starkbankVerbContentQuery(client, &starkbankTable_##ident, id, #verb,     \
+                                         stringKey1, stringValue1, stringKey2,            \
+                                         stringValue2, out, out_len, errors);             \
+    }
+
 #define STARKBANK_VERB_SUB_RESOURCE(ident, verb, subResourceName, tagName)               \
     STARKBANK_API int STARKBANK_CALL starkbank_##ident##_##verb(                         \
         const starkbank_client *client, const char *id,                                  \
