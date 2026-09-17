@@ -60,6 +60,17 @@ name-keyed accessors.
 - Suites: engine, slice against goldens recorded from sdk-python, the core-ABI
   guard, the loose-query build, ASan/UBSan, leaks/valgrind and a
   ThreadSanitizer job sharing one client across eight threads
+- Boleto (+ Log): due is a plain DATE, unlike Invoice's DATE_OR_DATETIME,
+  because sdk-python calls `check_date` and there is no scheduled-boleto
+  equivalent
+- BoletoPayment (+ Log)
+- BrcodePayment (+ Log, Rule): `status` is PATCH-only, the same shape as
+  `Invoice.status`, because sdk-python's `update()` accepts only that key
+- `STARKBANK_VERB_CONTENT_QUERY`: an engine verb shape for a content route
+  with one optional string query key and one optional list-of-strings query
+  key, both omitted when empty - generalises `CONTENT_INT`'s "0 means send
+  nothing" rule to `Boleto.pdf`'s `layout` and `hiddenFields` rather than
+  hand-writing a per-resource function
 
 ### Changed
 - `tests/reference/sdk-python.sha` moved to `be7755a5`, the sdk-python master
