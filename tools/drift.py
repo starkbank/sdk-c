@@ -80,6 +80,7 @@ VERB_PYTHON_NAME = {
     "QUERY": "query",
     "PAGE": "page",
     "PATCH_ID": "update",
+    "PATCH_ID_ECHO": "update",
     "DELETE_ID": "delete",
 }
 VERB_NAMED = ("CONTENT", "CONTENT_INT", "CONTENT_QUERY", "SUB_RESOURCE")
@@ -543,7 +544,7 @@ def verbEndpoint(shape, endpoint, verbName):
         return ("GET", base)
     if shape == "GET_ID":
         return ("GET", base + "/:id")
-    if shape == "PATCH_ID":
+    if shape in ("PATCH_ID", "PATCH_ID_ECHO"):
         return ("PATCH", base + "/:id")
     if shape == "DELETE_ID":
         return ("DELETE", base + "/:id")

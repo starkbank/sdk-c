@@ -595,7 +595,7 @@ def sampleBody(ident, table, verb, shape):
     starkbank_free(cursor);
     starkbank_list_free(page);
 """ % {"ident": ident, "call": call})
-    if shape == "PATCH_ID":
+    if shape in ("PATCH_ID", "PATCH_ID_ECHO"):
         setter = patchSetter(ident, table)
         if setter is None:
             return None

@@ -96,6 +96,19 @@
         return starkbankVerbPatchId(client, &starkbankTable_##ident, id, patch, out, errors); \
     }
 
+/* Same as STARKBANK_VERB_PATCH_ID, plus echoKeys (a NULL-terminated array of
+   wire keys) mirrored into the URL's query string whenever patch carries
+   them - the one shape Workspace.update needs and no other patchable
+   resource does. See starkbankVerbPatchIdEcho's comment in internal.h. */
+#define STARKBANK_VERB_PATCH_ID_ECHO(ident, echoKeys)                                    \
+    STARKBANK_API int STARKBANK_CALL starkbank_##ident##_update(                         \
+        const starkbank_client *client, const char *id, const starkbank_entity *patch,   \
+        starkbank_entity **out, starkbank_errors **errors)                               \
+    {                                                                                    \
+        return starkbankVerbPatchIdEcho(client, &starkbankTable_##ident, id, patch,       \
+                                        echoKeys, out, errors);                          \
+    }
+
 #define STARKBANK_VERB_DELETE_ID(ident)                                                  \
     STARKBANK_API int STARKBANK_CALL starkbank_##ident##_delete(                         \
         const starkbank_client *client, const char *id,                                  \

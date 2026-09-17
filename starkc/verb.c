@@ -286,6 +286,59 @@ int starkbankVerbPatchId(const starkbank_client *client, const starkbankResource
     return wrapOwned(resource, reply, out);
 }
 
+int starkbankVerbPatchIdEcho(const starkbank_client *client, const starkbankResource *resource,
+                             const char *id, const starkbank_entity *patch,
+                             const char *const *echoKeys,
+                             starkbank_entity **out, starkbank_errors **errors)
+{
+    starkcore_json *payload = NULL;
+    starkcore_json *query = NULL;
+    starkcore_json *reply = NULL;
+    const char *value;
+    int index;
+    int status;
+
+    if (out == NULL) {
+        return STARKCORE_ERROR_ARGUMENT;
+    }
+    *out = NULL;
+    status = checkVerb(client, errors);
+    if (status != STARKCORE_OK) {
+        return status;
+    }
+    if (id == NULL || patch == NULL) {
+        return STARKCORE_ERROR_ARGUMENT;
+    }
+    status = starkbankEntityDehydrate(patch, STARKBANK_FLAG_PATCH, &payload);
+    if (status != STARKCORE_OK) {
+        return status;
+    }
+    for (index = 0; echoKeys != NULL && echoKeys[index] != NULL; index++) {
+        value = NULL;
+        if (starkbank_entity_string(patch, echoKeys[index], &value) != STARKCORE_OK
+            || value == NULL) {
+            continue;
+        }
+        if (query == NULL && starkcore_json_new_object(&query) != STARKCORE_OK) {
+            starkcore_json_free(payload);
+            return STARKCORE_ERROR_ARGUMENT;
+        }
+        if (starkcore_json_set_string(query, echoKeys[index], value) != STARKCORE_OK) {
+            starkcore_json_free(payload);
+            starkcore_json_free(query);
+            return STARKCORE_ERROR_ARGUMENT;
+        }
+    }
+    status = starkcore_rest_patch_id(starkbankClientCore(client), resource->name, id,
+                                     payload, query, &reply, errors);
+    starkcore_json_free(payload);
+    starkcore_json_free(query);
+    if (status != STARKCORE_OK) {
+        return status;
+    }
+    return wrapOwned(resource, reply, out);
+}
+
 int starkbankVerbDeleteId(const starkbank_client *client, const starkbankResource *resource,
                           const char *id, starkbank_entity **out, starkbank_errors **errors)
 {

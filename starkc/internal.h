@@ -196,6 +196,19 @@ int starkbankVerbPage(const starkbank_client *client, const starkbankResource *r
 int starkbankVerbPatchId(const starkbank_client *client, const starkbankResource *resource,
                          const char *id, const starkbank_entity *patch,
                          starkbank_entity **out, starkbank_errors **errors);
+/*
+ * Workspace.update is the one patch_id call in sdk-python that also echoes
+ * some of the patched keys into the URL's query string (rest.patch_id's
+ * **query, forwarded from workspace/__workspace.py alone - no other resource
+ * passes any). echoKeys is a NULL-terminated list of wire keys read out of
+ * patch with starkbank_entity_string; whichever of them patch actually
+ * carries become query parameters, same as the body. A resource that never
+ * needs this passes starkbankVerbPatchId above instead.
+ */
+int starkbankVerbPatchIdEcho(const starkbank_client *client, const starkbankResource *resource,
+                             const char *id, const starkbank_entity *patch,
+                             const char *const *echoKeys,
+                             starkbank_entity **out, starkbank_errors **errors);
 int starkbankVerbDeleteId(const starkbank_client *client, const starkbankResource *resource,
                           const char *id, starkbank_entity **out, starkbank_errors **errors);
 int starkbankVerbContent(const starkbank_client *client, const starkbankResource *resource,

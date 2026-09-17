@@ -46,6 +46,7 @@
     R(utility_payment)         \
     R(utility_payment_log)     \
     R(utility_preview)         \
-    R(webhook)
+    R(webhook)                 \
+    R(workspace)
 
 #endif /* STARKBANK_RESOURCES_H */

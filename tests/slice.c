@@ -489,7 +489,7 @@ static void testRegistry(void)
         "PaymentPreview.TaxPreview", "PaymentPreview.UtilityPreview",
         "Split", "TaxPayment", "TaxPaymentLog", "Transaction", "Transfer",
         "TransferLog", "Transfer.Rule", "UtilityPayment", "UtilityPaymentLog",
-        "Webhook"
+        "Webhook", "Workspace"
     };
     char label[160];
     size_t index;
@@ -2368,6 +2368,103 @@ static void testUtilityPaymentLog(void)
     starkbank_client_free(client);
 }
 
+/* ============================================================= Workspace */
+
+static void testWorkspace(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *workspace = NULL;
+    starkbank_entity *created = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_list *page = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+
+    startGroup("Workspace, post_single like Webhook");
+    client = newClient(&fake);
+    replies(&fake, responseBody("workspace"), NULL);
+    starkbank_workspace_new(&workspace);
+    starkbank_entity_set_string(workspace, STARKBANK_WORKSPACE_USERNAME, "starkbankworkspace");
+    starkbank_entity_set_string(workspace, STARKBANK_WORKSPACE_NAME, "Stark Bank Workspace");
+    starkbank_entity_append_string(workspace, STARKBANK_WORKSPACE_ALLOWED_TAX_IDS,
+                                   "012.345.678-90");
+    starkbank_entity_append_string(workspace, STARKBANK_WORKSPACE_ALLOWED_TAX_IDS,
+                                   "20.018.183/0001-80");
+    check("create takes one entity and returns one entity",
+          starkbank_workspace_create(client, workspace, &created, NULL) == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(created), "Workspace"), NULL);
+    checkRequests("workspace.create", &fake);
+    checkHydration("workspace.create", 0, created);
+    starkbank_entity_free(workspace);
+    workspace = NULL;
+    starkbank_entity_free(created);
+    created = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("workspace"), NULL);
+    starkbank_workspace_get(client, "6284441752174592", &workspace, NULL);
+    checkRequests("workspace.get", &fake);
+    checkHydration("workspace.get", 0, workspace);
+    starkbank_entity_free(workspace);
+    workspace = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("workspaces"), NULL);
+    starkbank_workspace_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_set_string(params, "username", "starkbankworkspace");
+    starkbank_workspace_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("workspace.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("workspaces"), NULL);
+    starkbank_workspace_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_workspace_page(client, params, &page, NULL, NULL);
+    checkRequests("workspace.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+
+    /* picture is sent as one wire string: sdk-python base64-encodes the bytes
+       itself and prefixes a data URI. sdk-c adds no new engine shape - the
+       caller builds the identical string and hands it to the existing
+       generic string setter.
+       username and name are patched here too, unlike every other patchable
+       resource: sdk-python's workspace.update also echoes them as URL query
+       parameters, and this is the case that proves it - see
+       STARKBANK_VERB_PATCH_ID_ECHO and workspaceEchoQuery in workspace.c. */
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("workspace"), NULL);
+    starkbank_workspace_params_new(&params);
+    starkbank_entity_set_string(params, STARKBANK_WORKSPACE_USERNAME, "starkbankworkspace");
+    starkbank_entity_set_string(params, STARKBANK_WORKSPACE_NAME, "Stark Bank Workspace");
+    starkbank_entity_set_string(params, STARKBANK_WORKSPACE_STATUS,
+                                STARKBANK_WORKSPACE_STATUS_ACTIVE);
+    starkbank_entity_set_string(params, STARKBANK_WORKSPACE_PICTURE,
+                                "data:image/png;base64,iVBORw0KGgogZmFrZQ==");
+    check("update patches username, name, status and the picture data URI together",
+          starkbank_workspace_update(client, "6284441752174592", params, &workspace, NULL)
+              == STARKBANK_OK, NULL);
+    check("username and name were also echoed into the query string",
+          strstr(fake.url[0], "?") != NULL
+          && strstr(fake.url[0], "username=starkbankworkspace") != NULL
+          && strstr(fake.url[0], "name=Stark") != NULL, fake.url[0]);
+    checkRequests("workspace.update", &fake);
+    starkbank_entity_free(workspace);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
 /* ============================================================== Webhook */
 
 /*
@@ -2815,6 +2912,7 @@ int main(void)
     testTransaction();
     testUtilityPayment();
     testUtilityPaymentLog();
+    testWorkspace();
     testNegatives();
     testErrorsAndAbi();
 

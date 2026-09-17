@@ -2041,6 +2041,90 @@ STARKBANK_API int STARKBANK_CALL starkbank_transaction_page(const starkbank_clie
     const starkbank_entity *params, starkbank_list **out, char **out_cursor,
     starkbank_errors **errors);
 
+/* =========================================================================
+ *                                Workspace
+ * =========================================================================
+ *
+ * create is post_single, like Webhook: sdk-python builds one Workspace
+ * locally from username/name/allowedTaxIds and posts it as the body itself,
+ * not wrapped in a list.
+ *
+ * Fields (wire keys; * = required on create, + = also patchable).
+ *
+ *   username*+ name*+ STRING      allowedTaxIds+ LIST_STRING
+ *   id organizationId pictureUrl STRING (ro)   created DATETIME (ro)
+ *   status+ picture+ STRING
+ *
+ * Query keys: limit, username, ids.
+ *
+ * picture carries PATCH alone, neither RO nor CREATE nor REQUIRED: it never
+ * appears on a returned Workspace (sdk-python's Workspace class has no
+ * picture attribute at all - only update() takes one), so it is the one
+ * field in this table that is genuinely write-only despite not being marked
+ * (ro) in the block above; the "* = required, + = patchable" legend has no
+ * symbol for that shape and this note is it.
+ *
+ * picture is the one field with judgement in it. sdk-python's update() takes
+ * picture as raw bytes and pictureType as a separate parameter, then builds
+ * exactly one wire value itself:
+ *     payload["picture"] = "data:{picture_type};base64,{base64(picture)}"
+ * pictureType never reaches the wire as its own key - it is only ever
+ * encoded into the "picture" string - so there is exactly one wire field to
+ * table, and its wire representation is already a plain string. No new
+ * engine verb shape is needed: the existing generic starkbank_entity_set_string
+ * covers it completely. A caller sends a picture by base64-encoding the bytes
+ * themselves and calling
+ *     starkbank_entity_set_string(patch, STARKBANK_WORKSPACE_PICTURE,
+ *         "data:image/png;base64,...")
+ * - a plain const char *, the smallest possible shape, the same preference
+ * STARKBANK_VERB_CONTENT_QUERY's own comment argues for boleto.pdf's two
+ * string keys.
+ */
+#define STARKBANK_WORKSPACE_USERNAME          "username"
+#define STARKBANK_WORKSPACE_NAME              "name"
+#define STARKBANK_WORKSPACE_ALLOWED_TAX_IDS   "allowedTaxIds"
+#define STARKBANK_WORKSPACE_ID                "id"
+#define STARKBANK_WORKSPACE_STATUS            "status"
+#define STARKBANK_WORKSPACE_ORGANIZATION_ID   "organizationId"
+#define STARKBANK_WORKSPACE_PICTURE_URL       "pictureUrl"
+#define STARKBANK_WORKSPACE_CREATED           "created"
+#define STARKBANK_WORKSPACE_PICTURE           "picture"
+
+#define STARKBANK_WORKSPACE_STATUS_ACTIVE  "active"
+#define STARKBANK_WORKSPACE_STATUS_CLOSED  "closed"
+#define STARKBANK_WORKSPACE_STATUS_FROZEN  "frozen"
+#define STARKBANK_WORKSPACE_STATUS_BLOCKED "blocked"
+
+STARKBANK_API int STARKBANK_CALL starkbank_workspace_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_workspace_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_workspace_create(const starkbank_client *client,
+    const starkbank_entity *workspace, starkbank_entity **out, starkbank_errors **errors);
+/* post_single: workspace is the body itself, not wrapped in a list - same
+   shape as starkbank_webhook_create. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_workspace_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_workspace_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+/* If no filters are set and the user is an Organization, every Workspace the
+   Organization owns is returned - unchanged from sdk-python. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_workspace_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_workspace_update(const starkbank_client *client,
+    const char *id, const starkbank_entity *patch, starkbank_entity **out,
+    starkbank_errors **errors);
+/* username, name, allowedTaxIds, status and picture are each independently
+   patchable; send only the keys that are changing.
+   Unlike every other patchable resource in this SDK, patching username or
+   name also sends it as a URL query parameter (?username=...&name=...) in
+   addition to the JSON body - sdk-python's workspace.update does the same,
+   and this mirrors it wire-for-wire. */
+
 #ifdef __cplusplus
 }
 #endif

@@ -138,6 +138,11 @@
       "owner": "eduardo.santos@starkbank.com",
       "resolution": "table",
       "reason": "As flag.conflict:Transaction:amount - create() is deprecated and always raises, so every '## Parameters' field is RO in the table regardless of the docstring's stale Parameters section."
+    },
+    {
+      "key": "field.gone:Workspace:picture",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "picture is a real wire key sdk-python's update() sends, but it is never an attribute of the Workspace class - update() builds the value from two of its own parameters (picture, picture_type) and never stores either on the returned object. The table carries it as a PATCH-only field so the engine can validate a write to it; python simply has no field of that name to compare against."
     }
   ]
 }
