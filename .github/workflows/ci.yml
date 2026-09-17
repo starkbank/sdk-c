@@ -61,7 +61,7 @@ jobs:
 
       - name: Build the siblings
         run: |
-          make -C starkbank/ecdsa-c
+          make -C starkbank/ecdsa-c CFLAGS="-O2 -fPIC"
           make -C starkinfra/core-c
           make -C starkinfra/core-c curl
 
@@ -140,7 +140,7 @@ jobs:
 
       - name: Build the siblings
         run: |
-          make -C starkbank/ecdsa-c
+          make -C starkbank/ecdsa-c CFLAGS="-O2 -fPIC"
           make -C starkinfra/core-c
 
       - name: One client, eight threads
@@ -207,7 +207,7 @@ jobs:
 
       - name: Build the siblings
         run: |
-          make -C starkbank/ecdsa-c
+          make -C starkbank/ecdsa-c CFLAGS="-O2 -fPIC"
           make -C starkinfra/core-c
 
       - name: Tables against sdk-python and the docs JSON
