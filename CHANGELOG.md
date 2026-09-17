@@ -67,10 +67,11 @@ name-keyed accessors.
 - BrcodePayment (+ Log, Rule): `status` is PATCH-only, the same shape as
   `Invoice.status`, because sdk-python's `update()` accepts only that key
 - `STARKBANK_VERB_CONTENT_QUERY`: an engine verb shape for a content route
-  with one optional string query key and one optional list-of-strings query
-  key, both omitted when empty - generalises `CONTENT_INT`'s "0 means send
-  nothing" rule to `Boleto.pdf`'s `layout` and `hiddenFields` rather than
-  hand-writing a per-resource function
+  with two optional string query keys, both omitted when empty - generalises
+  `CONTENT_INT`'s "0 means send nothing" rule to `Boleto.pdf`'s `layout` and
+  `hiddenFields` (a comma-joined list; core-c encodes a list the same way, so
+  the wire bytes match sdk-python's) rather than hand-writing a per-resource
+  function
 
 ### Changed
 - `tests/reference/sdk-python.sha` moved to `be7755a5`, the sdk-python master

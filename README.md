@@ -44,7 +44,7 @@ an FFI generator and MSVC can all read it. `make check-header` proves that.
 |---|---|---|
 | Invoice | create get query page update pdf qrcode payment | + `invoice.Log` (get query page pdf), `Invoice.Rule`, `Invoice.Payment`, `Split` |
 | Transfer | create get delete query page pdf | + `transfer.Log` (get query page), `Transfer.Rule` |
-| Boleto | create get delete query page pdf | + `boleto.Log` (get query page). `pdf` takes an optional `layout` and an optional `hiddenFields` list, both sent only when set |
+| Boleto | create get delete query page pdf | + `boleto.Log` (get query page). `pdf` takes an optional `layout` and an optional comma-joined `hiddenFields` string, both sent only when set |
 | BoletoPayment | create get delete query page pdf | + `boletopayment.Log` (get query page) |
 | BrcodePayment | create get query page update pdf | + `brcodepayment.Log` (get query page), `BrcodePayment.Rule`. `update` is status-only, to cancel before payment |
 | Event | get query page update delete parse | `log` is polymorphic: the table comes from `subscription` |
