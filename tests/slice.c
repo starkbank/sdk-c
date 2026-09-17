@@ -482,11 +482,13 @@ static void testRegistry(void)
     static const char *const expected[] = {
         "Balance", "Boleto", "BoletoLog", "BoletoPayment", "BoletoPaymentLog",
         "BrcodePayment", "BrcodePaymentLog", "BrcodePayment.Rule",
-        "Event", "EventAttempt", "Invoice", "InvoiceLog",
-        "Invoice.Payment", "Invoice.Rule", "PaymentPreview",
-        "PaymentPreview.BoletoPreview", "PaymentPreview.BrcodePreview",
-        "PaymentPreview.TaxPreview", "PaymentPreview.UtilityPreview",
-        "Split", "Transfer", "TransferLog", "Transfer.Rule", "Webhook"
+        "DarfPayment", "DarfPaymentLog", "Event", "EventAttempt",
+        "Invoice", "InvoiceLog", "Invoice.Payment", "Invoice.Rule",
+        "PaymentPreview", "PaymentPreview.BoletoPreview",
+        "PaymentPreview.BrcodePreview", "PaymentPreview.TaxPreview",
+        "PaymentPreview.UtilityPreview", "Split", "TaxPayment",
+        "TaxPaymentLog", "Transfer", "TransferLog", "Transfer.Rule",
+        "UtilityPayment", "UtilityPaymentLog", "Webhook"
     };
     char label[160];
     size_t index;
@@ -1652,6 +1654,459 @@ static void testBalance(void)
     starkbank_client_free(client);
 }
 
+/* =========================================================== DarfPayment */
+
+static void testDarfPayment(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_list *batch = NULL;
+    starkbank_list *created = NULL;
+    starkbank_list *page = NULL;
+    starkbank_entity *payment = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    unsigned char *blob = NULL;
+    size_t blobLength = 0;
+
+    startGroup("DarfPayment - fully structured, no line/barCode pair");
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("darfPayments"), NULL);
+
+    starkbank_darf_payment_new(&payment);
+    starkbank_entity_set_string(payment, STARKBANK_DARF_PAYMENT_DESCRIPTION,
+                                "DARF Payment - competence August");
+    starkbank_entity_set_string(payment, STARKBANK_DARF_PAYMENT_REVENUE_CODE, "5948");
+    starkbank_entity_set_string(payment, STARKBANK_DARF_PAYMENT_TAX_ID,
+                                "20.018.183/0001-80");
+    starkbank_entity_set_date(payment, STARKBANK_DARF_PAYMENT_COMPETENCE, 2026, 8, 31);
+    starkbank_entity_set_amount(payment, STARKBANK_DARF_PAYMENT_NOMINAL_AMOUNT, 23456);
+    starkbank_entity_set_amount(payment, STARKBANK_DARF_PAYMENT_FINE_AMOUNT, 234);
+    starkbank_entity_set_amount(payment, STARKBANK_DARF_PAYMENT_INTEREST_AMOUNT, 456);
+    starkbank_entity_set_date(payment, STARKBANK_DARF_PAYMENT_DUE, 2026, 10, 17);
+    starkbank_entity_set_string(payment, STARKBANK_DARF_PAYMENT_REFERENCE_NUMBER,
+                                "08.1.17.00-4");
+    starkbank_entity_set_date(payment, STARKBANK_DARF_PAYMENT_SCHEDULED, 2026, 9, 22);
+    starkbank_entity_append_string(payment, STARKBANK_DARF_PAYMENT_TAGS, "darf");
+    starkbank_entity_append_string(payment, STARKBANK_DARF_PAYMENT_TAGS, "federal");
+
+    starkbank_list_new(&batch);
+    starkbank_list_append(batch, payment);
+    check("create returns the created list",
+          starkbank_darf_payment_create(client, batch, &created, NULL) == STARKBANK_OK
+          && starkbank_list_count(created) == 1, NULL);
+    checkRequests("darfpayment.create", &fake);
+    checkHydration("darfpayment.create", 0, starkbank_list_at(created, 0));
+    check("no unknown key: the table matches python field for field",
+          starkbank_entity_unknown_count(starkbank_list_at(created, 0)) == 0, NULL);
+    starkbank_list_free(batch);
+    starkbank_list_free(created);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("darfPayment"), NULL);
+    starkbank_darf_payment_get(client, "5155165527080962", &payment, NULL);
+    checkRequests("darfpayment.get", &fake);
+    checkHydration("darfpayment.get", 0, payment);
+    starkbank_entity_free(payment);
+    payment = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("darfPayment"), NULL);
+    check("delete cancels and returns the DarfPayment as it stands",
+          starkbank_darf_payment_delete(client, "5155165527080962", &payment, NULL)
+              == STARKBANK_OK, NULL);
+    checkRequests("darfpayment.delete", &fake);
+    starkbank_entity_free(payment);
+    payment = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"payments\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_darf_payment_params_new(&params);
+    starkbank_entity_set_string(params, "status", "success");
+    starkbank_entity_append_string(params, "tags", "darf");
+    starkbank_darf_payment_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("darfpayment.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"payments\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_darf_payment_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_darf_payment_page(client, params, &page, NULL, NULL);
+    checkRequests("darfpayment.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "%PDF-1.4 fake", NULL);
+    starkbank_darf_payment_pdf(client, "5155165527080962", &blob, &blobLength, NULL);
+    checkRequests("darfpayment.pdf", &fake);
+    starkbank_free(blob);
+    starkbank_client_free(client);
+}
+
+static void testDarfPaymentLog(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *log = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *nested = NULL;
+    starkbank_list *page = NULL;
+
+    startGroup("darfpayment.Log");
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("darfPaymentLog"), NULL);
+    starkbank_darf_payment_log_get(client, "6341320293482498", &log, NULL);
+    checkRequests("darfpayment.log.get", &fake);
+    checkHydration("darfpayment.log.get", 0, log);
+    check("the nested payment is tagged",
+          starkbank_entity_entity(log, STARKBANK_DARF_PAYMENT_LOG_PAYMENT, &nested)
+              == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested), "DarfPayment"), NULL);
+    starkbank_entity_free(log);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_darf_payment_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_append_string(params, "types", "success");
+    starkbank_entity_append_string(params, "paymentIds", "5155165527080962");
+    starkbank_darf_payment_log_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("darfpayment.log.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_darf_payment_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_darf_payment_log_page(client, params, &page, NULL, NULL);
+    checkRequests("darfpayment.log.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+/* ============================================================ TaxPayment */
+
+static void testTaxPayment(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_list *batch = NULL;
+    starkbank_list *created = NULL;
+    starkbank_list *page = NULL;
+    starkbank_entity *payment = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    unsigned char *blob = NULL;
+    size_t blobLength = 0;
+
+    startGroup("TaxPayment");
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("taxPayments"), NULL);
+
+    starkbank_tax_payment_new(&payment);
+    starkbank_entity_set_string(payment, STARKBANK_TAX_PAYMENT_DESCRIPTION,
+                                "ISS Payment - Iron Throne");
+    /* line and barCode: the conditionally-required pair, as on
+       UtilityPayment. Both set here, as python sends both. */
+    starkbank_entity_set_string(payment, STARKBANK_TAX_PAYMENT_LINE,
+                                "85660000006 6 67940064007 5 41190025511 7 00010601813 8");
+    starkbank_entity_set_string(payment, STARKBANK_TAX_PAYMENT_BAR_CODE,
+                                "85660000006679400640074119002551100010601813");
+    starkbank_entity_set_date(payment, STARKBANK_TAX_PAYMENT_SCHEDULED, 2026, 9, 21);
+    starkbank_entity_append_string(payment, STARKBANK_TAX_PAYMENT_TAGS, "iss");
+    starkbank_entity_append_string(payment, STARKBANK_TAX_PAYMENT_TAGS, "throne");
+
+    starkbank_list_new(&batch);
+    starkbank_list_append(batch, payment);
+    check("create returns the created list",
+          starkbank_tax_payment_create(client, batch, &created, NULL) == STARKBANK_OK
+          && starkbank_list_count(created) == 1, NULL);
+    checkRequests("taxpayment.create", &fake);
+    checkHydration("taxpayment.create", 0, starkbank_list_at(created, 0));
+    check("no unknown key: the table matches python field for field",
+          starkbank_entity_unknown_count(starkbank_list_at(created, 0)) == 0, NULL);
+    starkbank_list_free(batch);
+    starkbank_list_free(created);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("taxPayment"), NULL);
+    starkbank_tax_payment_get(client, "5155165527080961", &payment, NULL);
+    checkRequests("taxpayment.get", &fake);
+    checkHydration("taxpayment.get", 0, payment);
+    starkbank_entity_free(payment);
+    payment = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("taxPayment"), NULL);
+    check("delete cancels and returns the TaxPayment as it stands",
+          starkbank_tax_payment_delete(client, "5155165527080961", &payment, NULL)
+              == STARKBANK_OK, NULL);
+    checkRequests("taxpayment.delete", &fake);
+    starkbank_entity_free(payment);
+    payment = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"payments\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_tax_payment_params_new(&params);
+    starkbank_entity_set_string(params, "status", "success");
+    starkbank_entity_append_string(params, "tags", "iss");
+    starkbank_tax_payment_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("taxpayment.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"payments\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_tax_payment_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_tax_payment_page(client, params, &page, NULL, NULL);
+    checkRequests("taxpayment.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "%PDF-1.4 fake", NULL);
+    starkbank_tax_payment_pdf(client, "5155165527080961", &blob, &blobLength, NULL);
+    checkRequests("taxpayment.pdf", &fake);
+    starkbank_free(blob);
+    starkbank_client_free(client);
+}
+
+static void testTaxPaymentLog(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *log = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *nested = NULL;
+    starkbank_list *page = NULL;
+
+    startGroup("taxpayment.Log");
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("taxPaymentLog"), NULL);
+    starkbank_tax_payment_log_get(client, "6341320293482497", &log, NULL);
+    checkRequests("taxpayment.log.get", &fake);
+    checkHydration("taxpayment.log.get", 0, log);
+    check("the nested payment is tagged",
+          starkbank_entity_entity(log, STARKBANK_TAX_PAYMENT_LOG_PAYMENT, &nested)
+              == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested), "TaxPayment"), NULL);
+    starkbank_entity_free(log);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_tax_payment_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_append_string(params, "types", "success");
+    starkbank_entity_append_string(params, "paymentIds", "5155165527080961");
+    starkbank_tax_payment_log_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("taxpayment.log.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_tax_payment_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_tax_payment_log_page(client, params, &page, NULL, NULL);
+    checkRequests("taxpayment.log.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+/* ======================================================= UtilityPayment */
+
+static void testUtilityPayment(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_list *batch = NULL;
+    starkbank_list *created = NULL;
+    starkbank_list *page = NULL;
+    starkbank_entity *payment = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    unsigned char *blob = NULL;
+    size_t blobLength = 0;
+
+    startGroup("UtilityPayment");
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("utilityPayments"), NULL);
+
+    starkbank_utility_payment_new(&payment);
+    starkbank_entity_set_string(payment, STARKBANK_UTILITY_PAYMENT_DESCRIPTION,
+                                "Utility Payment - Light Company");
+    /* line and barCode: the conditionally-required pair. Both set here, as
+       python sends both, and the wire body must carry both untouched. */
+    starkbank_entity_set_string(payment, STARKBANK_UTILITY_PAYMENT_LINE,
+                                "82660000002 8 44361143007 7 41190025511 7 00010601813 8");
+    starkbank_entity_set_string(payment, STARKBANK_UTILITY_PAYMENT_BAR_CODE,
+                                "82660000002443611430074119002551100010601813");
+    /* scheduled is a plain DATE, unlike Invoice.due: no scheduled-invoice
+       alternate meaning, just the day the payment runs. */
+    starkbank_entity_set_date(payment, STARKBANK_UTILITY_PAYMENT_SCHEDULED, 2026, 9, 20);
+    starkbank_entity_append_string(payment, STARKBANK_UTILITY_PAYMENT_TAGS, "electricity");
+    starkbank_entity_append_string(payment, STARKBANK_UTILITY_PAYMENT_TAGS, "light");
+
+    starkbank_list_new(&batch);
+    starkbank_list_append(batch, payment);
+    check("create returns the created list",
+          starkbank_utility_payment_create(client, batch, &created, NULL) == STARKBANK_OK
+          && starkbank_list_count(created) == 1, NULL);
+    checkRequests("utilitypayment.create", &fake);
+    checkHydration("utilitypayment.create", 0, starkbank_list_at(created, 0));
+    check("no unknown key: the table matches python field for field",
+          starkbank_entity_unknown_count(starkbank_list_at(created, 0)) == 0, NULL);
+    starkbank_list_free(batch);
+    starkbank_list_free(created);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("utilityPayment"), NULL);
+    starkbank_utility_payment_get(client, "5155165527080960", &payment, NULL);
+    checkRequests("utilitypayment.get", &fake);
+    checkHydration("utilitypayment.get", 0, payment);
+    starkbank_entity_free(payment);
+    payment = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("utilityPayment"), NULL);
+    check("delete cancels and returns the UtilityPayment as it stands",
+          starkbank_utility_payment_delete(client, "5155165527080960", &payment, NULL)
+              == STARKBANK_OK, NULL);
+    checkRequests("utilitypayment.delete", &fake);
+    starkbank_entity_free(payment);
+    payment = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"payments\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_utility_payment_params_new(&params);
+    starkbank_entity_set_string(params, "status", "success");
+    starkbank_entity_append_string(params, "tags", "electricity");
+    starkbank_utility_payment_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("utilitypayment.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"payments\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_utility_payment_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_utility_payment_page(client, params, &page, NULL, NULL);
+    checkRequests("utilitypayment.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "%PDF-1.4 fake", NULL);
+    starkbank_utility_payment_pdf(client, "5155165527080960", &blob, &blobLength, NULL);
+    checkRequests("utilitypayment.pdf", &fake);
+    starkbank_free(blob);
+    starkbank_client_free(client);
+}
+
+static void testUtilityPaymentLog(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *log = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *nested = NULL;
+    starkbank_list *page = NULL;
+
+    startGroup("utilitypayment.Log");
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("utilityPaymentLog"), NULL);
+    starkbank_utility_payment_log_get(client, "6341320293482496", &log, NULL);
+    checkRequests("utilitypayment.log.get", &fake);
+    checkHydration("utilitypayment.log.get", 0, log);
+    check("the nested payment is tagged",
+          starkbank_entity_entity(log, STARKBANK_UTILITY_PAYMENT_LOG_PAYMENT, &nested)
+              == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested), "UtilityPayment"), NULL);
+    starkbank_entity_free(log);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_utility_payment_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_append_string(params, "types", "success");
+    starkbank_entity_append_string(params, "paymentIds", "5155165527080960");
+    starkbank_utility_payment_log_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("utilitypayment.log.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_utility_payment_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_utility_payment_log_page(client, params, &page, NULL, NULL);
+    checkRequests("utilitypayment.log.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
 /* ============================================================== Webhook */
 
 /*
@@ -2088,6 +2543,12 @@ int main(void)
     testWebhook();
     testPaymentPreview();
     testBalance();
+    testDarfPayment();
+    testDarfPaymentLog();
+    testTaxPayment();
+    testTaxPaymentLog();
+    testUtilityPayment();
+    testUtilityPaymentLog();
     testNegatives();
     testErrorsAndAbi();
 
