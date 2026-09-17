@@ -114,8 +114,10 @@ RESOURCE_SOURCES = \
 	starkbank/darfpayment/log.c \
 	starkbank/deposit/deposit.c \
 	starkbank/deposit/log.c \
+	starkbank/dictkey/dictkey.c \
 	starkbank/event/attempt.c \
 	starkbank/event/event.c \
+	starkbank/institution/institution.c \
 	starkbank/invoice/invoice.c \
 	starkbank/invoice/log.c \
 	starkbank/invoice/payment.c \

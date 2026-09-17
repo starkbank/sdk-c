@@ -26,8 +26,10 @@
     R(darf_payment_log)        \
     R(deposit)                 \
     R(deposit_log)             \
+    R(dict_key)                \
     R(event)                   \
     R(event_attempt)           \
+    R(institution)             \
     R(invoice)                 \
     R(invoice_log)             \
     R(invoice_payment)         \

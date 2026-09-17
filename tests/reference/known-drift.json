@@ -87,6 +87,22 @@
       "owner": "eduardo.santos@starkbank.com",
       "resolution": "python",
       "reason": "sdk-python contradicts itself: Transfer.__init__ takes account_type positionally with no default, while its docstring lists it under '## Parameters (optional)' with default 'checking'. The table follows the docstring and leaves REQUIRED off, because the API defaults it and refusing a create locally that the API would accept is the worse failure. Revisit if python ever makes the two halves agree."
+    },
+    {
+      "key": "flag.conflict:DictKey:id",
+      "owner": "eduardo.santos@starkbank.com",
+      "resolution": "table",
+      "reason": "sdk-python's DictKey.__init__ takes id=None under '## Parameters (optional)', but DictKey has no create() function at all - only get/query/page. The docstring section documents the constructor of a local convenience object, not an accepted create-payload key, because there is no create endpoint for a create-payload key to belong to. The table is right: id is RO, read through get()'s id argument like every other resource's id."
+    },
+    {
+      "key": "verb.gone:Institution:page",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "The other half of verb.new:Institution:query: sdk-c names the verb after the engine shape it actually uses (page) rather than manufacturing a same-named 'query' for a function that is not one."
+    },
+    {
+      "key": "verb.new:Institution:query",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "sdk-python's institution.query() is itself rest.get_page(...)[0]: one page call, cursor discarded, no looping across pages - the PAGE shape wearing a different name. sdk-c exposes starkbank_institution_page directly instead of inventing an iterator python's own code never builds; pass NULL for out_cursor to match python's query() exactly."
     }
   ]
 }

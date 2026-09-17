@@ -1918,6 +1918,87 @@ STARKBANK_API int STARKBANK_CALL starkbank_deposit_log_page(const starkbank_clie
 STARKBANK_API int STARKBANK_CALL starkbank_deposit_log_pdf(const starkbank_client *client,
     const char *id, unsigned char **out, size_t *out_len, starkbank_errors **errors);
 
+/* =========================================================================
+ *                                 DictKey
+ * =========================================================================
+ *
+ * Query/get only: sdk-python's DictKey has no create() (an EVP key is
+ * created automatically for every new Workspace) and no update(); every
+ * attribute is return-only. id is the PIX key itself (an email, a tax id, a
+ * phone number, or a DICT-issued EVP uuid).
+ *
+ * Fields (all return-only): id type name taxId ownerType bankName ispb
+ *   branchCode accountNumber accountType status STRING (ro).
+ *
+ * Query keys: limit, type, after, before, ids, status.
+ */
+#define STARKBANK_DICT_KEY_ID               "id"
+#define STARKBANK_DICT_KEY_TYPE             "type"
+#define STARKBANK_DICT_KEY_NAME             "name"
+#define STARKBANK_DICT_KEY_TAX_ID           "taxId"
+#define STARKBANK_DICT_KEY_OWNER_TYPE       "ownerType"
+#define STARKBANK_DICT_KEY_BANK_NAME        "bankName"
+#define STARKBANK_DICT_KEY_ISPB             "ispb"
+#define STARKBANK_DICT_KEY_BRANCH_CODE      "branchCode"
+#define STARKBANK_DICT_KEY_ACCOUNT_NUMBER   "accountNumber"
+#define STARKBANK_DICT_KEY_ACCOUNT_TYPE     "accountType"
+#define STARKBANK_DICT_KEY_STATUS           "status"
+
+#define STARKBANK_DICT_KEY_TYPE_CPF    "cpf"
+#define STARKBANK_DICT_KEY_TYPE_CNPJ   "cnpj"
+#define STARKBANK_DICT_KEY_TYPE_PHONE  "phone"
+#define STARKBANK_DICT_KEY_TYPE_EMAIL  "email"
+#define STARKBANK_DICT_KEY_TYPE_EVP    "evp"
+
+#define STARKBANK_DICT_KEY_STATUS_CREATED     "created"
+#define STARKBANK_DICT_KEY_STATUS_REGISTERED  "registered"
+#define STARKBANK_DICT_KEY_STATUS_CANCELED    "canceled"
+#define STARKBANK_DICT_KEY_STATUS_FAILED      "failed"
+
+STARKBANK_API int STARKBANK_CALL starkbank_dict_key_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_dict_key_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+/* id is the PIX key. This looks up keys you do not own, so it can validate a
+   key before a Transfer to it - but avoid looking up keys without following
+   up with a transfer: Bacen blocks accounts that make too many standalone
+   lookups in a short time, invalid-key lookups included. The returned
+   encrypted branchCode/accountNumber can be passed straight into a Transfer
+   without decrypting them. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_dict_key_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_dict_key_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+/* =========================================================================
+ *                                Institution
+ * =========================================================================
+ *
+ * sdk-python models Institution as a SubResource, not a Resource: there is no
+ * id field, and the module's only function is query(), which is itself
+ * `rest.get_page(...)[0]` - one page call, cursor thrown away, no looping.
+ * That is the PAGE shape wearing a different name, so sdk-c exposes
+ * starkbank_institution_page directly rather than inventing an iterator
+ * python's own code never builds. Pass NULL for out_cursor to match python's
+ * query() exactly.
+ *
+ * Fields (all return-only): displayName name spiCode strCode STRING (ro).
+ * Query keys: limit, search, spiCodes, strCodes.
+ */
+#define STARKBANK_INSTITUTION_DISPLAY_NAME  "displayName"
+#define STARKBANK_INSTITUTION_NAME          "name"
+#define STARKBANK_INSTITUTION_SPI_CODE      "spiCode"
+#define STARKBANK_INSTITUTION_STR_CODE      "strCode"
+
+STARKBANK_API int STARKBANK_CALL starkbank_institution_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_institution_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
 #ifdef __cplusplus
 }
 #endif

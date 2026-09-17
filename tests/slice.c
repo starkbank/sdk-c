@@ -482,8 +482,8 @@ static void testRegistry(void)
     static const char *const expected[] = {
         "Balance", "Boleto", "BoletoLog", "BoletoPayment", "BoletoPaymentLog",
         "BrcodePayment", "BrcodePaymentLog", "BrcodePayment.Rule",
-        "DarfPayment", "DarfPaymentLog", "Deposit", "DepositLog",
-        "Event", "EventAttempt", "Invoice", "InvoiceLog",
+        "DarfPayment", "DarfPaymentLog", "Deposit", "DepositLog", "DictKey",
+        "Event", "EventAttempt", "Institution", "Invoice", "InvoiceLog",
         "Invoice.Payment", "Invoice.Rule", "PaymentPreview",
         "PaymentPreview.BoletoPreview", "PaymentPreview.BrcodePreview",
         "PaymentPreview.TaxPreview", "PaymentPreview.UtilityPreview",
@@ -1940,6 +1940,85 @@ static void testDepositLog(void)
     starkbank_client_free(client);
 }
 
+/* ================================================================ DictKey */
+
+static void testDictKey(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *key = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_list *page = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const char *text = NULL;
+
+    startGroup("DictKey");
+    client = newClient(&fake);
+    replies(&fake, responseBody("key"), NULL);
+    check("get takes the PIX key itself as id",
+          starkbank_dict_key_get(client, "tony@starkbank.com", &key, NULL) == STARKBANK_OK,
+          NULL);
+    checkRequests("dictkey.get", &fake);
+    checkHydration("dictkey.get", 0, key);
+    check("a masked taxId is still the string the API sent, not an error",
+          starkbank_entity_string(key, STARKBANK_DICT_KEY_TAX_ID, &text) == STARKBANK_OK
+          && equalStrings(text, "***.345.678-**"), NULL);
+    starkbank_entity_free(key);
+    key = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("keys"), NULL);
+    starkbank_dict_key_params_new(&params);
+    starkbank_entity_set_string(params, "type", "email");
+    starkbank_entity_set_string(params, "status", "registered");
+    starkbank_dict_key_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("dictkey.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("keys"), NULL);
+    starkbank_dict_key_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_dict_key_page(client, params, &page, NULL, NULL);
+    checkRequests("dictkey.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+/* ============================================================ Institution */
+
+static void testInstitution(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *params = NULL;
+    starkbank_list *page = NULL;
+
+    startGroup("Institution - python's query() is page()[0], nothing else");
+    client = newClient(&fake);
+    replies(&fake, responseBody("institutions"), NULL);
+    starkbank_institution_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_set_string(params, "search", "stark");
+    starkbank_entity_append_string(params, "spiCodes", "20018183");
+    check("page is python's query() under its own name: one call, no cursor needed",
+          starkbank_institution_page(client, params, &page, NULL, NULL) == STARKBANK_OK
+          && starkbank_list_count(page) == 1, NULL);
+    checkRequests("institution.query", &fake);
+    checkHydration("institution.query", 0, starkbank_list_at(page, 0));
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
 /* ============================================================ TaxPayment */
 
 static void testTaxPayment(void)
@@ -2680,6 +2759,8 @@ int main(void)
     testDarfPaymentLog();
     testDeposit();
     testDepositLog();
+    testDictKey();
+    testInstitution();
     testTaxPayment();
     testTaxPaymentLog();
     testUtilityPayment();
