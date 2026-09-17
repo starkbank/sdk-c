@@ -1200,6 +1200,7 @@ static void testBoletoPaymentLog(void)
     Fake fake;
     starkbank_entity *log = NULL;
     starkbank_entity *params = NULL;
+    starkbank_list *page = NULL;
     starkbank_iter *iter = NULL;
     const starkbank_entity *item = NULL;
     const starkbank_entity *nested = NULL;
@@ -1229,6 +1230,16 @@ static void testBoletoPaymentLog(void)
     }
     checkRequests("boletopayment.log.query", &fake);
     starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_boleto_payment_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_boleto_payment_log_page(client, params, &page, NULL, NULL);
+    checkRequests("boletopayment.log.page", &fake);
+    starkbank_list_free(page);
     starkbank_entity_free(params);
     starkbank_client_free(client);
 }
