@@ -11,4 +11,9 @@
 # of docstring grammar and CI, neither of which changes a wire shape, and
 # re-recording slice.json across the bump reproduced every existing case byte
 # for byte.
-be7755a5185244d3ba7bb65492e1c415a6380ac5
+#
+# Bumped again in step 5 review: sdk-python#170 added VerifiedAccount,
+# VerifiedAccount.Log and VerifiedTransfer to the reference, which turned the two
+# "unjoined" app-docs exemptions stale. Their tables arrive with the rest of the
+# bank surface; until then the checker carries resource.new entries for them.
+7e817fafc039d11f858ea72abda8d8c3a0e29ff2
