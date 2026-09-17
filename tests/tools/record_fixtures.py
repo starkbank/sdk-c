@@ -451,6 +451,93 @@ PAYMENT_PREVIEW_UNKNOWN = {
     "type": "pix-reversal", "payment": {"id": "1", "amount": 42},
 }
 
+BOLETO = {
+    "id": "5155165527080960",
+    "amount": 23456,
+    "name": "Anthony Edward Stark",
+    "taxId": "012.345.678-90",
+    "streetLine1": "Av. Paulista, 200",
+    "streetLine2": "Apto. 123",
+    "district": "Bela Vista",
+    "city": "Sao Paulo",
+    "stateCode": "SP",
+    "zipCode": "01311-200",
+    "due": "2026-10-28",
+    "fine": 2.5,
+    "interest": 1.0,
+    "overdueLimit": 59,
+    "descriptions": [{"text": "sword sharpening", "amount": 1234}],
+    "discounts": [{"percentage": 10.0, "date": "2026-10-01"}],
+    "tags": ["war", "supply"],
+    "receiverName": "Iron Bank S.A.",
+    "receiverTaxId": "20.018.183/0001-80",
+    "fee": 200,
+    "line": "34191.09008 63571.277308 71444.640008 5 81960000000062",
+    "barCode": "34195819600000000621090063571277307144464000",
+    "status": "registered",
+    "transactionIds": ["19827356981273"],
+    "workspaceId": "4545454545454545",
+    "ourNumber": "10131474",
+    "created": "2026-09-16T12:00:00+00:00",
+}
+
+BOLETO_LOG = {
+    "id": "6341320293482496",
+    "created": "2026-09-16T12:00:00+00:00",
+    "type": "registered",
+    "errors": [],
+    "boleto": BOLETO,
+}
+
+BOLETO_PAYMENT = {
+    "id": "5155165527080960",
+    "taxId": "20.018.183/0001-80",
+    "description": "sword sharpening",
+    "line": "34191.09008 63571.277308 71444.640008 5 81960000000062",
+    "barCode": "34195819600000000621090063571277307144464000",
+    "amount": 23456,
+    "scheduled": "2026-10-28",
+    "tags": ["war", "supply"],
+    "status": "success",
+    "fee": 200,
+    "transactionIds": ["19827356981273"],
+    "created": "2026-09-16T12:00:00+00:00",
+}
+
+BOLETO_PAYMENT_LOG = {
+    "id": "6341320293482497",
+    "created": "2026-09-16T12:00:00+00:00",
+    "type": "success",
+    "errors": [],
+    "payment": BOLETO_PAYMENT,
+}
+
+BRCODE_PAYMENT = {
+    "id": "5155165527080960",
+    "brcode": BRCODE,
+    "taxId": "012.345.678-90",
+    "description": "sword sharpening",
+    "amount": 23456,
+    "scheduled": "2026-10-28",
+    "tags": ["war", "supply"],
+    "rules": [{"key": "resendingLimit", "value": 5}],
+    "name": "Tony Stark",
+    "status": "success",
+    "type": "dynamic",
+    "transactionIds": ["19827356981273"],
+    "fee": 50,
+    "updated": "2026-09-17T12:00:00+00:00",
+    "created": "2026-09-16T12:00:00+00:00",
+}
+
+BRCODE_PAYMENT_LOG = {
+    "id": "6341320293482498",
+    "created": "2026-09-16T12:00:00+00:00",
+    "type": "success",
+    "errors": [],
+    "payment": BRCODE_PAYMENT,
+}
+
 BALANCE = {
     "id": "5155165527080960",
     "amount": 1234567,
@@ -548,6 +635,109 @@ def main():
            lambda: list(starkbank.transfer.log.query(limit=5, types=["success"],
                                                      transfer_ids=["5155165527080960"])))
 
+    boleto = starkbank.Boleto(
+        amount=23456,
+        name="Anthony Edward Stark",
+        tax_id="012.345.678-90",
+        street_line_1="Av. Paulista, 200",
+        street_line_2="Apto. 123",
+        district="Bela Vista",
+        city="Sao Paulo",
+        state_code="SP",
+        zip_code="01311-200",
+        due="2026-10-28",
+        fine=2.5,
+        interest=1.0,
+        overdue_limit=59,
+        tags=["war", "supply"],
+        descriptions=[{"text": "sword sharpening", "amount": 1234}],
+        discounts=[{"percentage": 10.0, "date": "2026-10-01"}],
+        receiver_name="Iron Bank S.A.",
+        receiver_tax_id="20.018.183/0001-80",
+    )
+
+    record("boleto.create", [{"boletos": [BOLETO]}], lambda: starkbank.boleto.create([boleto]))
+    record("boleto.get", [{"boleto": BOLETO}],
+           lambda: starkbank.boleto.get("5155165527080960"))
+    record("boleto.delete", [{"boleto": BOLETO}],
+           lambda: starkbank.boleto.delete("5155165527080960"))
+    record("boleto.query", [{"boletos": [BOLETO], "cursor": ""}],
+           lambda: list(starkbank.boleto.query(limit=5, status="registered",
+                                               tags=["war", "supply"])))
+    record("boleto.page", [{"boletos": [BOLETO], "cursor": ""}],
+           lambda: starkbank.boleto.page(limit=5)[0])
+    record("boleto.pdf", [PDF],
+           lambda: None if starkbank.boleto.pdf(
+               "5155165527080960", layout="booklet",
+               hidden_fields=["customerAddress", "customerTaxId"]) else None)
+    record("boleto.log.get", [{"log": BOLETO_LOG}],
+           lambda: starkbank.boleto.log.get("6341320293482496"))
+    record("boleto.log.query", [{"logs": [BOLETO_LOG], "cursor": ""}],
+           lambda: list(starkbank.boleto.log.query(limit=5, types=["registered"],
+                                                   boleto_ids=["5155165527080960"])))
+    record("boleto.log.page", [{"logs": [BOLETO_LOG], "cursor": ""}],
+           lambda: starkbank.boleto.log.page(limit=5)[0])
+
+    boleto_payment = starkbank.BoletoPayment(
+        tax_id="20.018.183/0001-80",
+        description="sword sharpening",
+        line="34191.09008 63571.277308 71444.640008 5 81960000000062",
+        scheduled="2026-10-28",
+        tags=["war", "supply"],
+    )
+
+    record("boletopayment.create", [{"payments": [BOLETO_PAYMENT]}],
+           lambda: starkbank.boletopayment.create([boleto_payment]))
+    record("boletopayment.get", [{"payment": BOLETO_PAYMENT}],
+           lambda: starkbank.boletopayment.get("5155165527080960"))
+    record("boletopayment.delete", [{"payment": BOLETO_PAYMENT}],
+           lambda: starkbank.boletopayment.delete("5155165527080960"))
+    record("boletopayment.query", [{"payments": [BOLETO_PAYMENT], "cursor": ""}],
+           lambda: list(starkbank.boletopayment.query(limit=5, status="success",
+                                                       tags=["war", "supply"])))
+    record("boletopayment.page", [{"payments": [BOLETO_PAYMENT], "cursor": ""}],
+           lambda: starkbank.boletopayment.page(limit=5)[0])
+    record("boletopayment.pdf", [PDF],
+           lambda: None if starkbank.boletopayment.pdf("5155165527080960") else None)
+    record("boletopayment.log.get", [{"log": BOLETO_PAYMENT_LOG}],
+           lambda: starkbank.boletopayment.log.get("6341320293482497"))
+    record("boletopayment.log.query", [{"logs": [BOLETO_PAYMENT_LOG], "cursor": ""}],
+           lambda: list(starkbank.boletopayment.log.query(limit=5, types=["success"],
+                                                          payment_ids=["5155165527080960"])))
+    record("boletopayment.log.page", [{"logs": [BOLETO_PAYMENT_LOG], "cursor": ""}],
+           lambda: starkbank.boletopayment.log.page(limit=5)[0])
+
+    brcode_payment = starkbank.BrcodePayment(
+        brcode=BRCODE,
+        tax_id="012.345.678-90",
+        description="sword sharpening",
+        amount=23456,
+        scheduled="2026-10-28",
+        tags=["war", "supply"],
+        rules=[starkbank.brcodepayment.Rule(key="resendingLimit", value=5)],
+    )
+
+    record("brcodepayment.create", [{"payments": [BRCODE_PAYMENT]}],
+           lambda: starkbank.brcodepayment.create([brcode_payment]))
+    record("brcodepayment.get", [{"payment": BRCODE_PAYMENT}],
+           lambda: starkbank.brcodepayment.get("5155165527080960"))
+    record("brcodepayment.query", [{"payments": [BRCODE_PAYMENT], "cursor": ""}],
+           lambda: list(starkbank.brcodepayment.query(limit=5, status="success",
+                                                       tags=["war", "supply"])))
+    record("brcodepayment.page", [{"payments": [BRCODE_PAYMENT], "cursor": ""}],
+           lambda: starkbank.brcodepayment.page(limit=5)[0])
+    record("brcodepayment.update", [{"payment": BRCODE_PAYMENT}],
+           lambda: starkbank.brcodepayment.update("5155165527080960", status="canceled"))
+    record("brcodepayment.pdf", [PDF],
+           lambda: None if starkbank.brcodepayment.pdf("5155165527080960") else None)
+    record("brcodepayment.log.get", [{"log": BRCODE_PAYMENT_LOG}],
+           lambda: starkbank.brcodepayment.log.get("6341320293482498"))
+    record("brcodepayment.log.query", [{"logs": [BRCODE_PAYMENT_LOG], "cursor": ""}],
+           lambda: list(starkbank.brcodepayment.log.query(limit=5, types=["success"],
+                                                          payment_ids=["5155165527080960"])))
+    record("brcodepayment.log.page", [{"logs": [BRCODE_PAYMENT_LOG], "cursor": ""}],
+           lambda: starkbank.brcodepayment.log.page(limit=5)[0])
+
     record("event.get", [{"event": EVENT}], lambda: starkbank.event.get("5764898044149760"))
     record("event.query", [{"events": [EVENT], "cursor": ""}],
            lambda: list(starkbank.event.query(limit=5, is_delivered=False)))
@@ -615,6 +805,15 @@ def main():
             "transfer": {"transfer": TRANSFER},
             "transfers": {"transfers": [TRANSFER]},
             "transferLog": {"log": TRANSFER_LOG},
+            "boleto": {"boleto": BOLETO},
+            "boletos": {"boletos": [BOLETO]},
+            "boletoLog": {"log": BOLETO_LOG},
+            "boletoPayment": {"payment": BOLETO_PAYMENT},
+            "boletoPayments": {"payments": [BOLETO_PAYMENT]},
+            "boletoPaymentLog": {"log": BOLETO_PAYMENT_LOG},
+            "brcodePayment": {"payment": BRCODE_PAYMENT},
+            "brcodePayments": {"payments": [BRCODE_PAYMENT]},
+            "brcodePaymentLog": {"log": BRCODE_PAYMENT_LOG},
             "event": {"event": EVENT},
             "eventTransfer": {"event": EVENT_TRANSFER},
             "eventUnknown": {"event": EVENT_UNKNOWN},

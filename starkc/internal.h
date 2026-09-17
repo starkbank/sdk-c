@@ -202,6 +202,11 @@ int starkbankVerbContent(const starkbank_client *client, const starkbankResource
                          const char *id, const char *subResourceName,
                          const char *queryKey, int queryValue, int queryMin, int queryMax,
                          unsigned char **out, size_t *outLen, starkbank_errors **errors);
+int starkbankVerbContentQuery(const starkbank_client *client, const starkbankResource *resource,
+                              const char *id, const char *subResourceName,
+                              const char *stringKey1, const char *stringValue1,
+                              const char *stringKey2, const char *stringValue2,
+                              unsigned char **out, size_t *outLen, starkbank_errors **errors);
 int starkbankVerbSubResource(const starkbank_client *client, const starkbankResource *resource,
                              const char *id, const char *subResourceName, const char *tagName,
                              starkbank_entity **out, starkbank_errors **errors);
