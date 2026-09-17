@@ -143,6 +143,22 @@ const
   STARKBANK_BRCODE_PREVIEW_REDUCTION_AMOUNT = 'reductionAmount';
   STARKBANK_BRCODE_PREVIEW_STATUS = 'status';
   STARKBANK_BRCODE_PREVIEW_TAX_ID = 'taxId';
+  STARKBANK_CORPORATE_HOLDER_CENTER_ID = 'centerId';
+  STARKBANK_CORPORATE_HOLDER_CREATED = 'created';
+  STARKBANK_CORPORATE_HOLDER_ID = 'id';
+  STARKBANK_CORPORATE_HOLDER_LOG_CREATED = 'created';
+  STARKBANK_CORPORATE_HOLDER_LOG_HOLDER = 'holder';
+  STARKBANK_CORPORATE_HOLDER_LOG_ID = 'id';
+  STARKBANK_CORPORATE_HOLDER_LOG_TYPE = 'type';
+  STARKBANK_CORPORATE_HOLDER_NAME = 'name';
+  STARKBANK_CORPORATE_HOLDER_PERMISSIONS = 'permissions';
+  STARKBANK_CORPORATE_HOLDER_RULES = 'rules';
+  STARKBANK_CORPORATE_HOLDER_STATUS = 'status';
+  STARKBANK_CORPORATE_HOLDER_STATUS_ACTIVE = 'active';
+  STARKBANK_CORPORATE_HOLDER_STATUS_BLOCKED = 'blocked';
+  STARKBANK_CORPORATE_HOLDER_STATUS_CANCELED = 'canceled';
+  STARKBANK_CORPORATE_HOLDER_TAGS = 'tags';
+  STARKBANK_CORPORATE_HOLDER_UPDATED = 'updated';
   STARKBANK_DARF_PAYMENT_AMOUNT = 'amount';
   STARKBANK_DARF_PAYMENT_COMPETENCE = 'competence';
   STARKBANK_DARF_PAYMENT_CREATED = 'created';
@@ -329,6 +345,13 @@ const
   STARKBANK_PAYMENT_PREVIEW_TYPE_BRCODE_PAYMENT = 'brcode-payment';
   STARKBANK_PAYMENT_PREVIEW_TYPE_TAX_PAYMENT = 'tax-payment';
   STARKBANK_PAYMENT_PREVIEW_TYPE_UTILITY_PAYMENT = 'utility-payment';
+  STARKBANK_PERMISSION_CREATED = 'created';
+  STARKBANK_PERMISSION_OWNER_EMAIL = 'ownerEmail';
+  STARKBANK_PERMISSION_OWNER_ID = 'ownerId';
+  STARKBANK_PERMISSION_OWNER_NAME = 'ownerName';
+  STARKBANK_PERMISSION_OWNER_PICTURE_URL = 'ownerPictureUrl';
+  STARKBANK_PERMISSION_OWNER_STATUS = 'ownerStatus';
+  STARKBANK_PERMISSION_OWNER_TYPE = 'ownerType';
   STARKBANK_SPLIT_AMOUNT = 'amount';
   STARKBANK_SPLIT_CREATED = 'created';
   STARKBANK_SPLIT_EXTERNAL_ID = 'externalId';
@@ -600,6 +623,30 @@ function starkbank_client_set_user_agent_prefix(client: Pstarkbank_client; prefi
 
 function starkbank_core_version: PAnsiChar; cdecl; external StarkbankLib name 'starkbank_core_version';
 
+function starkbank_corporate_holder_create(client: Pstarkbank_client; holders: Pstarkbank_list; &out: PPstarkbank_list; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_holder_create';
+
+function starkbank_corporate_holder_delete(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_holder_delete';
+
+function starkbank_corporate_holder_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_holder_get';
+
+function starkbank_corporate_holder_log_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_holder_log_get';
+
+function starkbank_corporate_holder_log_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_holder_log_page';
+
+function starkbank_corporate_holder_log_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_holder_log_params_new';
+
+function starkbank_corporate_holder_log_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_holder_log_query';
+
+function starkbank_corporate_holder_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_holder_new';
+
+function starkbank_corporate_holder_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_holder_page';
+
+function starkbank_corporate_holder_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_holder_params_new';
+
+function starkbank_corporate_holder_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_holder_query';
+
+function starkbank_corporate_holder_update(client: Pstarkbank_client; id: PAnsiChar; patch: Pstarkbank_entity; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_holder_update';
+
 function starkbank_darf_payment_create(client: Pstarkbank_client; payments: Pstarkbank_list; &out: PPstarkbank_list; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_darf_payment_create';
 
 function starkbank_darf_payment_delete(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_darf_payment_delete';
@@ -807,6 +854,8 @@ function starkbank_parse_and_verify(client: Pstarkbank_client; content: PAnsiCha
 function starkbank_payment_preview_create(client: Pstarkbank_client; previews: Pstarkbank_list; &out: PPstarkbank_list; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_payment_preview_create';
 
 function starkbank_payment_preview_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_payment_preview_new';
+
+function starkbank_permission_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_permission_new';
 
 function starkbank_project_new(id: PAnsiChar; environment: Integer; private_key_pem: PAnsiChar; &out: PPstarkbank_user): Integer; cdecl; external StarkbankLib name 'starkbank_project_new';
 

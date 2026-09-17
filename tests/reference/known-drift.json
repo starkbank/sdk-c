@@ -143,6 +143,36 @@
       "key": "field.gone:Workspace:picture",
       "owner": "eduardo.santos@starkbank.com",
       "reason": "picture is a real wire key sdk-python's update() sends, but it is never an attribute of the Workspace class - update() builds the value from two of its own parameters (picture, picture_type) and never stores either on the returned object. The table carries it as a PATCH-only field so the engine can validate a write to it; python simply has no field of that name to compare against."
+    },
+    {
+      "key": "query.new:CorporateHolder:names",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "The docs list names as a GET /v2/corporate-holder filter; sdk-python's holder.query()/page() accept no such keyword. python is normative for the verb surface, so the table does not add a filter no SDK sends."
+    },
+    {
+      "key": "query.new:CorporateHolder:search",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "As query.new:CorporateHolder:names - the docs' search filter has no counterpart in sdk-python's query()/page() keywords."
+    },
+    {
+      "key": "query.gone:CorporateHolderLog:ids",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "sdk-python's corporateholder.log.query()/page() accept ids and the docs' GET /v2/corporate-holder/log endpoint does not list it. python is normative for the verb surface, so the table keeps the filter python actually forwards to rest.get_stream/get_page even though the docs page omits it."
+    },
+    {
+      "key": "verb.new:CorporateHolder:cancel",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "sdk-python spells the DELETE /v2/corporate-holder/:id call cancel(); sdk-c keeps every resource's DELETE_ID verb named starkbank_<resource>_delete for one consistent spelling across the whole SDK rather than a per-resource alias, the same choice sdk-c4 documents for Institution's page()/query() naming. The HTTP call is identical; only the C symbol's name differs from python's function name."
+    },
+    {
+      "key": "verb.gone:CorporateHolder:delete",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "The other half of verb.new:CorporateHolder:cancel - sdk-c's starkbank_corporate_holder_delete is the same DELETE_ID call sdk-python names cancel(), not a verb sdk-python lacks."
+    },
+    {
+      "key": "verb.new:Permission:parse_permissions",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "parse_permissions is a module-level helper in corporateholder/__permission.py that turns a caller's raw list into Permission objects before CorporateHolder.__init__ stores it; it is not a REST verb and has no HTTP shape to give a table. drift.py's python reader collects every non-underscore module-level def as a candidate verb, which is what surfaces this one. Hydration and dehydration of a LIST_RESOURCE field is the engine's job in sdk-c, so nothing here is missing."
     }
   ]
 }

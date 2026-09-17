@@ -138,6 +138,22 @@ namespace StarkBank
         public const string StarkbankBrcodePreviewReductionAmount = "reductionAmount";
         public const string StarkbankBrcodePreviewStatus = "status";
         public const string StarkbankBrcodePreviewTaxId = "taxId";
+        public const string StarkbankCorporateHolderCenterId = "centerId";
+        public const string StarkbankCorporateHolderCreated = "created";
+        public const string StarkbankCorporateHolderId = "id";
+        public const string StarkbankCorporateHolderLogCreated = "created";
+        public const string StarkbankCorporateHolderLogHolder = "holder";
+        public const string StarkbankCorporateHolderLogId = "id";
+        public const string StarkbankCorporateHolderLogType = "type";
+        public const string StarkbankCorporateHolderName = "name";
+        public const string StarkbankCorporateHolderPermissions = "permissions";
+        public const string StarkbankCorporateHolderRules = "rules";
+        public const string StarkbankCorporateHolderStatus = "status";
+        public const string StarkbankCorporateHolderStatusActive = "active";
+        public const string StarkbankCorporateHolderStatusBlocked = "blocked";
+        public const string StarkbankCorporateHolderStatusCanceled = "canceled";
+        public const string StarkbankCorporateHolderTags = "tags";
+        public const string StarkbankCorporateHolderUpdated = "updated";
         public const string StarkbankDarfPaymentAmount = "amount";
         public const string StarkbankDarfPaymentCompetence = "competence";
         public const string StarkbankDarfPaymentCreated = "created";
@@ -324,6 +340,13 @@ namespace StarkBank
         public const string StarkbankPaymentPreviewTypeBrcodePayment = "brcode-payment";
         public const string StarkbankPaymentPreviewTypeTaxPayment = "tax-payment";
         public const string StarkbankPaymentPreviewTypeUtilityPayment = "utility-payment";
+        public const string StarkbankPermissionCreated = "created";
+        public const string StarkbankPermissionOwnerEmail = "ownerEmail";
+        public const string StarkbankPermissionOwnerId = "ownerId";
+        public const string StarkbankPermissionOwnerName = "ownerName";
+        public const string StarkbankPermissionOwnerPictureUrl = "ownerPictureUrl";
+        public const string StarkbankPermissionOwnerStatus = "ownerStatus";
+        public const string StarkbankPermissionOwnerType = "ownerType";
         public const string StarkbankSplitAmount = "amount";
         public const string StarkbankSplitCreated = "created";
         public const string StarkbankSplitExternalId = "externalId";
@@ -622,6 +645,42 @@ namespace StarkBank
 
         [DllImport(Library, EntryPoint = "starkbank_core_version", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr StarkbankCoreVersion();
+
+        [DllImport(Library, EntryPoint = "starkbank_corporate_holder_create", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankCorporateHolderCreate(IntPtr client, IntPtr holders, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_corporate_holder_delete", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankCorporateHolderDelete(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_corporate_holder_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankCorporateHolderGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_corporate_holder_log_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankCorporateHolderLogGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_corporate_holder_log_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankCorporateHolderLogPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_corporate_holder_log_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankCorporateHolderLogParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_corporate_holder_log_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankCorporateHolderLogQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_corporate_holder_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankCorporateHolderNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_corporate_holder_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankCorporateHolderPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_corporate_holder_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankCorporateHolderParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_corporate_holder_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankCorporateHolderQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_corporate_holder_update", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankCorporateHolderUpdate(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, IntPtr patch, out IntPtr @out, out IntPtr errors);
 
         [DllImport(Library, EntryPoint = "starkbank_darf_payment_create", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankDarfPaymentCreate(IntPtr client, IntPtr payments, out IntPtr @out, out IntPtr errors);
@@ -934,6 +993,9 @@ namespace StarkBank
 
         [DllImport(Library, EntryPoint = "starkbank_payment_preview_new", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankPaymentPreviewNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_permission_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankPermissionNew(out IntPtr @out);
 
         [DllImport(Library, EntryPoint = "starkbank_project_new", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankProjectNew([MarshalAs(UnmanagedType.LPStr)] string id, int environment, [MarshalAs(UnmanagedType.LPStr)] string private_key_pem, out IntPtr @out);

@@ -1721,6 +1721,117 @@ STARKBANK_API int STARKBANK_CALL starkbank_tax_payment_log_page(const starkbank_
     starkbank_errors **errors);
 
 /* =========================================================================
+ *                              CorporateHolder
+ * =========================================================================
+ *
+ * Fields (wire keys; * = required on create, + = also accepted in an update).
+ * Checked against the field table by tools/drift.py.
+ *
+ *   name*+ STRING                centerId+ STRING
+ *   permissions+ LIST_RESOURCE("CorporateHolder.Permission")
+ *   rules+ LIST_RESOURCE("CorporateRule")              tags+ LIST_STRING
+ *   status+ STRING
+ *   id STRING (ro)                                     updated created DATETIME (ro)
+ *
+ * Query keys: limit, after, before, ids, status, tags, expand.
+ *
+ * expand is listed as a query key even though no field carries it: QUERY and
+ * PAGE already forward any bare key their params entity is given, so a caller
+ * who lists or pages holders may set "expand" to "rules" today. create() and
+ * get() cannot yet - neither verb shape takes a query of its own - which is
+ * why sdk-python's expand keyword on those two is not modelled here.
+ *
+ * sdk-python spells the delete verb cancel(); sdk-c keeps the engine's DELETE_ID
+ * naming (starkbank_corporate_holder_delete) for the same reason sdk-c4's
+ * Institution keeps PAGE's own name instead of manufacturing a query() that
+ * is not one - see known-drift.json's verb.new/verb.gone:CorporateHolder pair.
+ */
+
+#define STARKBANK_CORPORATE_HOLDER_NAME         "name"
+#define STARKBANK_CORPORATE_HOLDER_CENTER_ID    "centerId"
+#define STARKBANK_CORPORATE_HOLDER_PERMISSIONS  "permissions"
+#define STARKBANK_CORPORATE_HOLDER_RULES        "rules"
+#define STARKBANK_CORPORATE_HOLDER_TAGS         "tags"
+#define STARKBANK_CORPORATE_HOLDER_STATUS       "status"
+#define STARKBANK_CORPORATE_HOLDER_ID           "id"
+#define STARKBANK_CORPORATE_HOLDER_UPDATED      "updated"
+#define STARKBANK_CORPORATE_HOLDER_CREATED      "created"
+
+/* Statuses, from the docs' enum; python's docstring gives examples only. */
+#define STARKBANK_CORPORATE_HOLDER_STATUS_ACTIVE   "active"
+#define STARKBANK_CORPORATE_HOLDER_STATUS_BLOCKED  "blocked"
+#define STARKBANK_CORPORATE_HOLDER_STATUS_CANCELED "canceled"
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_create(const starkbank_client *client,
+    const starkbank_list *holders, starkbank_list **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_update(const starkbank_client *client,
+    const char *id, const starkbank_entity *patch, starkbank_entity **out,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_delete(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+/* sdk-python names this cancel(); see the section header. */
+
+/* -------------------------------------------------------------- Permission */
+/* Access granted to a user for a particular CorporateHolder; embedded in its
+ * "permissions" list, never fetched on its own. Registered under its bare
+ * python name (corporateholder.__permission.py's _resource, not
+ * _sub_resource), the same way Split is "Split" and not "Invoice.Split".
+ * Fields: ownerId ownerType STRING, ownerEmail ownerName ownerPictureUrl
+ *         ownerStatus STRING (ro), created DATETIME (ro).
+ * No id: sdk-python's Permission is a SubResource, not a Resource.
+ */
+#define STARKBANK_PERMISSION_OWNER_ID          "ownerId"
+#define STARKBANK_PERMISSION_OWNER_TYPE        "ownerType"
+#define STARKBANK_PERMISSION_OWNER_EMAIL       "ownerEmail"
+#define STARKBANK_PERMISSION_OWNER_NAME        "ownerName"
+#define STARKBANK_PERMISSION_OWNER_PICTURE_URL "ownerPictureUrl"
+#define STARKBANK_PERMISSION_OWNER_STATUS      "ownerStatus"
+#define STARKBANK_PERMISSION_CREATED           "created"
+
+STARKBANK_API int STARKBANK_CALL starkbank_permission_new(starkbank_entity **out);
+
+/* ------------------------------------------------------ CorporateHolderLog */
+/*
+ * Resource "CorporateHolderLog"; endpoint "corporate-holder/log", derived at
+ * run time.
+ * Fields: id STRING (ro), created DATETIME (ro), type STRING (ro),
+ *         holder RESOURCE("CorporateHolder") (ro).
+ * Query keys: limit, after, before, types, holderIds, ids.
+ *
+ * There is no corporateholder.Log pdf: sdk-python does not have one.
+ */
+#define STARKBANK_CORPORATE_HOLDER_LOG_ID       "id"
+#define STARKBANK_CORPORATE_HOLDER_LOG_CREATED  "created"
+#define STARKBANK_CORPORATE_HOLDER_LOG_TYPE     "type"
+#define STARKBANK_CORPORATE_HOLDER_LOG_HOLDER   "holder"
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_log_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_log_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_log_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_log_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+
+/* =========================================================================
  *                               DarfPayment
  * =========================================================================
  *
