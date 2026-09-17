@@ -173,6 +173,17 @@
       "key": "verb.new:Permission:parse_permissions",
       "owner": "eduardo.santos@starkbank.com",
       "reason": "parse_permissions is a module-level helper in corporateholder/__permission.py that turns a caller's raw list into Permission objects before CorporateHolder.__init__ stores it; it is not a REST verb and has no HTTP shape to give a table. drift.py's python reader collects every non-underscore module-level def as a candidate verb, which is what surfaces this one. Hydration and dehydration of a LIST_RESOURCE field is the engine's job in sdk-c, so nothing here is missing."
+    },
+    {
+      "key": "verb.new:CorporateRule:parse_rules",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "As verb.new:Permission:parse_permissions - corporaterule/__corporaterule.py's parse_rules is the same local-hydration helper, not a REST verb, and drift.py's python reader has no way to tell the two apart from a bare module-level def."
+    },
+    {
+      "key": "type.conflict:CorporateBalance:updated",
+      "owner": "eduardo.santos@starkbank.com",
+      "resolution": "table",
+      "reason": "sdk-python's CorporateBalance.__init__ does 'self.updated = updated' with no check_datetime call at all, unlike every other resource's updated/created field - a bug of omission in sdk-python, not a documented STRING semantic: the class docstring's own example is a datetime.datetime, and CorporateBalance.get() hydrates the same ISO-8601 timestamp every other DATETIME field on the wire uses. The table follows the wire format and the docstring; python's missing coercion is the divergence."
     }
   ]
 }

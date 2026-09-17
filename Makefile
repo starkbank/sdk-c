@@ -110,9 +110,11 @@ RESOURCE_SOURCES = \
 	starkbank/brcodepayment/brcodepayment.c \
 	starkbank/brcodepayment/log.c \
 	starkbank/brcodepayment/rule.c \
+	starkbank/corporatebalance/corporatebalance.c \
 	starkbank/corporateholder/corporateholder.c \
 	starkbank/corporateholder/log.c \
 	starkbank/corporateholder/permission.c \
+	starkbank/corporaterule/corporaterule.c \
 	starkbank/darfpayment/darfpayment.c \
 	starkbank/darfpayment/log.c \
 	starkbank/deposit/deposit.c \

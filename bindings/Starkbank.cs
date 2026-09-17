@@ -138,6 +138,12 @@ namespace StarkBank
         public const string StarkbankBrcodePreviewReductionAmount = "reductionAmount";
         public const string StarkbankBrcodePreviewStatus = "status";
         public const string StarkbankBrcodePreviewTaxId = "taxId";
+        public const string StarkbankCorporateBalanceAmount = "amount";
+        public const string StarkbankCorporateBalanceCurrency = "currency";
+        public const string StarkbankCorporateBalanceId = "id";
+        public const string StarkbankCorporateBalanceLimit = "limit";
+        public const string StarkbankCorporateBalanceMaxLimit = "maxLimit";
+        public const string StarkbankCorporateBalanceUpdated = "updated";
         public const string StarkbankCorporateHolderCenterId = "centerId";
         public const string StarkbankCorporateHolderCreated = "created";
         public const string StarkbankCorporateHolderId = "id";
@@ -154,6 +160,28 @@ namespace StarkBank
         public const string StarkbankCorporateHolderStatusCanceled = "canceled";
         public const string StarkbankCorporateHolderTags = "tags";
         public const string StarkbankCorporateHolderUpdated = "updated";
+        public const string StarkbankCorporateRuleAmount = "amount";
+        public const string StarkbankCorporateRuleCategories = "categories";
+        public const string StarkbankCorporateRuleCounterAmount = "counterAmount";
+        public const string StarkbankCorporateRuleCountries = "countries";
+        public const string StarkbankCorporateRuleCurrencyCode = "currencyCode";
+        public const string StarkbankCorporateRuleCurrencyName = "currencyName";
+        public const string StarkbankCorporateRuleCurrencySymbol = "currencySymbol";
+        public const string StarkbankCorporateRuleId = "id";
+        public const string StarkbankCorporateRuleInterval = "interval";
+        public const string StarkbankCorporateRuleIntervalDay = "day";
+        public const string StarkbankCorporateRuleIntervalInstant = "instant";
+        public const string StarkbankCorporateRuleIntervalLifetime = "lifetime";
+        public const string StarkbankCorporateRuleIntervalMonth = "month";
+        public const string StarkbankCorporateRuleIntervalWeek = "week";
+        public const string StarkbankCorporateRuleIntervalYear = "year";
+        public const string StarkbankCorporateRuleMethods = "methods";
+        public const string StarkbankCorporateRuleName = "name";
+        public const string StarkbankCorporateRulePurposes = "purposes";
+        public const string StarkbankCorporateRulePurposePurchase = "purchase";
+        public const string StarkbankCorporateRulePurposeVerification = "verification";
+        public const string StarkbankCorporateRulePurposeWithdrawal = "withdrawal";
+        public const string StarkbankCorporateRuleSchedule = "schedule";
         public const string StarkbankDarfPaymentAmount = "amount";
         public const string StarkbankDarfPaymentCompetence = "competence";
         public const string StarkbankDarfPaymentCreated = "created";
@@ -646,6 +674,9 @@ namespace StarkBank
         [DllImport(Library, EntryPoint = "starkbank_core_version", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr StarkbankCoreVersion();
 
+        [DllImport(Library, EntryPoint = "starkbank_corporate_balance_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankCorporateBalanceGet(IntPtr client, out IntPtr @out, out IntPtr errors);
+
         [DllImport(Library, EntryPoint = "starkbank_corporate_holder_create", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankCorporateHolderCreate(IntPtr client, IntPtr holders, out IntPtr @out, out IntPtr errors);
 
@@ -681,6 +712,9 @@ namespace StarkBank
 
         [DllImport(Library, EntryPoint = "starkbank_corporate_holder_update", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankCorporateHolderUpdate(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, IntPtr patch, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_corporate_rule_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankCorporateRuleNew(out IntPtr @out);
 
         [DllImport(Library, EntryPoint = "starkbank_darf_payment_create", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankDarfPaymentCreate(IntPtr client, IntPtr payments, out IntPtr @out, out IntPtr errors);

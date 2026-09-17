@@ -22,8 +22,10 @@
     R(brcode_payment_log)      \
     R(brcode_payment_rule)     \
     R(brcode_preview)          \
+    R(corporate_balance)       \
     R(corporate_holder)        \
     R(corporate_holder_log)    \
+    R(corporate_rule)          \
     R(darf_payment)            \
     R(darf_payment_log)        \
     R(deposit)                 \

@@ -1832,6 +1832,81 @@ STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_log_page(const stark
 
 
 /* =========================================================================
+ *                               CorporateRule
+ * =========================================================================
+ *
+ * A spending rule embedded in CorporateHolder.rules and CorporateCard.rules.
+ * Bare top-level resource - sdk-python's _resource, not _sub_resource - with
+ * no REST verbs of its own, the same shape as Split. No PATCH bit anywhere:
+ * python's corporaterule module has no update(), so a caller changes a rule
+ * by resending the owning holder's or card's whole "rules" list. categories,
+ * countries and methods are opaque objects, not LIST_RESOURCE: their python
+ * counterparts (MerchantCategory, MerchantCountry, CardMethod) are not
+ * registered in this build, so a caller sends them exactly as the docs show,
+ * e.g. [{"code": "fastFoodRestaurants"}].
+ *
+ * Fields (wire keys; * = required on create).
+ *
+ *   name*  STRING              amount* AMOUNT
+ *   interval schedule currencyCode STRING
+ *   purposes LIST_STRING
+ *   categories countries methods LIST_OBJECT
+ *   id currencySymbol currencyName STRING (ro)      counterAmount AMOUNT (ro).
+ */
+
+#define STARKBANK_CORPORATE_RULE_NAME            "name"
+#define STARKBANK_CORPORATE_RULE_AMOUNT          "amount"
+#define STARKBANK_CORPORATE_RULE_INTERVAL        "interval"
+#define STARKBANK_CORPORATE_RULE_SCHEDULE        "schedule"
+#define STARKBANK_CORPORATE_RULE_PURPOSES        "purposes"
+#define STARKBANK_CORPORATE_RULE_CURRENCY_CODE   "currencyCode"
+#define STARKBANK_CORPORATE_RULE_CATEGORIES      "categories"
+#define STARKBANK_CORPORATE_RULE_COUNTRIES       "countries"
+#define STARKBANK_CORPORATE_RULE_METHODS         "methods"
+#define STARKBANK_CORPORATE_RULE_ID              "id"
+#define STARKBANK_CORPORATE_RULE_COUNTER_AMOUNT  "counterAmount"
+#define STARKBANK_CORPORATE_RULE_CURRENCY_SYMBOL "currencySymbol"
+#define STARKBANK_CORPORATE_RULE_CURRENCY_NAME   "currencyName"
+
+/* Intervals, from the docs' enum. */
+#define STARKBANK_CORPORATE_RULE_INTERVAL_INSTANT  "instant"
+#define STARKBANK_CORPORATE_RULE_INTERVAL_DAY      "day"
+#define STARKBANK_CORPORATE_RULE_INTERVAL_WEEK     "week"
+#define STARKBANK_CORPORATE_RULE_INTERVAL_MONTH    "month"
+#define STARKBANK_CORPORATE_RULE_INTERVAL_YEAR     "year"
+#define STARKBANK_CORPORATE_RULE_INTERVAL_LIFETIME "lifetime"
+
+/* Purposes, from the docs' enum. */
+#define STARKBANK_CORPORATE_RULE_PURPOSE_PURCHASE    "purchase"
+#define STARKBANK_CORPORATE_RULE_PURPOSE_WITHDRAWAL  "withdrawal"
+#define STARKBANK_CORPORATE_RULE_PURPOSE_VERIFICATION "verification"
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_rule_new(starkbank_entity **out);
+
+
+/* =========================================================================
+ *                              CorporateBalance
+ * =========================================================================
+ *
+ * The degenerate shape, again: one object, no id, no filters, one verb - see
+ * Balance.
+ *
+ * Fields: id currency STRING (ro), amount limit maxLimit AMOUNT (ro), updated
+ * DATETIME (ro).
+ */
+
+#define STARKBANK_CORPORATE_BALANCE_ID         "id"
+#define STARKBANK_CORPORATE_BALANCE_AMOUNT     "amount"
+#define STARKBANK_CORPORATE_BALANCE_LIMIT      "limit"
+#define STARKBANK_CORPORATE_BALANCE_MAX_LIMIT  "maxLimit"
+#define STARKBANK_CORPORATE_BALANCE_CURRENCY   "currency"
+#define STARKBANK_CORPORATE_BALANCE_UPDATED    "updated"
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_balance_get(const starkbank_client *client,
+    starkbank_entity **out, starkbank_errors **errors);
+
+
+/* =========================================================================
  *                               DarfPayment
  * =========================================================================
  *

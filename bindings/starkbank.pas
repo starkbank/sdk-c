@@ -143,6 +143,12 @@ const
   STARKBANK_BRCODE_PREVIEW_REDUCTION_AMOUNT = 'reductionAmount';
   STARKBANK_BRCODE_PREVIEW_STATUS = 'status';
   STARKBANK_BRCODE_PREVIEW_TAX_ID = 'taxId';
+  STARKBANK_CORPORATE_BALANCE_AMOUNT = 'amount';
+  STARKBANK_CORPORATE_BALANCE_CURRENCY = 'currency';
+  STARKBANK_CORPORATE_BALANCE_ID = 'id';
+  STARKBANK_CORPORATE_BALANCE_LIMIT = 'limit';
+  STARKBANK_CORPORATE_BALANCE_MAX_LIMIT = 'maxLimit';
+  STARKBANK_CORPORATE_BALANCE_UPDATED = 'updated';
   STARKBANK_CORPORATE_HOLDER_CENTER_ID = 'centerId';
   STARKBANK_CORPORATE_HOLDER_CREATED = 'created';
   STARKBANK_CORPORATE_HOLDER_ID = 'id';
@@ -159,6 +165,28 @@ const
   STARKBANK_CORPORATE_HOLDER_STATUS_CANCELED = 'canceled';
   STARKBANK_CORPORATE_HOLDER_TAGS = 'tags';
   STARKBANK_CORPORATE_HOLDER_UPDATED = 'updated';
+  STARKBANK_CORPORATE_RULE_AMOUNT = 'amount';
+  STARKBANK_CORPORATE_RULE_CATEGORIES = 'categories';
+  STARKBANK_CORPORATE_RULE_COUNTER_AMOUNT = 'counterAmount';
+  STARKBANK_CORPORATE_RULE_COUNTRIES = 'countries';
+  STARKBANK_CORPORATE_RULE_CURRENCY_CODE = 'currencyCode';
+  STARKBANK_CORPORATE_RULE_CURRENCY_NAME = 'currencyName';
+  STARKBANK_CORPORATE_RULE_CURRENCY_SYMBOL = 'currencySymbol';
+  STARKBANK_CORPORATE_RULE_ID = 'id';
+  STARKBANK_CORPORATE_RULE_INTERVAL = 'interval';
+  STARKBANK_CORPORATE_RULE_INTERVAL_DAY = 'day';
+  STARKBANK_CORPORATE_RULE_INTERVAL_INSTANT = 'instant';
+  STARKBANK_CORPORATE_RULE_INTERVAL_LIFETIME = 'lifetime';
+  STARKBANK_CORPORATE_RULE_INTERVAL_MONTH = 'month';
+  STARKBANK_CORPORATE_RULE_INTERVAL_WEEK = 'week';
+  STARKBANK_CORPORATE_RULE_INTERVAL_YEAR = 'year';
+  STARKBANK_CORPORATE_RULE_METHODS = 'methods';
+  STARKBANK_CORPORATE_RULE_NAME = 'name';
+  STARKBANK_CORPORATE_RULE_PURPOSES = 'purposes';
+  STARKBANK_CORPORATE_RULE_PURPOSE_PURCHASE = 'purchase';
+  STARKBANK_CORPORATE_RULE_PURPOSE_VERIFICATION = 'verification';
+  STARKBANK_CORPORATE_RULE_PURPOSE_WITHDRAWAL = 'withdrawal';
+  STARKBANK_CORPORATE_RULE_SCHEDULE = 'schedule';
   STARKBANK_DARF_PAYMENT_AMOUNT = 'amount';
   STARKBANK_DARF_PAYMENT_COMPETENCE = 'competence';
   STARKBANK_DARF_PAYMENT_CREATED = 'created';
@@ -623,6 +651,8 @@ function starkbank_client_set_user_agent_prefix(client: Pstarkbank_client; prefi
 
 function starkbank_core_version: PAnsiChar; cdecl; external StarkbankLib name 'starkbank_core_version';
 
+function starkbank_corporate_balance_get(client: Pstarkbank_client; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_balance_get';
+
 function starkbank_corporate_holder_create(client: Pstarkbank_client; holders: Pstarkbank_list; &out: PPstarkbank_list; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_holder_create';
 
 function starkbank_corporate_holder_delete(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_holder_delete';
@@ -646,6 +676,8 @@ function starkbank_corporate_holder_params_new(&out: PPstarkbank_entity): Intege
 function starkbank_corporate_holder_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_holder_query';
 
 function starkbank_corporate_holder_update(client: Pstarkbank_client; id: PAnsiChar; patch: Pstarkbank_entity; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_holder_update';
+
+function starkbank_corporate_rule_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_rule_new';
 
 function starkbank_darf_payment_create(client: Pstarkbank_client; payments: Pstarkbank_list; &out: PPstarkbank_list; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_darf_payment_create';
 
