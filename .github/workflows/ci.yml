@@ -22,7 +22,7 @@ env:
   # pins and app-docs at its default branch. Neither is imported and neither is
   # written; both are inputs.
   SDK_PYTHON_REF: master
-  APP_DOCS_REF: master
+  APP_DOCS_REF: development
 
 jobs:
   build:
