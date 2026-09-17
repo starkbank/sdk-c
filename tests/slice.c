@@ -482,13 +482,13 @@ static void testRegistry(void)
     static const char *const expected[] = {
         "Balance", "Boleto", "BoletoLog", "BoletoPayment", "BoletoPaymentLog",
         "BrcodePayment", "BrcodePaymentLog", "BrcodePayment.Rule",
-        "DarfPayment", "DarfPaymentLog", "Event", "EventAttempt",
-        "Invoice", "InvoiceLog", "Invoice.Payment", "Invoice.Rule",
-        "PaymentPreview", "PaymentPreview.BoletoPreview",
-        "PaymentPreview.BrcodePreview", "PaymentPreview.TaxPreview",
-        "PaymentPreview.UtilityPreview", "Split", "TaxPayment",
-        "TaxPaymentLog", "Transfer", "TransferLog", "Transfer.Rule",
-        "UtilityPayment", "UtilityPaymentLog", "Webhook"
+        "DarfPayment", "DarfPaymentLog", "Deposit", "DepositLog",
+        "Event", "EventAttempt", "Invoice", "InvoiceLog",
+        "Invoice.Payment", "Invoice.Rule", "PaymentPreview",
+        "PaymentPreview.BoletoPreview", "PaymentPreview.BrcodePreview",
+        "PaymentPreview.TaxPreview", "PaymentPreview.UtilityPreview",
+        "Split", "TaxPayment", "TaxPaymentLog", "Transfer", "TransferLog",
+        "Transfer.Rule", "UtilityPayment", "UtilityPaymentLog", "Webhook"
     };
     char label[160];
     size_t index;
@@ -1807,6 +1807,139 @@ static void testDarfPaymentLog(void)
     starkbank_client_free(client);
 }
 
+/* =============================================================== Deposit */
+
+static void testDeposit(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *deposit = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_list *page = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    double amount = -1.0;
+
+    startGroup("Deposit - no create, reversal is the only write");
+    client = newClient(&fake);
+    replies(&fake, responseBody("deposit"), NULL);
+    check("get hydrates a Deposit",
+          starkbank_deposit_get(client, "5768139429316608", &deposit, NULL) == STARKBANK_OK,
+          NULL);
+    checkRequests("deposit.get", &fake);
+    checkHydration("deposit.get", 0, deposit);
+    starkbank_entity_free(deposit);
+    deposit = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("deposits"), NULL);
+    starkbank_deposit_params_new(&params);
+    starkbank_entity_set_string(params, STARKBANK_DEPOSIT_STATUS, "created");
+    starkbank_entity_append_string(params, STARKBANK_DEPOSIT_TAGS, "reconciliationId");
+    starkbank_entity_append_string(params, STARKBANK_DEPOSIT_TAGS, "txId");
+    starkbank_deposit_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("deposit.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("deposits"), NULL);
+    starkbank_deposit_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_deposit_page(client, params, &page, NULL, NULL);
+    checkRequests("deposit.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+
+    /* amount=0 fully reverses. This is the same absent-vs-zero distinction
+       Invoice.amount forces, proven again on a resource that reaches it only
+       through PATCH rather than a create. */
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("deposit"), NULL);
+    starkbank_deposit_params_new(&params);
+    starkbank_entity_set_amount(params, STARKBANK_DEPOSIT_AMOUNT, 0);
+    check("update sends the legal zero amount, not an absent key",
+          starkbank_deposit_update(client, "5768139429316608", params, &deposit, NULL)
+              == STARKBANK_OK, NULL);
+    checkRequests("deposit.update", &fake);
+    check("amount reads back as the real 1234, from the fixed canned reply",
+          starkbank_entity_amount(deposit, STARKBANK_DEPOSIT_AMOUNT, &amount) == STARKBANK_OK
+          && amount == 1234.0, NULL);
+    starkbank_entity_free(deposit);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+static void testDepositLog(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *log = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_list *page = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *nested = NULL;
+    unsigned char *blob = NULL;
+    size_t blobLength = 0;
+
+    startGroup("deposit.Log");
+    client = newClient(&fake);
+    replies(&fake, responseBody("depositLog"), NULL);
+    starkbank_deposit_log_get(client, "6341320293482499", &log, NULL);
+    checkRequests("deposit.log.get", &fake);
+    checkHydration("deposit.log.get", 0, log);
+    check("the nested deposit is tagged",
+          starkbank_entity_entity(log, STARKBANK_DEPOSIT_LOG_DEPOSIT, &nested) == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested), "Deposit"), NULL);
+    starkbank_entity_free(log);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("depositLogs"), NULL);
+    starkbank_deposit_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_append_string(params, "types", "credited");
+    starkbank_entity_append_string(params, "depositIds", "5768139429316608");
+    starkbank_deposit_log_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        check("query hydrates the log it iterates over",
+              equalStrings(starkbank_entity_resource(item), "DepositLog"), NULL);
+    }
+    checkRequests("deposit.log.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("depositLogs"), NULL);
+    starkbank_deposit_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    check("page returns the log list",
+          starkbank_deposit_log_page(client, params, &page, NULL, NULL) == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(starkbank_list_at(page, 0)), "DepositLog"),
+          NULL);
+    checkRequests("deposit.log.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+
+    /* deposit.Log has a pdf verb - the reversed deposit's receipt - unlike
+       transfer.Log, boleto.Log, boletopayment.Log and brcodepayment.Log. */
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "%PDF-1.4 fake", NULL);
+    starkbank_deposit_log_pdf(client, "6341320293482499", &blob, &blobLength, NULL);
+    checkRequests("deposit.log.pdf", &fake);
+    starkbank_free(blob);
+    starkbank_client_free(client);
+}
+
 /* ============================================================ TaxPayment */
 
 static void testTaxPayment(void)
@@ -2545,6 +2678,8 @@ int main(void)
     testBalance();
     testDarfPayment();
     testDarfPaymentLog();
+    testDeposit();
+    testDepositLog();
     testTaxPayment();
     testTaxPaymentLog();
     testUtilityPayment();

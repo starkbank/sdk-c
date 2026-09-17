@@ -1826,6 +1826,98 @@ STARKBANK_API int STARKBANK_CALL starkbank_darf_payment_log_page(const starkbank
     const starkbank_entity *params, starkbank_list **out, char **out_cursor,
     starkbank_errors **errors);
 
+/* =========================================================================
+ *                                 Deposit
+ * =========================================================================
+ *
+ * Deposit models passive cash-in received from an external transfer.
+ * sdk-python's Deposit has no create() at all - every field is return-only -
+ * and the only mutation the API exposes is reversal: rest.patch_id with a
+ * single "amount" key, full or partial, where amount=0 fully reverses the
+ * deposit. There is therefore no NEW and no create verb here, only
+ * PARAMS (the query and patch bag), GET_ID, QUERY, PAGE and PATCH_ID.
+ *
+ * Fields (wire keys; + = patchable). Every field but amount is return-only.
+ *
+ *   amount+ AMOUNT
+ *   id name taxId bankCode branchCode accountNumber accountType type status STRING (ro)
+ *   fee AMOUNT (ro)
+ *   tags transactionIds LIST_STRING (ro)
+ *   created updated DATETIME (ro)
+ *
+ * Query keys: limit, after, before, status, sort, tags, ids.
+ *
+ * amount carries PATCH and neither CREATE nor REQUIRED: REQUIRED means
+ * "required on create" and this resource has no create to be required for.
+ * sdk-python's own update(id, amount=None, user=None) defaults amount to
+ * None despite the docstring's prose calling it required - the same
+ * update()-is-not-create asymmetry Invoice.status and BrcodePayment.status
+ * already carry. A caller who omits it gets the API's own error.
+ */
+#define STARKBANK_DEPOSIT_ID                "id"
+#define STARKBANK_DEPOSIT_NAME              "name"
+#define STARKBANK_DEPOSIT_TAX_ID            "taxId"
+#define STARKBANK_DEPOSIT_BANK_CODE         "bankCode"
+#define STARKBANK_DEPOSIT_BRANCH_CODE       "branchCode"
+#define STARKBANK_DEPOSIT_ACCOUNT_NUMBER    "accountNumber"
+#define STARKBANK_DEPOSIT_ACCOUNT_TYPE      "accountType"
+#define STARKBANK_DEPOSIT_AMOUNT            "amount"
+#define STARKBANK_DEPOSIT_TYPE              "type"
+#define STARKBANK_DEPOSIT_STATUS            "status"
+#define STARKBANK_DEPOSIT_TAGS              "tags"
+#define STARKBANK_DEPOSIT_FEE               "fee"
+#define STARKBANK_DEPOSIT_TRANSACTION_IDS   "transactionIds"
+#define STARKBANK_DEPOSIT_CREATED           "created"
+#define STARKBANK_DEPOSIT_UPDATED           "updated"
+
+#define STARKBANK_DEPOSIT_STATUS_CREATED   "created"
+#define STARKBANK_DEPOSIT_STATUS_VOID      "void"
+
+STARKBANK_API int STARKBANK_CALL starkbank_deposit_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_deposit_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_deposit_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_deposit_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_deposit_update(const starkbank_client *client,
+    const char *id, const starkbank_entity *patch, starkbank_entity **out,
+    starkbank_errors **errors);
+/* amount is the only patchable key: pass 0 to fully reverse, or a smaller
+   amount to partially reverse. */
+
+/* ------------------------------------------------------------- deposit.Log */
+/*
+ * Resource "DepositLog"; endpoint "deposit/log", derived at run time.
+ * Fields: id STRING (ro), created DATETIME (ro), type STRING (ro),
+ *         errors LIST_STRING (ro), deposit RESOURCE("Deposit") (ro).
+ * Query keys: limit, after, before, types, depositIds.
+ *
+ * Unlike transfer.Log, boleto.Log, boletopayment.Log and brcodepayment.Log,
+ * deposit.Log has a pdf verb: the reversed deposit's receipt.
+ */
+#define STARKBANK_DEPOSIT_LOG_ID        "id"
+#define STARKBANK_DEPOSIT_LOG_CREATED   "created"
+#define STARKBANK_DEPOSIT_LOG_TYPE      "type"
+#define STARKBANK_DEPOSIT_LOG_ERRORS    "errors"
+#define STARKBANK_DEPOSIT_LOG_DEPOSIT   "deposit"
+
+STARKBANK_API int STARKBANK_CALL starkbank_deposit_log_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_deposit_log_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_deposit_log_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_deposit_log_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_deposit_log_pdf(const starkbank_client *client,
+    const char *id, unsigned char **out, size_t *out_len, starkbank_errors **errors);
+
 #ifdef __cplusplus
 }
 #endif
