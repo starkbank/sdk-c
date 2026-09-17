@@ -13,6 +13,384 @@
         }
       ]
     },
+    "boleto.create": {
+      "hydrated": [
+        "{\"amount\":23456,\"barCode\":\"34195819600000000621090063571277307144464000\",\"city\":\"Sao Paulo\",\"created\":\"2026-09-16T12:00:00+00:00\",\"descriptions\":[{\"amount\":1234,\"text\":\"sword sharpening\"}],\"discounts\":[{\"date\":\"2026-10-01\",\"percentage\":10}],\"district\":\"Bela Vista\",\"due\":\"2026-10-28\",\"fee\":200,\"fine\":2.5,\"id\":\"5155165527080960\",\"interest\":1,\"line\":\"34191.09008 63571.277308 71444.640008 5 81960000000062\",\"name\":\"Anthony Edward Stark\",\"ourNumber\":\"10131474\",\"overdueLimit\":59,\"receiverName\":\"Iron Bank S.A.\",\"receiverTaxId\":\"20.018.183/0001-80\",\"stateCode\":\"SP\",\"status\":\"registered\",\"streetLine1\":\"Av. Paulista, 200\",\"streetLine2\":\"Apto. 123\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"012.345.678-90\",\"transactionIds\":[\"19827356981273\"],\"workspaceId\":\"4545454545454545\",\"zipCode\":\"01311-200\"}"
+      ],
+      "requests": [
+        {
+          "body": "{\"boletos\":[{\"amount\":23456,\"city\":\"Sao Paulo\",\"descriptions\":[{\"amount\":1234,\"text\":\"sword sharpening\"}],\"discounts\":[{\"date\":\"2026-10-01\",\"percentage\":10}],\"district\":\"Bela Vista\",\"due\":\"2026-10-28\",\"fine\":2.5,\"interest\":1,\"name\":\"Anthony Edward Stark\",\"overdueLimit\":59,\"receiverName\":\"Iron Bank S.A.\",\"receiverTaxId\":\"20.018.183/0001-80\",\"stateCode\":\"SP\",\"streetLine1\":\"Av. Paulista, 200\",\"streetLine2\":\"Apto. 123\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"012.345.678-90\",\"zipCode\":\"01311-200\"}]}",
+          "bodyRaw": "{\"boletos\": [{\"amount\": 23456, \"city\": \"Sao Paulo\", \"descriptions\": [{\"text\": \"sword sharpening\", \"amount\": 1234}], \"discounts\": [{\"percentage\": 10.0, \"date\": \"2026-10-01\"}], \"district\": \"Bela Vista\", \"due\": \"2026-10-28\", \"fine\": 2.5, \"interest\": 1.0, \"name\": \"Anthony Edward Stark\", \"overdueLimit\": 59, \"receiverName\": \"Iron Bank S.A.\", \"receiverTaxId\": \"20.018.183/0001-80\", \"stateCode\": \"SP\", \"streetLine1\": \"Av. Paulista, 200\", \"streetLine2\": \"Apto. 123\", \"tags\": [\"war\", \"supply\"], \"taxId\": \"012.345.678-90\", \"zipCode\": \"01311-200\"}]}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/boleto"
+        }
+      ]
+    },
+    "boleto.delete": {
+      "hydrated": "{\"amount\":23456,\"barCode\":\"34195819600000000621090063571277307144464000\",\"city\":\"Sao Paulo\",\"created\":\"2026-09-16T12:00:00+00:00\",\"descriptions\":[{\"amount\":1234,\"text\":\"sword sharpening\"}],\"discounts\":[{\"date\":\"2026-10-01\",\"percentage\":10}],\"district\":\"Bela Vista\",\"due\":\"2026-10-28\",\"fee\":200,\"fine\":2.5,\"id\":\"5155165527080960\",\"interest\":1,\"line\":\"34191.09008 63571.277308 71444.640008 5 81960000000062\",\"name\":\"Anthony Edward Stark\",\"ourNumber\":\"10131474\",\"overdueLimit\":59,\"receiverName\":\"Iron Bank S.A.\",\"receiverTaxId\":\"20.018.183/0001-80\",\"stateCode\":\"SP\",\"status\":\"registered\",\"streetLine1\":\"Av. Paulista, 200\",\"streetLine2\":\"Apto. 123\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"012.345.678-90\",\"transactionIds\":[\"19827356981273\"],\"workspaceId\":\"4545454545454545\",\"zipCode\":\"01311-200\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "DELETE",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/boleto/5155165527080960"
+        }
+      ]
+    },
+    "boleto.get": {
+      "hydrated": "{\"amount\":23456,\"barCode\":\"34195819600000000621090063571277307144464000\",\"city\":\"Sao Paulo\",\"created\":\"2026-09-16T12:00:00+00:00\",\"descriptions\":[{\"amount\":1234,\"text\":\"sword sharpening\"}],\"discounts\":[{\"date\":\"2026-10-01\",\"percentage\":10}],\"district\":\"Bela Vista\",\"due\":\"2026-10-28\",\"fee\":200,\"fine\":2.5,\"id\":\"5155165527080960\",\"interest\":1,\"line\":\"34191.09008 63571.277308 71444.640008 5 81960000000062\",\"name\":\"Anthony Edward Stark\",\"ourNumber\":\"10131474\",\"overdueLimit\":59,\"receiverName\":\"Iron Bank S.A.\",\"receiverTaxId\":\"20.018.183/0001-80\",\"stateCode\":\"SP\",\"status\":\"registered\",\"streetLine1\":\"Av. Paulista, 200\",\"streetLine2\":\"Apto. 123\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"012.345.678-90\",\"transactionIds\":[\"19827356981273\"],\"workspaceId\":\"4545454545454545\",\"zipCode\":\"01311-200\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/boleto/5155165527080960"
+        }
+      ]
+    },
+    "boleto.log.get": {
+      "hydrated": "{\"boleto\":{\"amount\":23456,\"barCode\":\"34195819600000000621090063571277307144464000\",\"city\":\"Sao Paulo\",\"created\":\"2026-09-16T12:00:00+00:00\",\"descriptions\":[{\"amount\":1234,\"text\":\"sword sharpening\"}],\"discounts\":[{\"date\":\"2026-10-01\",\"percentage\":10}],\"district\":\"Bela Vista\",\"due\":\"2026-10-28\",\"fee\":200,\"fine\":2.5,\"id\":\"5155165527080960\",\"interest\":1,\"line\":\"34191.09008 63571.277308 71444.640008 5 81960000000062\",\"name\":\"Anthony Edward Stark\",\"ourNumber\":\"10131474\",\"overdueLimit\":59,\"receiverName\":\"Iron Bank S.A.\",\"receiverTaxId\":\"20.018.183/0001-80\",\"stateCode\":\"SP\",\"status\":\"registered\",\"streetLine1\":\"Av. Paulista, 200\",\"streetLine2\":\"Apto. 123\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"012.345.678-90\",\"transactionIds\":[\"19827356981273\"],\"workspaceId\":\"4545454545454545\",\"zipCode\":\"01311-200\"},\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482496\",\"type\":\"registered\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/boleto/log/6341320293482496"
+        }
+      ]
+    },
+    "boleto.log.page": {
+      "hydrated": [
+        "{\"boleto\":{\"amount\":23456,\"barCode\":\"34195819600000000621090063571277307144464000\",\"city\":\"Sao Paulo\",\"created\":\"2026-09-16T12:00:00+00:00\",\"descriptions\":[{\"amount\":1234,\"text\":\"sword sharpening\"}],\"discounts\":[{\"date\":\"2026-10-01\",\"percentage\":10}],\"district\":\"Bela Vista\",\"due\":\"2026-10-28\",\"fee\":200,\"fine\":2.5,\"id\":\"5155165527080960\",\"interest\":1,\"line\":\"34191.09008 63571.277308 71444.640008 5 81960000000062\",\"name\":\"Anthony Edward Stark\",\"ourNumber\":\"10131474\",\"overdueLimit\":59,\"receiverName\":\"Iron Bank S.A.\",\"receiverTaxId\":\"20.018.183/0001-80\",\"stateCode\":\"SP\",\"status\":\"registered\",\"streetLine1\":\"Av. Paulista, 200\",\"streetLine2\":\"Apto. 123\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"012.345.678-90\",\"transactionIds\":[\"19827356981273\"],\"workspaceId\":\"4545454545454545\",\"zipCode\":\"01311-200\"},\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482496\",\"type\":\"registered\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/boleto/log"
+        }
+      ]
+    },
+    "boleto.log.query": {
+      "hydrated": [
+        "{\"boleto\":{\"amount\":23456,\"barCode\":\"34195819600000000621090063571277307144464000\",\"city\":\"Sao Paulo\",\"created\":\"2026-09-16T12:00:00+00:00\",\"descriptions\":[{\"amount\":1234,\"text\":\"sword sharpening\"}],\"discounts\":[{\"date\":\"2026-10-01\",\"percentage\":10}],\"district\":\"Bela Vista\",\"due\":\"2026-10-28\",\"fee\":200,\"fine\":2.5,\"id\":\"5155165527080960\",\"interest\":1,\"line\":\"34191.09008 63571.277308 71444.640008 5 81960000000062\",\"name\":\"Anthony Edward Stark\",\"ourNumber\":\"10131474\",\"overdueLimit\":59,\"receiverName\":\"Iron Bank S.A.\",\"receiverTaxId\":\"20.018.183/0001-80\",\"stateCode\":\"SP\",\"status\":\"registered\",\"streetLine1\":\"Av. Paulista, 200\",\"streetLine2\":\"Apto. 123\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"012.345.678-90\",\"transactionIds\":[\"19827356981273\"],\"workspaceId\":\"4545454545454545\",\"zipCode\":\"01311-200\"},\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482496\",\"type\":\"registered\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "boletoIds=5155165527080960&limit=5&types=registered",
+          "queryRaw": "limit=5&types=registered&boletoIds=5155165527080960",
+          "url": "https://sandbox.api.starkbank.com/v2/boleto/log"
+        }
+      ]
+    },
+    "boleto.page": {
+      "hydrated": [
+        "{\"amount\":23456,\"barCode\":\"34195819600000000621090063571277307144464000\",\"city\":\"Sao Paulo\",\"created\":\"2026-09-16T12:00:00+00:00\",\"descriptions\":[{\"amount\":1234,\"text\":\"sword sharpening\"}],\"discounts\":[{\"date\":\"2026-10-01\",\"percentage\":10}],\"district\":\"Bela Vista\",\"due\":\"2026-10-28\",\"fee\":200,\"fine\":2.5,\"id\":\"5155165527080960\",\"interest\":1,\"line\":\"34191.09008 63571.277308 71444.640008 5 81960000000062\",\"name\":\"Anthony Edward Stark\",\"ourNumber\":\"10131474\",\"overdueLimit\":59,\"receiverName\":\"Iron Bank S.A.\",\"receiverTaxId\":\"20.018.183/0001-80\",\"stateCode\":\"SP\",\"status\":\"registered\",\"streetLine1\":\"Av. Paulista, 200\",\"streetLine2\":\"Apto. 123\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"012.345.678-90\",\"transactionIds\":[\"19827356981273\"],\"workspaceId\":\"4545454545454545\",\"zipCode\":\"01311-200\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/boleto"
+        }
+      ]
+    },
+    "boleto.pdf": {
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "hiddenFields=customerAddress%2CcustomerTaxId&layout=booklet",
+          "queryRaw": "layout=booklet&hiddenFields=customerAddress%2CcustomerTaxId",
+          "url": "https://sandbox.api.starkbank.com/v2/boleto/5155165527080960/pdf"
+        }
+      ]
+    },
+    "boleto.query": {
+      "hydrated": [
+        "{\"amount\":23456,\"barCode\":\"34195819600000000621090063571277307144464000\",\"city\":\"Sao Paulo\",\"created\":\"2026-09-16T12:00:00+00:00\",\"descriptions\":[{\"amount\":1234,\"text\":\"sword sharpening\"}],\"discounts\":[{\"date\":\"2026-10-01\",\"percentage\":10}],\"district\":\"Bela Vista\",\"due\":\"2026-10-28\",\"fee\":200,\"fine\":2.5,\"id\":\"5155165527080960\",\"interest\":1,\"line\":\"34191.09008 63571.277308 71444.640008 5 81960000000062\",\"name\":\"Anthony Edward Stark\",\"ourNumber\":\"10131474\",\"overdueLimit\":59,\"receiverName\":\"Iron Bank S.A.\",\"receiverTaxId\":\"20.018.183/0001-80\",\"stateCode\":\"SP\",\"status\":\"registered\",\"streetLine1\":\"Av. Paulista, 200\",\"streetLine2\":\"Apto. 123\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"012.345.678-90\",\"transactionIds\":[\"19827356981273\"],\"workspaceId\":\"4545454545454545\",\"zipCode\":\"01311-200\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&status=registered&tags=war%2Csupply",
+          "queryRaw": "limit=5&status=registered&tags=war%2Csupply",
+          "url": "https://sandbox.api.starkbank.com/v2/boleto"
+        }
+      ]
+    },
+    "boletopayment.create": {
+      "hydrated": [
+        "{\"amount\":23456,\"barCode\":\"34195819600000000621090063571277307144464000\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"sword sharpening\",\"fee\":200,\"id\":\"5155165527080960\",\"line\":\"34191.09008 63571.277308 71444.640008 5 81960000000062\",\"scheduled\":\"2026-10-28\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"]}"
+      ],
+      "requests": [
+        {
+          "body": "{\"payments\":[{\"description\":\"sword sharpening\",\"line\":\"34191.09008 63571.277308 71444.640008 5 81960000000062\",\"scheduled\":\"2026-10-28\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\"}]}",
+          "bodyRaw": "{\"payments\": [{\"description\": \"sword sharpening\", \"line\": \"34191.09008 63571.277308 71444.640008 5 81960000000062\", \"scheduled\": \"2026-10-28\", \"tags\": [\"war\", \"supply\"], \"taxId\": \"20.018.183/0001-80\"}]}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/boleto-payment"
+        }
+      ]
+    },
+    "boletopayment.delete": {
+      "hydrated": "{\"amount\":23456,\"barCode\":\"34195819600000000621090063571277307144464000\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"sword sharpening\",\"fee\":200,\"id\":\"5155165527080960\",\"line\":\"34191.09008 63571.277308 71444.640008 5 81960000000062\",\"scheduled\":\"2026-10-28\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"]}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "DELETE",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/boleto-payment/5155165527080960"
+        }
+      ]
+    },
+    "boletopayment.get": {
+      "hydrated": "{\"amount\":23456,\"barCode\":\"34195819600000000621090063571277307144464000\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"sword sharpening\",\"fee\":200,\"id\":\"5155165527080960\",\"line\":\"34191.09008 63571.277308 71444.640008 5 81960000000062\",\"scheduled\":\"2026-10-28\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"]}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/boleto-payment/5155165527080960"
+        }
+      ]
+    },
+    "boletopayment.log.get": {
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482497\",\"payment\":{\"amount\":23456,\"barCode\":\"34195819600000000621090063571277307144464000\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"sword sharpening\",\"fee\":200,\"id\":\"5155165527080960\",\"line\":\"34191.09008 63571.277308 71444.640008 5 81960000000062\",\"scheduled\":\"2026-10-28\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"]},\"type\":\"success\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/boleto-payment/log/6341320293482497"
+        }
+      ]
+    },
+    "boletopayment.log.page": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482497\",\"payment\":{\"amount\":23456,\"barCode\":\"34195819600000000621090063571277307144464000\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"sword sharpening\",\"fee\":200,\"id\":\"5155165527080960\",\"line\":\"34191.09008 63571.277308 71444.640008 5 81960000000062\",\"scheduled\":\"2026-10-28\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"]},\"type\":\"success\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/boleto-payment/log"
+        }
+      ]
+    },
+    "boletopayment.log.query": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482497\",\"payment\":{\"amount\":23456,\"barCode\":\"34195819600000000621090063571277307144464000\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"sword sharpening\",\"fee\":200,\"id\":\"5155165527080960\",\"line\":\"34191.09008 63571.277308 71444.640008 5 81960000000062\",\"scheduled\":\"2026-10-28\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"]},\"type\":\"success\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&paymentIds=5155165527080960&types=success",
+          "queryRaw": "limit=5&types=success&paymentIds=5155165527080960",
+          "url": "https://sandbox.api.starkbank.com/v2/boleto-payment/log"
+        }
+      ]
+    },
+    "boletopayment.page": {
+      "hydrated": [
+        "{\"amount\":23456,\"barCode\":\"34195819600000000621090063571277307144464000\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"sword sharpening\",\"fee\":200,\"id\":\"5155165527080960\",\"line\":\"34191.09008 63571.277308 71444.640008 5 81960000000062\",\"scheduled\":\"2026-10-28\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"]}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/boleto-payment"
+        }
+      ]
+    },
+    "boletopayment.pdf": {
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/boleto-payment/5155165527080960/pdf"
+        }
+      ]
+    },
+    "boletopayment.query": {
+      "hydrated": [
+        "{\"amount\":23456,\"barCode\":\"34195819600000000621090063571277307144464000\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"sword sharpening\",\"fee\":200,\"id\":\"5155165527080960\",\"line\":\"34191.09008 63571.277308 71444.640008 5 81960000000062\",\"scheduled\":\"2026-10-28\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"]}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&status=success&tags=war%2Csupply",
+          "queryRaw": "limit=5&tags=war%2Csupply&status=success",
+          "url": "https://sandbox.api.starkbank.com/v2/boleto-payment"
+        }
+      ]
+    },
+    "brcodepayment.create": {
+      "hydrated": [
+        "{\"amount\":23456,\"brcode\":\"00020126580014br.gov.bcb.pix0136a629532e-7693-4846-852d-1bbff817b5a8520400005303986540510.005802BR5908T'Challa6009Sao Paulo62090505123456304B14A\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"sword sharpening\",\"fee\":50,\"id\":\"5155165527080960\",\"name\":\"Tony Stark\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"012.345.678-90\",\"transactionIds\":[\"19827356981273\"],\"type\":\"dynamic\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "{\"payments\":[{\"amount\":23456,\"brcode\":\"00020126580014br.gov.bcb.pix0136a629532e-7693-4846-852d-1bbff817b5a8520400005303986540510.005802BR5908T'Challa6009Sao Paulo62090505123456304B14A\",\"description\":\"sword sharpening\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"012.345.678-90\"}]}",
+          "bodyRaw": "{\"payments\": [{\"amount\": 23456, \"brcode\": \"00020126580014br.gov.bcb.pix0136a629532e-7693-4846-852d-1bbff817b5a8520400005303986540510.005802BR5908T'Challa6009Sao Paulo62090505123456304B14A\", \"description\": \"sword sharpening\", \"rules\": [{\"key\": \"resendingLimit\", \"value\": 5}], \"scheduled\": \"2026-10-28\", \"tags\": [\"war\", \"supply\"], \"taxId\": \"012.345.678-90\"}]}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/brcode-payment"
+        }
+      ]
+    },
+    "brcodepayment.get": {
+      "hydrated": "{\"amount\":23456,\"brcode\":\"00020126580014br.gov.bcb.pix0136a629532e-7693-4846-852d-1bbff817b5a8520400005303986540510.005802BR5908T'Challa6009Sao Paulo62090505123456304B14A\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"sword sharpening\",\"fee\":50,\"id\":\"5155165527080960\",\"name\":\"Tony Stark\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"012.345.678-90\",\"transactionIds\":[\"19827356981273\"],\"type\":\"dynamic\",\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/brcode-payment/5155165527080960"
+        }
+      ]
+    },
+    "brcodepayment.log.get": {
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482498\",\"payment\":{\"amount\":23456,\"brcode\":\"00020126580014br.gov.bcb.pix0136a629532e-7693-4846-852d-1bbff817b5a8520400005303986540510.005802BR5908T'Challa6009Sao Paulo62090505123456304B14A\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"sword sharpening\",\"fee\":50,\"id\":\"5155165527080960\",\"name\":\"Tony Stark\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"012.345.678-90\",\"transactionIds\":[\"19827356981273\"],\"type\":\"dynamic\",\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"success\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/brcode-payment/log/6341320293482498"
+        }
+      ]
+    },
+    "brcodepayment.log.page": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482498\",\"payment\":{\"amount\":23456,\"brcode\":\"00020126580014br.gov.bcb.pix0136a629532e-7693-4846-852d-1bbff817b5a8520400005303986540510.005802BR5908T'Challa6009Sao Paulo62090505123456304B14A\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"sword sharpening\",\"fee\":50,\"id\":\"5155165527080960\",\"name\":\"Tony Stark\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"012.345.678-90\",\"transactionIds\":[\"19827356981273\"],\"type\":\"dynamic\",\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"success\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/brcode-payment/log"
+        }
+      ]
+    },
+    "brcodepayment.log.query": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482498\",\"payment\":{\"amount\":23456,\"brcode\":\"00020126580014br.gov.bcb.pix0136a629532e-7693-4846-852d-1bbff817b5a8520400005303986540510.005802BR5908T'Challa6009Sao Paulo62090505123456304B14A\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"sword sharpening\",\"fee\":50,\"id\":\"5155165527080960\",\"name\":\"Tony Stark\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"012.345.678-90\",\"transactionIds\":[\"19827356981273\"],\"type\":\"dynamic\",\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"success\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&paymentIds=5155165527080960&types=success",
+          "queryRaw": "limit=5&types=success&paymentIds=5155165527080960",
+          "url": "https://sandbox.api.starkbank.com/v2/brcode-payment/log"
+        }
+      ]
+    },
+    "brcodepayment.page": {
+      "hydrated": [
+        "{\"amount\":23456,\"brcode\":\"00020126580014br.gov.bcb.pix0136a629532e-7693-4846-852d-1bbff817b5a8520400005303986540510.005802BR5908T'Challa6009Sao Paulo62090505123456304B14A\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"sword sharpening\",\"fee\":50,\"id\":\"5155165527080960\",\"name\":\"Tony Stark\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"012.345.678-90\",\"transactionIds\":[\"19827356981273\"],\"type\":\"dynamic\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/brcode-payment"
+        }
+      ]
+    },
+    "brcodepayment.pdf": {
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/brcode-payment/5155165527080960/pdf"
+        }
+      ]
+    },
+    "brcodepayment.query": {
+      "hydrated": [
+        "{\"amount\":23456,\"brcode\":\"00020126580014br.gov.bcb.pix0136a629532e-7693-4846-852d-1bbff817b5a8520400005303986540510.005802BR5908T'Challa6009Sao Paulo62090505123456304B14A\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"sword sharpening\",\"fee\":50,\"id\":\"5155165527080960\",\"name\":\"Tony Stark\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"012.345.678-90\",\"transactionIds\":[\"19827356981273\"],\"type\":\"dynamic\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&status=success&tags=war%2Csupply",
+          "queryRaw": "limit=5&tags=war%2Csupply&status=success",
+          "url": "https://sandbox.api.starkbank.com/v2/brcode-payment"
+        }
+      ]
+    },
+    "brcodepayment.update": {
+      "hydrated": "{\"amount\":23456,\"brcode\":\"00020126580014br.gov.bcb.pix0136a629532e-7693-4846-852d-1bbff817b5a8520400005303986540510.005802BR5908T'Challa6009Sao Paulo62090505123456304B14A\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"sword sharpening\",\"fee\":50,\"id\":\"5155165527080960\",\"name\":\"Tony Stark\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"012.345.678-90\",\"transactionIds\":[\"19827356981273\"],\"type\":\"dynamic\",\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "{\"status\":\"canceled\"}",
+          "bodyRaw": "{\"status\": \"canceled\"}",
+          "method": "PATCH",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/brcode-payment/5155165527080960"
+        }
+      ]
+    },
     "event.attempt.get": {
       "hydrated": "{\"code\":\"500\",\"created\":\"2026-09-16T12:00:00+00:00\",\"eventId\":\"5764898044149760\",\"id\":\"1616161616161616\",\"message\":\"Internal Server Error\",\"webhookId\":\"6178044066660352\"}",
       "requests": [
@@ -548,6 +926,318 @@
         }
       ],
       "cursor": ""
+    },
+    "boleto": {
+      "boleto": {
+        "amount": 23456,
+        "barCode": "34195819600000000621090063571277307144464000",
+        "city": "Sao Paulo",
+        "created": "2026-09-16T12:00:00+00:00",
+        "descriptions": [
+          {
+            "amount": 1234,
+            "text": "sword sharpening"
+          }
+        ],
+        "discounts": [
+          {
+            "date": "2026-10-01",
+            "percentage": 10.0
+          }
+        ],
+        "district": "Bela Vista",
+        "due": "2026-10-28",
+        "fee": 200,
+        "fine": 2.5,
+        "id": "5155165527080960",
+        "interest": 1.0,
+        "line": "34191.09008 63571.277308 71444.640008 5 81960000000062",
+        "name": "Anthony Edward Stark",
+        "ourNumber": "10131474",
+        "overdueLimit": 59,
+        "receiverName": "Iron Bank S.A.",
+        "receiverTaxId": "20.018.183/0001-80",
+        "stateCode": "SP",
+        "status": "registered",
+        "streetLine1": "Av. Paulista, 200",
+        "streetLine2": "Apto. 123",
+        "tags": [
+          "war",
+          "supply"
+        ],
+        "taxId": "012.345.678-90",
+        "transactionIds": [
+          "19827356981273"
+        ],
+        "workspaceId": "4545454545454545",
+        "zipCode": "01311-200"
+      }
+    },
+    "boletoLog": {
+      "log": {
+        "boleto": {
+          "amount": 23456,
+          "barCode": "34195819600000000621090063571277307144464000",
+          "city": "Sao Paulo",
+          "created": "2026-09-16T12:00:00+00:00",
+          "descriptions": [
+            {
+              "amount": 1234,
+              "text": "sword sharpening"
+            }
+          ],
+          "discounts": [
+            {
+              "date": "2026-10-01",
+              "percentage": 10.0
+            }
+          ],
+          "district": "Bela Vista",
+          "due": "2026-10-28",
+          "fee": 200,
+          "fine": 2.5,
+          "id": "5155165527080960",
+          "interest": 1.0,
+          "line": "34191.09008 63571.277308 71444.640008 5 81960000000062",
+          "name": "Anthony Edward Stark",
+          "ourNumber": "10131474",
+          "overdueLimit": 59,
+          "receiverName": "Iron Bank S.A.",
+          "receiverTaxId": "20.018.183/0001-80",
+          "stateCode": "SP",
+          "status": "registered",
+          "streetLine1": "Av. Paulista, 200",
+          "streetLine2": "Apto. 123",
+          "tags": [
+            "war",
+            "supply"
+          ],
+          "taxId": "012.345.678-90",
+          "transactionIds": [
+            "19827356981273"
+          ],
+          "workspaceId": "4545454545454545",
+          "zipCode": "01311-200"
+        },
+        "created": "2026-09-16T12:00:00+00:00",
+        "errors": [],
+        "id": "6341320293482496",
+        "type": "registered"
+      }
+    },
+    "boletoPayment": {
+      "payment": {
+        "amount": 23456,
+        "barCode": "34195819600000000621090063571277307144464000",
+        "created": "2026-09-16T12:00:00+00:00",
+        "description": "sword sharpening",
+        "fee": 200,
+        "id": "5155165527080960",
+        "line": "34191.09008 63571.277308 71444.640008 5 81960000000062",
+        "scheduled": "2026-10-28",
+        "status": "success",
+        "tags": [
+          "war",
+          "supply"
+        ],
+        "taxId": "20.018.183/0001-80",
+        "transactionIds": [
+          "19827356981273"
+        ]
+      }
+    },
+    "boletoPaymentLog": {
+      "log": {
+        "created": "2026-09-16T12:00:00+00:00",
+        "errors": [],
+        "id": "6341320293482497",
+        "payment": {
+          "amount": 23456,
+          "barCode": "34195819600000000621090063571277307144464000",
+          "created": "2026-09-16T12:00:00+00:00",
+          "description": "sword sharpening",
+          "fee": 200,
+          "id": "5155165527080960",
+          "line": "34191.09008 63571.277308 71444.640008 5 81960000000062",
+          "scheduled": "2026-10-28",
+          "status": "success",
+          "tags": [
+            "war",
+            "supply"
+          ],
+          "taxId": "20.018.183/0001-80",
+          "transactionIds": [
+            "19827356981273"
+          ]
+        },
+        "type": "success"
+      }
+    },
+    "boletoPayments": {
+      "payments": [
+        {
+          "amount": 23456,
+          "barCode": "34195819600000000621090063571277307144464000",
+          "created": "2026-09-16T12:00:00+00:00",
+          "description": "sword sharpening",
+          "fee": 200,
+          "id": "5155165527080960",
+          "line": "34191.09008 63571.277308 71444.640008 5 81960000000062",
+          "scheduled": "2026-10-28",
+          "status": "success",
+          "tags": [
+            "war",
+            "supply"
+          ],
+          "taxId": "20.018.183/0001-80",
+          "transactionIds": [
+            "19827356981273"
+          ]
+        }
+      ]
+    },
+    "boletos": {
+      "boletos": [
+        {
+          "amount": 23456,
+          "barCode": "34195819600000000621090063571277307144464000",
+          "city": "Sao Paulo",
+          "created": "2026-09-16T12:00:00+00:00",
+          "descriptions": [
+            {
+              "amount": 1234,
+              "text": "sword sharpening"
+            }
+          ],
+          "discounts": [
+            {
+              "date": "2026-10-01",
+              "percentage": 10.0
+            }
+          ],
+          "district": "Bela Vista",
+          "due": "2026-10-28",
+          "fee": 200,
+          "fine": 2.5,
+          "id": "5155165527080960",
+          "interest": 1.0,
+          "line": "34191.09008 63571.277308 71444.640008 5 81960000000062",
+          "name": "Anthony Edward Stark",
+          "ourNumber": "10131474",
+          "overdueLimit": 59,
+          "receiverName": "Iron Bank S.A.",
+          "receiverTaxId": "20.018.183/0001-80",
+          "stateCode": "SP",
+          "status": "registered",
+          "streetLine1": "Av. Paulista, 200",
+          "streetLine2": "Apto. 123",
+          "tags": [
+            "war",
+            "supply"
+          ],
+          "taxId": "012.345.678-90",
+          "transactionIds": [
+            "19827356981273"
+          ],
+          "workspaceId": "4545454545454545",
+          "zipCode": "01311-200"
+        }
+      ]
+    },
+    "brcodePayment": {
+      "payment": {
+        "amount": 23456,
+        "brcode": "00020126580014br.gov.bcb.pix0136a629532e-7693-4846-852d-1bbff817b5a8520400005303986540510.005802BR5908T'Challa6009Sao Paulo62090505123456304B14A",
+        "created": "2026-09-16T12:00:00+00:00",
+        "description": "sword sharpening",
+        "fee": 50,
+        "id": "5155165527080960",
+        "name": "Tony Stark",
+        "rules": [
+          {
+            "key": "resendingLimit",
+            "value": 5
+          }
+        ],
+        "scheduled": "2026-10-28",
+        "status": "success",
+        "tags": [
+          "war",
+          "supply"
+        ],
+        "taxId": "012.345.678-90",
+        "transactionIds": [
+          "19827356981273"
+        ],
+        "type": "dynamic",
+        "updated": "2026-09-17T12:00:00+00:00"
+      }
+    },
+    "brcodePaymentLog": {
+      "log": {
+        "created": "2026-09-16T12:00:00+00:00",
+        "errors": [],
+        "id": "6341320293482498",
+        "payment": {
+          "amount": 23456,
+          "brcode": "00020126580014br.gov.bcb.pix0136a629532e-7693-4846-852d-1bbff817b5a8520400005303986540510.005802BR5908T'Challa6009Sao Paulo62090505123456304B14A",
+          "created": "2026-09-16T12:00:00+00:00",
+          "description": "sword sharpening",
+          "fee": 50,
+          "id": "5155165527080960",
+          "name": "Tony Stark",
+          "rules": [
+            {
+              "key": "resendingLimit",
+              "value": 5
+            }
+          ],
+          "scheduled": "2026-10-28",
+          "status": "success",
+          "tags": [
+            "war",
+            "supply"
+          ],
+          "taxId": "012.345.678-90",
+          "transactionIds": [
+            "19827356981273"
+          ],
+          "type": "dynamic",
+          "updated": "2026-09-17T12:00:00+00:00"
+        },
+        "type": "success"
+      }
+    },
+    "brcodePayments": {
+      "payments": [
+        {
+          "amount": 23456,
+          "brcode": "00020126580014br.gov.bcb.pix0136a629532e-7693-4846-852d-1bbff817b5a8520400005303986540510.005802BR5908T'Challa6009Sao Paulo62090505123456304B14A",
+          "created": "2026-09-16T12:00:00+00:00",
+          "description": "sword sharpening",
+          "fee": 50,
+          "id": "5155165527080960",
+          "name": "Tony Stark",
+          "rules": [
+            {
+              "key": "resendingLimit",
+              "value": 5
+            }
+          ],
+          "scheduled": "2026-10-28",
+          "status": "success",
+          "tags": [
+            "war",
+            "supply"
+          ],
+          "taxId": "012.345.678-90",
+          "transactionIds": [
+            "19827356981273"
+          ],
+          "type": "dynamic",
+          "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ]
     },
     "event": {
       "event": {
