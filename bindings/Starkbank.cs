@@ -21,6 +21,50 @@ namespace StarkBank
         public const string StarkbankBalanceCurrency = "currency";
         public const string StarkbankBalanceId = "id";
         public const string StarkbankBalanceUpdated = "updated";
+        public const string StarkbankBoletoAmount = "amount";
+        public const string StarkbankBoletoBarCode = "barCode";
+        public const string StarkbankBoletoCity = "city";
+        public const string StarkbankBoletoCreated = "created";
+        public const string StarkbankBoletoDescriptions = "descriptions";
+        public const string StarkbankBoletoDiscounts = "discounts";
+        public const string StarkbankBoletoDistrict = "district";
+        public const string StarkbankBoletoDue = "due";
+        public const string StarkbankBoletoFee = "fee";
+        public const string StarkbankBoletoFine = "fine";
+        public const string StarkbankBoletoId = "id";
+        public const string StarkbankBoletoInterest = "interest";
+        public const string StarkbankBoletoLine = "line";
+        public const string StarkbankBoletoLogBoleto = "boleto";
+        public const string StarkbankBoletoLogCreated = "created";
+        public const string StarkbankBoletoLogErrors = "errors";
+        public const string StarkbankBoletoLogId = "id";
+        public const string StarkbankBoletoLogType = "type";
+        public const string StarkbankBoletoName = "name";
+        public const string StarkbankBoletoOurNumber = "ourNumber";
+        public const string StarkbankBoletoOverdueLimit = "overdueLimit";
+        public const string StarkbankBoletoPaymentAmount = "amount";
+        public const string StarkbankBoletoPaymentBarCode = "barCode";
+        public const string StarkbankBoletoPaymentCreated = "created";
+        public const string StarkbankBoletoPaymentDescription = "description";
+        public const string StarkbankBoletoPaymentFee = "fee";
+        public const string StarkbankBoletoPaymentId = "id";
+        public const string StarkbankBoletoPaymentLine = "line";
+        public const string StarkbankBoletoPaymentLogCreated = "created";
+        public const string StarkbankBoletoPaymentLogErrors = "errors";
+        public const string StarkbankBoletoPaymentLogId = "id";
+        public const string StarkbankBoletoPaymentLogPayment = "payment";
+        public const string StarkbankBoletoPaymentLogType = "type";
+        public const string StarkbankBoletoPaymentScheduled = "scheduled";
+        public const string StarkbankBoletoPaymentStatus = "status";
+        public const string StarkbankBoletoPaymentStatusCanceled = "canceled";
+        public const string StarkbankBoletoPaymentStatusConfirmed = "confirmed";
+        public const string StarkbankBoletoPaymentStatusCreated = "created";
+        public const string StarkbankBoletoPaymentStatusFailed = "failed";
+        public const string StarkbankBoletoPaymentStatusProcessing = "processing";
+        public const string StarkbankBoletoPaymentStatusSuccess = "success";
+        public const string StarkbankBoletoPaymentTags = "tags";
+        public const string StarkbankBoletoPaymentTaxId = "taxId";
+        public const string StarkbankBoletoPaymentTransactionIds = "transactionIds";
         public const string StarkbankBoletoPreviewAmount = "amount";
         public const string StarkbankBoletoPreviewBarCode = "barCode";
         public const string StarkbankBoletoPreviewDiscountAmount = "discountAmount";
@@ -36,6 +80,50 @@ namespace StarkBank
         public const string StarkbankBoletoPreviewReceiverTaxId = "receiverTaxId";
         public const string StarkbankBoletoPreviewStatus = "status";
         public const string StarkbankBoletoPreviewTaxId = "taxId";
+        public const string StarkbankBoletoReceiverName = "receiverName";
+        public const string StarkbankBoletoReceiverTaxId = "receiverTaxId";
+        public const string StarkbankBoletoStateCode = "stateCode";
+        public const string StarkbankBoletoStatus = "status";
+        public const string StarkbankBoletoStatusCanceled = "canceled";
+        public const string StarkbankBoletoStatusCreated = "created";
+        public const string StarkbankBoletoStatusOverdue = "overdue";
+        public const string StarkbankBoletoStatusPaid = "paid";
+        public const string StarkbankBoletoStatusRegistered = "registered";
+        public const string StarkbankBoletoStreetLine1 = "streetLine1";
+        public const string StarkbankBoletoStreetLine2 = "streetLine2";
+        public const string StarkbankBoletoTags = "tags";
+        public const string StarkbankBoletoTaxId = "taxId";
+        public const string StarkbankBoletoTransactionIds = "transactionIds";
+        public const string StarkbankBoletoWorkspaceId = "workspaceId";
+        public const string StarkbankBoletoZipCode = "zipCode";
+        public const string StarkbankBrcodePaymentAmount = "amount";
+        public const string StarkbankBrcodePaymentBrcode = "brcode";
+        public const string StarkbankBrcodePaymentCreated = "created";
+        public const string StarkbankBrcodePaymentDescription = "description";
+        public const string StarkbankBrcodePaymentFee = "fee";
+        public const string StarkbankBrcodePaymentId = "id";
+        public const string StarkbankBrcodePaymentLogCreated = "created";
+        public const string StarkbankBrcodePaymentLogErrors = "errors";
+        public const string StarkbankBrcodePaymentLogId = "id";
+        public const string StarkbankBrcodePaymentLogPayment = "payment";
+        public const string StarkbankBrcodePaymentLogType = "type";
+        public const string StarkbankBrcodePaymentName = "name";
+        public const string StarkbankBrcodePaymentRules = "rules";
+        public const string StarkbankBrcodePaymentRuleKey = "key";
+        public const string StarkbankBrcodePaymentRuleValue = "value";
+        public const string StarkbankBrcodePaymentScheduled = "scheduled";
+        public const string StarkbankBrcodePaymentStatus = "status";
+        public const string StarkbankBrcodePaymentStatusCanceled = "canceled";
+        public const string StarkbankBrcodePaymentStatusConfirmed = "confirmed";
+        public const string StarkbankBrcodePaymentStatusCreated = "created";
+        public const string StarkbankBrcodePaymentStatusFailed = "failed";
+        public const string StarkbankBrcodePaymentStatusProcessing = "processing";
+        public const string StarkbankBrcodePaymentStatusSuccess = "success";
+        public const string StarkbankBrcodePaymentTags = "tags";
+        public const string StarkbankBrcodePaymentTaxId = "taxId";
+        public const string StarkbankBrcodePaymentTransactionIds = "transactionIds";
+        public const string StarkbankBrcodePaymentType = "type";
+        public const string StarkbankBrcodePaymentUpdated = "updated";
         public const string StarkbankBrcodePreviewAccountType = "accountType";
         public const string StarkbankBrcodePreviewAllowChange = "allowChange";
         public const string StarkbankBrcodePreviewAmount = "amount";
@@ -243,6 +331,117 @@ namespace StarkBank
 
         [DllImport(Library, EntryPoint = "starkbank_balance_get", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankBalanceGet(IntPtr client, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_create", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoCreate(IntPtr client, IntPtr boletos, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_delete", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoDelete(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_log_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoLogGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_log_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoLogPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_log_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoLogParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_log_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoLogQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_payment_create", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoPaymentCreate(IntPtr client, IntPtr payments, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_payment_delete", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoPaymentDelete(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_payment_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoPaymentGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_payment_log_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoPaymentLogGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_payment_log_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoPaymentLogPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_payment_log_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoPaymentLogParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_payment_log_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoPaymentLogQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_payment_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoPaymentNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_payment_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoPaymentPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_payment_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoPaymentParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_payment_pdf", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoPaymentPdf(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out UIntPtr out_len, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_payment_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoPaymentQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_pdf", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoPdf(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, [MarshalAs(UnmanagedType.LPStr)] string layout, [MarshalAs(UnmanagedType.LPStr)] string hidden_fields, out IntPtr @out, out UIntPtr out_len, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_brcode_payment_create", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBrcodePaymentCreate(IntPtr client, IntPtr payments, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_brcode_payment_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBrcodePaymentGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_brcode_payment_log_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBrcodePaymentLogGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_brcode_payment_log_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBrcodePaymentLogPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_brcode_payment_log_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBrcodePaymentLogParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_brcode_payment_log_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBrcodePaymentLogQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_brcode_payment_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBrcodePaymentNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_brcode_payment_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBrcodePaymentPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_brcode_payment_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBrcodePaymentParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_brcode_payment_pdf", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBrcodePaymentPdf(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out UIntPtr out_len, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_brcode_payment_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBrcodePaymentQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_brcode_payment_rule_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBrcodePaymentRuleNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_brcode_payment_update", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBrcodePaymentUpdate(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, IntPtr patch, out IntPtr @out, out IntPtr errors);
 
         [DllImport(Library, EntryPoint = "starkbank_client_cache_clear", CallingConvention = CallingConvention.Cdecl)]
         public static extern void StarkbankClientCacheClear(IntPtr client);

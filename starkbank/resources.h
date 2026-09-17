@@ -18,6 +18,9 @@
     R(boleto_payment)          \
     R(boleto_payment_log)      \
     R(boleto_preview)          \
+    R(brcode_payment)          \
+    R(brcode_payment_log)      \
+    R(brcode_payment_rule)     \
     R(brcode_preview)          \
     R(event)                   \
     R(event_attempt)           \

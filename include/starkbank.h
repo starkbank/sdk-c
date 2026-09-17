@@ -1414,6 +1414,119 @@ STARKBANK_API int STARKBANK_CALL starkbank_boleto_payment_log_page(const starkba
     const starkbank_entity *params, starkbank_list **out, char **out_cursor,
     starkbank_errors **errors);
 
+/* =========================================================================
+ *                              BrcodePayment
+ * =========================================================================
+ *
+ * Fields (wire keys; * = required on create, + = also accepted in an update).
+ *
+ *   brcode* taxId* description* STRING
+ *   amount AMOUNT           scheduled DATE          tags LIST_STRING
+ *   rules LIST_RESOURCE("BrcodePayment.Rule")
+ *   id name type STRING (ro)                        status+ STRING
+ *   transactionIds LIST_STRING (ro)                 fee AMOUNT (ro)
+ *   updated created DATETIME (ro)
+ *
+ * Query keys: limit, after, before, tags, ids, status.
+ *
+ * status is PATCH and neither CREATE nor REQUIRED: sdk-python's update()
+ * accepts only status, to cancel a payment before it is processed - the same
+ * shape Invoice.status has, and for the same reason.
+ *
+ * scheduled is DATE: sdk-python calls check_date despite a docstring that
+ * still reads "date, datetime.datetime or string" - the coercion is
+ * normative, not the prose beside it.
+ */
+
+#define STARKBANK_BRCODE_PAYMENT_BRCODE           "brcode"
+#define STARKBANK_BRCODE_PAYMENT_TAX_ID           "taxId"
+#define STARKBANK_BRCODE_PAYMENT_DESCRIPTION      "description"
+#define STARKBANK_BRCODE_PAYMENT_AMOUNT           "amount"
+#define STARKBANK_BRCODE_PAYMENT_SCHEDULED        "scheduled"
+#define STARKBANK_BRCODE_PAYMENT_TAGS             "tags"
+#define STARKBANK_BRCODE_PAYMENT_RULES            "rules"
+#define STARKBANK_BRCODE_PAYMENT_ID               "id"
+#define STARKBANK_BRCODE_PAYMENT_NAME             "name"
+#define STARKBANK_BRCODE_PAYMENT_STATUS           "status"
+#define STARKBANK_BRCODE_PAYMENT_TYPE             "type"
+#define STARKBANK_BRCODE_PAYMENT_TRANSACTION_IDS  "transactionIds"
+#define STARKBANK_BRCODE_PAYMENT_FEE              "fee"
+#define STARKBANK_BRCODE_PAYMENT_UPDATED          "updated"
+#define STARKBANK_BRCODE_PAYMENT_CREATED          "created"
+
+#define STARKBANK_BRCODE_PAYMENT_STATUS_CREATED     "created"
+#define STARKBANK_BRCODE_PAYMENT_STATUS_PROCESSING  "processing"
+#define STARKBANK_BRCODE_PAYMENT_STATUS_CONFIRMED   "confirmed"
+#define STARKBANK_BRCODE_PAYMENT_STATUS_SUCCESS     "success"
+#define STARKBANK_BRCODE_PAYMENT_STATUS_FAILED      "failed"
+#define STARKBANK_BRCODE_PAYMENT_STATUS_CANCELED    "canceled"
+
+STARKBANK_API int STARKBANK_CALL starkbank_brcode_payment_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_brcode_payment_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_brcode_payment_create(const starkbank_client *client,
+    const starkbank_list *payments, starkbank_list **out, starkbank_errors **errors);
+/* Processing is asynchronous: a freshly created BrcodePayment's amount is
+   initially zero. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_brcode_payment_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_brcode_payment_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_brcode_payment_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_brcode_payment_update(const starkbank_client *client,
+    const char *id, const starkbank_entity *patch, starkbank_entity **out,
+    starkbank_errors **errors);
+/* status is the only patchable key; the only legal value is "canceled", and
+   only before the payment has been paid. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_brcode_payment_pdf(const starkbank_client *client,
+    const char *id, unsigned char **out, size_t *out_len, starkbank_errors **errors);
+/* Valid only once the payment carries status "success", "processing" or
+   "created". Free with starkbank_free. There is no starkbank_brcode_payment_delete:
+   sdk-python has no delete() for this resource, cancellation is the update above. */
+
+/* ------------------------------------------------------- BrcodePayment.Rule */
+/* Modifies a BrcodePayment's behaviour; passed in the "rules" list at create.
+ * Fields: key* STRING, value* NUMBER. ex: key "resendingLimit", value 5.
+ * Note the value type: a BrcodePayment.Rule value is a number, like
+ * Transfer.Rule's and unlike Invoice.Rule's list of strings. */
+#define STARKBANK_BRCODE_PAYMENT_RULE_KEY    "key"
+#define STARKBANK_BRCODE_PAYMENT_RULE_VALUE  "value"
+
+STARKBANK_API int STARKBANK_CALL starkbank_brcode_payment_rule_new(starkbank_entity **out);
+
+/* ------------------------------------------------------ BrcodePaymentLog */
+/*
+ * Resource "BrcodePaymentLog"; endpoint "brcode-payment/log", derived at run
+ * time.
+ * Fields: id STRING (ro), created DATETIME (ro), type STRING (ro),
+ *         errors LIST_STRING (ro), payment RESOURCE("BrcodePayment") (ro).
+ * Query keys: limit, after, before, types, paymentIds.
+ *
+ * There is no brcodepayment.Log pdf: sdk-python does not have one, and python
+ * is normative for the verb surface. The receipt is starkbank_brcode_payment_pdf.
+ */
+#define STARKBANK_BRCODE_PAYMENT_LOG_ID       "id"
+#define STARKBANK_BRCODE_PAYMENT_LOG_CREATED  "created"
+#define STARKBANK_BRCODE_PAYMENT_LOG_TYPE     "type"
+#define STARKBANK_BRCODE_PAYMENT_LOG_ERRORS   "errors"
+#define STARKBANK_BRCODE_PAYMENT_LOG_PAYMENT  "payment"
+
+STARKBANK_API int STARKBANK_CALL starkbank_brcode_payment_log_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_brcode_payment_log_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_brcode_payment_log_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_brcode_payment_log_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
 #ifdef __cplusplus
 }
 #endif

@@ -481,6 +481,7 @@ static void testRegistry(void)
 {
     static const char *const expected[] = {
         "Balance", "Boleto", "BoletoLog", "BoletoPayment", "BoletoPaymentLog",
+        "BrcodePayment", "BrcodePaymentLog", "BrcodePayment.Rule",
         "Event", "EventAttempt", "Invoice", "InvoiceLog",
         "Invoice.Payment", "Invoice.Rule", "PaymentPreview",
         "PaymentPreview.BoletoPreview", "PaymentPreview.BrcodePreview",
@@ -1232,6 +1233,163 @@ static void testBoletoPaymentLog(void)
     starkbank_client_free(client);
 }
 
+/* ========================================================= BrcodePayment */
+
+static void testBrcodePayment(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_list *batch = NULL;
+    starkbank_list *created = NULL;
+    starkbank_list *page = NULL;
+    starkbank_entity *payment = NULL;
+    starkbank_entity *rule = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    unsigned char *blob = NULL;
+    size_t blobLength = 0;
+
+    startGroup("BrcodePayment");
+    client = newClient(&fake);
+    replies(&fake, responseBody("brcodePayments"), NULL);
+
+    starkbank_brcode_payment_new(&payment);
+    starkbank_entity_set_string(payment, STARKBANK_BRCODE_PAYMENT_BRCODE,
+        "00020126580014br.gov.bcb.pix0136a629532e-7693-4846-852d-1bbff817b5a8"
+        "520400005303986540510.005802BR5908T'Challa6009Sao Paulo62090505123456304B14A");
+    starkbank_entity_set_string(payment, STARKBANK_BRCODE_PAYMENT_TAX_ID, "012.345.678-90");
+    starkbank_entity_set_string(payment, STARKBANK_BRCODE_PAYMENT_DESCRIPTION,
+                                "sword sharpening");
+    starkbank_entity_set_amount(payment, STARKBANK_BRCODE_PAYMENT_AMOUNT, 23456);
+    starkbank_entity_set_date(payment, STARKBANK_BRCODE_PAYMENT_SCHEDULED, 2026, 10, 28);
+    starkbank_entity_append_string(payment, STARKBANK_BRCODE_PAYMENT_TAGS, "war");
+    starkbank_entity_append_string(payment, STARKBANK_BRCODE_PAYMENT_TAGS, "supply");
+
+    starkbank_brcode_payment_rule_new(&rule);
+    starkbank_entity_set_string(rule, STARKBANK_BRCODE_PAYMENT_RULE_KEY, "resendingLimit");
+    /* A BrcodePayment.Rule value is a number, like Transfer.Rule's. */
+    starkbank_entity_set_number(rule, STARKBANK_BRCODE_PAYMENT_RULE_VALUE, 5);
+    starkbank_entity_append_entity(payment, STARKBANK_BRCODE_PAYMENT_RULES, rule);
+
+    starkbank_list_new(&batch);
+    starkbank_list_append(batch, payment);
+    check("create returns the created list",
+          starkbank_brcode_payment_create(client, batch, &created, NULL) == STARKBANK_OK
+          && starkbank_list_count(created) == 1, NULL);
+    checkRequests("brcodepayment.create", &fake);
+    checkHydration("brcodepayment.create", 0, starkbank_list_at(created, 0));
+    check("a created BrcodePayment carries no unknown key",
+          starkbank_entity_unknown_count(starkbank_list_at(created, 0)) == 0, NULL);
+    starkbank_list_free(batch);
+    starkbank_list_free(created);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("brcodePayment"), NULL);
+    starkbank_brcode_payment_get(client, "5155165527080960", &payment, NULL);
+    checkRequests("brcodepayment.get", &fake);
+    checkHydration("brcodepayment.get", 0, payment);
+    starkbank_entity_free(payment);
+    payment = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"payments\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_brcode_payment_params_new(&params);
+    starkbank_entity_set_string(params, "status", "success");
+    starkbank_entity_append_string(params, "tags", "war");
+    starkbank_entity_append_string(params, "tags", "supply");
+    starkbank_brcode_payment_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("brcodepayment.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"payments\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_brcode_payment_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_brcode_payment_page(client, params, &page, NULL, NULL);
+    checkRequests("brcodepayment.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("brcodePayment"), NULL);
+    starkbank_brcode_payment_params_new(&params);
+    starkbank_entity_set_string(params, STARKBANK_BRCODE_PAYMENT_STATUS, "canceled");
+    check("update patches only status",
+          starkbank_brcode_payment_update(client, "5155165527080960", params, &payment, NULL)
+              == STARKBANK_OK, NULL);
+    checkRequests("brcodepayment.update", &fake);
+    starkbank_entity_free(payment);
+    payment = NULL;
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "%PDF-1.4 fake", NULL);
+    starkbank_brcode_payment_pdf(client, "5155165527080960", &blob, &blobLength, NULL);
+    checkRequests("brcodepayment.pdf", &fake);
+    starkbank_free(blob);
+    starkbank_client_free(client);
+}
+
+static void testBrcodePaymentLog(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *log = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_list *page = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *nested = NULL;
+
+    startGroup("brcodepayment.Log");
+    client = newClient(&fake);
+    replies(&fake, responseBody("brcodePaymentLog"), NULL);
+    starkbank_brcode_payment_log_get(client, "6341320293482498", &log, NULL);
+    checkRequests("brcodepayment.log.get", &fake);
+    checkHydration("brcodepayment.log.get", 0, log);
+    check("the nested payment is a tagged BrcodePayment",
+          starkbank_entity_entity(log, STARKBANK_BRCODE_PAYMENT_LOG_PAYMENT, &nested)
+              == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested), "BrcodePayment"), NULL);
+    starkbank_entity_free(log);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_brcode_payment_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_append_string(params, "types", "success");
+    starkbank_entity_append_string(params, "paymentIds", "5155165527080960");
+    starkbank_brcode_payment_log_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("brcodepayment.log.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_brcode_payment_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_brcode_payment_log_page(client, params, &page, NULL, NULL);
+    checkRequests("brcodepayment.log.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
 /* ================================================================ Event */
 
 static void testEvent(void)
@@ -1911,6 +2069,8 @@ int main(void)
     testBoletoLog();
     testBoletoPayment();
     testBoletoPaymentLog();
+    testBrcodePayment();
+    testBrcodePaymentLog();
     testEvent();
     testEventAttempt();
     testEventParse();
