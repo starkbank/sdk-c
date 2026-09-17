@@ -87,16 +87,6 @@
       "owner": "eduardo.santos@starkbank.com",
       "resolution": "python",
       "reason": "sdk-python contradicts itself: Transfer.__init__ takes account_type positionally with no default, while its docstring lists it under '## Parameters (optional)' with default 'checking'. The table follows the docstring and leaves REQUIRED off, because the API defaults it and refusing a create locally that the API would accept is the worse failure. Revisit if python ever makes the two halves agree."
-    },
-    {
-      "key": "resource.unjoined:verifiedaccount:docs",
-      "owner": "eduardo.santos@starkbank.com",
-      "reason": "sdk-python#170 shipped VerifiedAccount on 2026-09-16; the docs page exists in starkbank/app-docs#69 (re-land after the development rollback) and is not on development yet. Remove this entry when #69 merges \u2014 the checker will report it STALE."
-    },
-    {
-      "key": "resource.unjoined:verifiedtransfer:docs",
-      "owner": "eduardo.santos@starkbank.com",
-      "reason": "sdk-python#170 shipped VerifiedTransfer on 2026-09-16; the docs page exists in starkbank/app-docs#69 (re-land after the development rollback) and is not on development yet. Remove this entry when #69 merges \u2014 the checker will report it STALE."
     }
   ]
 }
