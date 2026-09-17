@@ -952,6 +952,68 @@ static void testIter(void)
     starkbank_client_free(client);
 }
 
+/* ============================================================ post_single */
+
+/*
+ * The shape Webhook has and nothing else in the bank surface does. What is
+ * asserted here is the body: one object, sent as itself. Not a list, and not
+ * wrapped under the singular key either - the envelope key belongs to the
+ * response, and core-c's starkcore_rest_post_single is where that is decided,
+ * exactly as core-python's post_single decides it.
+ */
+static void testPostSingle(void)
+{
+    starkbank_client *client = NULL;
+    FakeTransport fake;
+    starkbank_entity *gadget = NULL;
+    starkbank_entity *created = NULL;
+    starkbank_errors *errors = NULL;
+    int status;
+
+    startGroup("post_single");
+    client = newClient(&fake);
+
+    fake.reply = "{\"gadget\":{\"id\":\"7\",\"url\":\"https://example.test/hook\"}}";
+    starkbank_gadget_new(&gadget);
+    starkbank_entity_set_string(gadget, "url", "https://example.test/hook");
+    status = starkbank_gadget_create(client, gadget, &created, &errors);
+    check("create posts one object and hydrates one entity",
+          status == STARKBANK_OK && fake.calls == 1
+          && fake.method == STARKCORE_METHOD_POST
+          && equalStrings(starkbank_entity_resource(created), "Gadget"), fake.url[0]);
+    check("the body is the entity itself: no list and no envelope key",
+          equalStrings(fake.body[0], "{\"url\":\"https://example.test/hook\"}"), fake.body[0]);
+    check("and the entity the caller handed over is still theirs to free",
+          starkbank_entity_json(gadget) != NULL, NULL);
+    starkbank_entity_free(created);
+    created = NULL;
+    starkbank_entity_free(gadget);
+
+    memset(&fake, 0, sizeof(fake));
+    fake.status = 200;
+    fake.reply = "{\"gadget\":{}}";
+    starkbank_gadget_new(&gadget);
+    check("a missing REQUIRED field fails locally and sends nothing",
+          starkbank_gadget_create(client, gadget, &created, NULL) == STARKBANK_ERROR_FIELD
+          && fake.calls == 0 && created == NULL, NULL);
+    starkbank_entity_free(gadget);
+
+    starkbank_widget_new(&gadget);
+    starkbank_entity_set_amount(gadget, "amount", 1);
+    starkbank_entity_set_string(gadget, "name", "Arya Stark");
+    check("an entity of another resource is RESOURCE, not a 400 later",
+          starkbank_gadget_create(client, gadget, &created, NULL) == STARKBANK_ERROR_RESOURCE
+          && fake.calls == 0, NULL);
+    starkbank_entity_free(gadget);
+
+    check("a NULL entity is an argument error, not a crash",
+          starkbank_gadget_create(client, NULL, &created, NULL) == STARKCORE_ERROR_ARGUMENT
+          && created == NULL, NULL);
+    check("and so is a NULL out parameter",
+          starkbank_gadget_create(client, NULL, NULL, NULL) == STARKCORE_ERROR_ARGUMENT, NULL);
+    starkbank_client_free(client);
+}
+
 /* ==================================================== nested and errors */
 
 static void testNested(void)
@@ -1256,6 +1318,7 @@ int main(void)
     testList();
     testVerbs();
     testIter();
+    testPostSingle();
     testNested();
     testErrors();
     testParse();

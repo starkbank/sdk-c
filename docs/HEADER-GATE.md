@@ -77,16 +77,18 @@ houserules: 9 rules, no violations
 gate: C89  (cc -std=c89 -pedantic-errors)
 gate: C++98 (c++ -x c++ -std=c++98)
 gate: cffi
-cffi: 114 declarations parsed, 155 constants read
+cffi: 123 declarations parsed, 216 constants read
 gate: tooling negative cases
 tooling: all cases passed
 gate: bindings regenerate byte-identically
 gate: OK
 ```
 
-114 declarations, 155 constants, and `make check-exports` derives the same 114
+123 declarations, 216 constants, and `make check-exports` derives the same 123
 symbols from the header's `STARKBANK_API` lines with no difference in either
-direction.
+direction. The counts move with the surface - they were 114 and 155 through
+step 4, and Webhook and PaymentPreview added nine entry points in step 5 - so
+they are re-read here rather than restated.
 
 ## Pending a Windows CI runner
 
@@ -436,3 +438,175 @@ committed now so the Windows evidence starts accumulating the day the siblings
 are published, rather than at release; it is still not the week-one experiment
 design risk 2 asks for, which needs a Delphi translator and a real P/Invoke
 round trip.
+
+---
+
+## Step 5: Webhook, PaymentPreview, and the last two REST shapes
+
+Every `starkcore_rest_*` shape the bank SDK uses is now exercised by a table.
+What was missing was `post_single` (Webhook) and a `post_multi` whose response
+hydrates a sub-object chosen at run time (PaymentPreview). Both turned out to
+be engine work: neither resource contains a line of C beyond its table.
+
+### The finding that mattered: post_single sends no envelope
+
+The brief for this step said Webhook's create must send `{"webhook": {...}}`
+rather than `{"webhooks": [...]}`. Half of that is right and half is not, and
+the half that is not is worth writing down because it is the kind of claim
+that gets copied forward.
+
+`core-python`'s `rest.post_single` is four lines and none of them wrap:
+
+```python
+def post_single(..., resource, entity, ...):
+    payload = api_json(entity)
+    json = fetch(..., payload=payload, ...).json()
+    entity_json = json[last_name(resource)]
+```
+
+The **request** is the entity's own object. The singular key is the
+**response** envelope, and `starkcore_rest_post_single` in the frozen core-c
+does exactly the same thing - `sendSingle` casts the entity and sends it,
+then unwraps `last_name` from the reply. So the shape is:
+
+```
+POST /v2/webhook
+{"subscriptions":["transfer","invoice"],"url":"https://webhook.site/..."}
+    -> {"webhook": {...}}
+```
+
+sdk-python is normative for the wire (design §1), core-c is normative for
+envelope keys, and both agree, so sdk-c sends the bare object. This is not
+adjudicated by argument: `tests/reference/slice.json` carries python's own
+`bodyRaw` for `webhook.create`, recorded through the stub transport, and
+`tests/slice.c` compares against it and additionally asserts in plain sight
+that neither `"webhook"` nor `"webhooks"` appears in the body. Mutating
+`starkbankVerbCreateSingle` to add the wrapper fails both assertions.
+
+What the brief was right about is the part that shows in the ABI:
+`starkbank_webhook_create` takes **one entity, not a list**, and borrows it
+rather than taking ownership. A batch of one would have been the wrong
+signature even though it would have produced a legal request.
+
+### Polymorphism generalised from a function to a table
+
+Step 3 gave Event a `starkbankRefFn` - a per-resource C function that read
+`subscription` and looked a name up. PaymentPreview needs the same thing off
+`type`, and a second copy of that function would have been the first sign of
+the "generic engine plus a small hand-written tail" story starting to leak.
+
+The hook is now data. `starkbankResource` carries a NULL-terminated
+`starkbankPolymorph` list of `{field, discriminator, variants}`, and
+`starkc/table.c` resolves it in one function for the whole library:
+
+```c
+STARKBANK_POLYMORPH(payment_preview, "payment", "type",
+                    STARKBANK_PAYMENT_PREVIEW_VARIANTS);
+STARKBANK_RESOURCE_FULL(payment_preview, "PaymentPreview",
+                        STARKBANK_PAYMENT_PREVIEW_FIELDS, NULL,
+                        starkbankPolymorph_payment_preview);
+```
+
+Consequences worth naming:
+
+- `starkbank/event/event.c` lost its resolver and is now table and verb macros
+  only, like every other resource. The subscription map moved to `event.h`
+  beside the field table, where the rest of the data lives.
+- The list is NULL-terminated rather than a single entry, so a resource with
+  two polymorphic fields needs no engine change. Nothing in the bank surface
+  needs that today; `CreditNote.payment` + `paymentType` in infra will.
+- `tools/reflect` reports `"polymorphic": true` off the pointer, unchanged in
+  meaning.
+- An unresolvable variant still counts as exactly one unknown rather than one
+  per key, which is the step-2 decision and is now shared by both resources.
+- The suite's own `Gadget` carries the generalised map as well, so the engine
+  suite exercises the mechanism without the real registry.
+
+Polymorphic entry points are now 2 of 49 (4%), against the 15% at which design
+§8.3 says this design should be abandoned for a generated one.
+
+### Table judgements
+
+- **`PaymentPreview.BoletoPreview.due` and `.expiration` are `STRING`, not
+  `DATE`.** python's `BoletoPreview` is a `SubResource` whose `__init__` runs
+  no `check_date`, so a python caller holds the ISO string the API sent. A
+  `DATE` row here would declare a coercion the normative implementation does
+  not perform, and `drift.py` agrees: retyping either one to `DATE` produces
+  `HARD STOP type.conflict ... sdk-python coerces with None and the table says
+  DATE`. The cost is that `starkbank_entity_datetime` returns
+  `STARKBANK_ERROR_TYPE` on them and the caller parses the string; the suite
+  asserts exactly that, so the day sdk-python adds `check_date` the assertion
+  fails and the table follows. `PaymentPreview.scheduled` **is** `DATE`,
+  because python does coerce it.
+- **The preview tags are `PaymentPreview.BrcodePreview` and friends.** Long,
+  and it is the spelling the inputs force: `drift.py` joins a python
+  `_sub_resource` to `<owning resource>.<class name>`, which is how
+  `Invoice.Rule` is already spelled, and a bare `BrcodePreview` would join to
+  nothing and silently drop the field-set comparison for four tables. The
+  `#define`s stay short (`STARKBANK_BRCODE_PREVIEW_*`) because a constant
+  named `STARKBANK_PAYMENT_PREVIEW_BRCODE_PREVIEW_STATUS` helps nobody.
+- **No `TransferPreview`.** The brief named a transfer preview among the
+  sub-classes. `_sub_resource_by_type` has four entries and none of them is a
+  transfer; there is no `TransferPreview` anywhere in sdk-python, sdk-go or
+  app-docs. The mixed-batch golden therefore covers brcode + boleto + tax +
+  utility, which is every type that exists, plus a fifth preview whose type
+  this build does not know.
+- **Webhook's query key list is `limit` alone**, which is what both python's
+  `query()` and the docs' `GET /v2/webhook` say once `cursor` and `fields` are
+  removed as pagination and projection.
+- **Constants: subscriptions and preview types only.** Those are the two
+  vocabularies python states as data (`webhook`'s docstring list and
+  `_sub_resource_by_type`'s keys). `BrcodePreview.status` and
+  `BoletoPreview.status` are documented in prose in the header's field block
+  and get no constants, following `Invoice.Payment.method`, which is also a
+  return-only vocabulary with no constants. Nothing checks a constant against
+  python, so every one of them is a thing that can rot.
+
+### The sdk-python pin moved, and why that is part of this change
+
+`tests/reference/sdk-python.sha` now names `be7755a5` (master) instead of
+`575279bf`. Two reasons, both mechanical rather than convenient: the recorder
+refuses to write goldens from an unpinned tree, and `check-drift-pinned`
+refuses to compare - so reading `webhook/__webhook.py` and
+`paymentpreview/*.py` at master and recording from anywhere else would have
+been dishonest about which commit the tables came from. The bump crosses two
+commits of docstring grammar and CI; re-recording `slice.json` across it
+reproduced all 31 pre-existing cases byte for byte, which is the evidence that
+no wire shape moved with it.
+
+### known-drift grew by two entries, neither of them ours
+
+`resource.unjoined:verified-account:python` and
+`resource.unjoined:verified-transfer:python`. app-docs documented two
+resources sdk-python has no package for, so the checker was already red before
+this branch started. python is normative for the surface, so sdk-c models
+neither; both entries go stale - and the checker will say so - the day
+sdk-python ships them.
+
+Webhook, PaymentPreview and the four preview tables produced **no** drift
+findings of their own: no `field.new`, no `field.gone`, no `flag.conflict`, no
+`type.conflict`, no `endpoint.changed`, no `query.new`, no `comment.stale`.
+
+### Mutation-tested, four faults, each caught and reverted
+
+1. `starkbankVerbCreateSingle` wraps the payload under `"webhook"` -
+   `FAIL webhook.create[0]: body` and the explicit no-envelope assertion.
+2. `"boleto-payment"` mapped to `BrcodePreview` - the hydration golden, the
+   tag assertion and `unknown_count` all fail for item 1.
+3. `reconciliationId` deleted from the BrcodePreview table -
+   `field.new:PaymentPreview.BrcodePreview:reconciliationId` and
+   `comment.stale`, plus two suite failures.
+4. `BoletoPreview.due` retyped `DATE` - the `type.conflict` hard stop, which
+   no plain known-drift entry can silence.
+
+### Samples
+
+36 emitted programs, six of them new: `webhook-{create,get,query,page,delete}`
+and `payment-preview-create`. **No hand-written sample was needed.** The
+emitter grew one arm for `POST_SINGLE` and two example values, because the
+type-driven defaults produced a Webhook subscribing to `"war"` and a
+PaymentPreview previewing the code `"example"` - both compile and neither is
+something a reader can paste. `id` gets a boleto line because PaymentPreview
+is the only resource where `id` is a create parameter rather than an
+identifier; that is a global map keyed by field name, and it is the fragile
+part of the emitter today.

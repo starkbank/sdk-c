@@ -71,7 +71,7 @@ static void printResource(const starkbankResource *resource)
     printDerived("lastName", starkcore_api_last_name, resource->name);
     printf(",\n");
     printDerived("lastNamePlural", starkcore_api_last_name_plural, resource->name);
-    printf(",\n      \"polymorphic\": %s,\n", resource->refResolve != NULL ? "true" : "false");
+    printf(",\n      \"polymorphic\": %s,\n", resource->polymorph != NULL ? "true" : "false");
 
     printf("      \"queryKeys\": [");
     if (resource->queryKeys != NULL) {

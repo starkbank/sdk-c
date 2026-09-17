@@ -4,4 +4,16 @@
 # which is the PR that also applies whatever the checker found.
 #
 # starkbank/sdk-python, default branch master.
-575279bfac495aceaa4d5668c1a838377a988a8c
+#
+# Bumped in step 5 (Webhook, PaymentPreview): those two tables are derived from
+# webhook/__webhook.py and paymentpreview/*.py as master carries them, and the
+# goldens are recorded from the same tree. The move from 575279bf is two commits
+# of docstring grammar and CI, neither of which changes a wire shape, and
+# re-recording slice.json across the bump reproduced every existing case byte
+# for byte.
+#
+# Bumped again in step 5 review: sdk-python#170 added VerifiedAccount,
+# VerifiedAccount.Log and VerifiedTransfer to the reference, which turned the two
+# "unjoined" app-docs exemptions stale. Their tables arrive with the rest of the
+# bank surface; until then the checker carries resource.new entries for them.
+7e817fafc039d11f858ea72abda8d8c3a0e29ff2

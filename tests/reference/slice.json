@@ -323,6 +323,39 @@
         }
       ]
     },
+    "paymentpreview.create": {
+      "hydrated": [
+        "{\"id\":\"00020126580014br.gov.bcb.pix0136a629532e-7693-4846-852d-1bbff817b5a8520400005303986540510.005802BR5908T'Challa6009Sao Paulo62090505123456304B14A\",\"payment\":{\"accountType\":\"checking\",\"allowChange\":true,\"amount\":1000,\"bankCode\":\"20018183\",\"description\":\"Payment for service #1234\",\"discountAmount\":0,\"fineAmount\":50,\"interestAmount\":50,\"name\":\"Tony Stark\",\"nominalAmount\":900,\"reconciliationId\":\"tx-123\",\"reductionAmount\":0,\"status\":\"created\",\"taxId\":\"012.345.678-90\"},\"scheduled\":\"2026-10-28\",\"type\":\"brcode-payment\"}",
+        "{\"id\":\"34191.09008 63571.277308 71444.640008 5 81960000000062\",\"payment\":{\"amount\":23456,\"barCode\":\"34195819600000000621090063571277307144464000\",\"discountAmount\":0,\"due\":\"2026-10-28\",\"expiration\":\"2026-11-27\",\"fineAmount\":0,\"interestAmount\":0,\"line\":\"34191.09008 63571.277308 71444.640008 5 81960000000062\",\"name\":\"Anthony Edward Stark\",\"payerName\":\"Arya Stark\",\"payerTaxId\":\"012.345.678-90\",\"receiverName\":\"Iron Bank S.A.\",\"receiverTaxId\":\"20.018.183/0001-80\",\"status\":\"active\",\"taxId\":\"20.018.183/0001-80\"},\"scheduled\":\"2026-10-28\",\"type\":\"boleto-payment\"}",
+        "{\"id\":\"85660000006 6 67940064007 5 41190025511 7 00010601813 8\",\"payment\":{\"amount\":23456,\"barCode\":\"85660000006679400640074119002551100010601813\",\"description\":\"ISS Payment - Iron Throne\",\"line\":\"85660000006 6 67940064007 5 41190025511 7 00010601813 8\",\"name\":\"Iron Throne\"},\"scheduled\":\"2026-10-28\",\"type\":\"tax-payment\"}",
+        "{\"id\":\"82660000002 8 44361143007 7 41190025511 7 00010601813 8\",\"payment\":{\"amount\":23456,\"barCode\":\"82660000002443611430074119002551100010601813\",\"description\":\"Utility Payment - Light Company\",\"line\":\"82660000002 8 44361143007 7 41190025511 7 00010601813 8\",\"name\":\"Light Company\"},\"scheduled\":\"2026-10-28\",\"type\":\"utility-payment\"}"
+      ],
+      "requests": [
+        {
+          "body": "{\"previews\":[{\"id\":\"00020126580014br.gov.bcb.pix0136a629532e-7693-4846-852d-1bbff817b5a8520400005303986540510.005802BR5908T'Challa6009Sao Paulo62090505123456304B14A\",\"scheduled\":\"2026-10-28\"},{\"id\":\"34191.09008 63571.277308 71444.640008 5 81960000000062\",\"scheduled\":\"2026-10-28\"},{\"id\":\"85660000006 6 67940064007 5 41190025511 7 00010601813 8\",\"scheduled\":\"2026-10-28\"},{\"id\":\"82660000002 8 44361143007 7 41190025511 7 00010601813 8\",\"scheduled\":\"2026-10-28\"}]}",
+          "bodyRaw": "{\"previews\": [{\"id\": \"00020126580014br.gov.bcb.pix0136a629532e-7693-4846-852d-1bbff817b5a8520400005303986540510.005802BR5908T'Challa6009Sao Paulo62090505123456304B14A\", \"scheduled\": \"2026-10-28\"}, {\"id\": \"34191.09008 63571.277308 71444.640008 5 81960000000062\", \"scheduled\": \"2026-10-28\"}, {\"id\": \"85660000006 6 67940064007 5 41190025511 7 00010601813 8\", \"scheduled\": \"2026-10-28\"}, {\"id\": \"82660000002 8 44361143007 7 41190025511 7 00010601813 8\", \"scheduled\": \"2026-10-28\"}]}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/payment-preview"
+        }
+      ]
+    },
+    "paymentpreview.unknown": {
+      "hydrated": [
+        "{\"id\":\"5656565656565656\",\"payment\":{\"amount\":42,\"id\":\"1\"},\"scheduled\":\"2026-10-28\",\"type\":\"pix-reversal\"}"
+      ],
+      "requests": [
+        {
+          "body": "{\"previews\":[{\"id\":\"5656565656565656\"}]}",
+          "bodyRaw": "{\"previews\": [{\"id\": \"5656565656565656\"}]}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/payment-preview"
+        }
+      ]
+    },
     "transfer.create": {
       "hydrated": [
         "{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"amount\":1000,\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Payment for service #1234\",\"displayDescription\":\"Sword sharpening\",\"externalId\":\"my-internal-id-123456\",\"fee\":200,\"id\":\"5155165527080960\",\"metadata\":{\"attempt\":2,\"tracker\":\"abc\"},\"name\":\"Daenerys Targaryen Stormborn\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28T17:59:26+00:00\",\"status\":\"processing\",\"tags\":[\"daenerys\",\"invoice/1234\"],\"taxId\":\"594.739.480-42\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
@@ -431,6 +464,75 @@
           "query": "limit=5&sort=-created&status=processing&taxId=594.739.480-42",
           "queryRaw": "limit=5&status=processing&taxId=594.739.480-42&sort=-created",
           "url": "https://sandbox.api.starkbank.com/v2/transfer"
+        }
+      ]
+    },
+    "webhook.create": {
+      "hydrated": "{\"id\":\"6178044066660352\",\"subscriptions\":[\"transfer\",\"invoice\"],\"url\":\"https://webhook.site/60e9c18e-4b5c-4369-bda1-ab5fcd8e1b29\"}",
+      "requests": [
+        {
+          "body": "{\"subscriptions\":[\"transfer\",\"invoice\"],\"url\":\"https://webhook.site/60e9c18e-4b5c-4369-bda1-ab5fcd8e1b29\"}",
+          "bodyRaw": "{\"subscriptions\": [\"transfer\", \"invoice\"], \"url\": \"https://webhook.site/60e9c18e-4b5c-4369-bda1-ab5fcd8e1b29\"}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/webhook"
+        }
+      ]
+    },
+    "webhook.delete": {
+      "hydrated": "{\"id\":\"6178044066660352\",\"subscriptions\":[\"transfer\",\"invoice\"],\"url\":\"https://webhook.site/60e9c18e-4b5c-4369-bda1-ab5fcd8e1b29\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "DELETE",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/webhook/6178044066660352"
+        }
+      ]
+    },
+    "webhook.get": {
+      "hydrated": "{\"id\":\"6178044066660352\",\"subscriptions\":[\"transfer\",\"invoice\"],\"url\":\"https://webhook.site/60e9c18e-4b5c-4369-bda1-ab5fcd8e1b29\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/webhook/6178044066660352"
+        }
+      ]
+    },
+    "webhook.page": {
+      "hydrated": [
+        "{\"id\":\"6178044066660352\",\"subscriptions\":[\"transfer\",\"invoice\"],\"url\":\"https://webhook.site/60e9c18e-4b5c-4369-bda1-ab5fcd8e1b29\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/webhook"
+        }
+      ]
+    },
+    "webhook.query": {
+      "hydrated": [
+        "{\"id\":\"6178044066660352\",\"subscriptions\":[\"transfer\",\"invoice\"],\"url\":\"https://webhook.site/60e9c18e-4b5c-4369-bda1-ab5fcd8e1b29\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/webhook"
         }
       ]
     }
@@ -794,6 +896,90 @@
         }
       ]
     },
+    "previewUnknown": {
+      "previews": [
+        {
+          "id": "5656565656565656",
+          "payment": {
+            "amount": 42,
+            "id": "1"
+          },
+          "scheduled": "2026-10-28",
+          "type": "pix-reversal"
+        }
+      ]
+    },
+    "previews": {
+      "previews": [
+        {
+          "id": "00020126580014br.gov.bcb.pix0136a629532e-7693-4846-852d-1bbff817b5a8520400005303986540510.005802BR5908T'Challa6009Sao Paulo62090505123456304B14A",
+          "payment": {
+            "accountType": "checking",
+            "allowChange": true,
+            "amount": 1000,
+            "bankCode": "20018183",
+            "description": "Payment for service #1234",
+            "discountAmount": 0,
+            "fineAmount": 50,
+            "interestAmount": 50,
+            "name": "Tony Stark",
+            "nominalAmount": 900,
+            "reconciliationId": "tx-123",
+            "reductionAmount": 0,
+            "status": "created",
+            "taxId": "012.345.678-90"
+          },
+          "scheduled": "2026-10-28",
+          "type": "brcode-payment"
+        },
+        {
+          "id": "34191.09008 63571.277308 71444.640008 5 81960000000062",
+          "payment": {
+            "amount": 23456,
+            "barCode": "34195819600000000621090063571277307144464000",
+            "discountAmount": 0,
+            "due": "2026-10-28",
+            "expiration": "2026-11-27",
+            "fineAmount": 0,
+            "interestAmount": 0,
+            "line": "34191.09008 63571.277308 71444.640008 5 81960000000062",
+            "name": "Anthony Edward Stark",
+            "payerName": "Arya Stark",
+            "payerTaxId": "012.345.678-90",
+            "receiverName": "Iron Bank S.A.",
+            "receiverTaxId": "20.018.183/0001-80",
+            "status": "active",
+            "taxId": "20.018.183/0001-80"
+          },
+          "scheduled": "2026-10-28",
+          "type": "boleto-payment"
+        },
+        {
+          "id": "85660000006 6 67940064007 5 41190025511 7 00010601813 8",
+          "payment": {
+            "amount": 23456,
+            "barCode": "85660000006679400640074119002551100010601813",
+            "description": "ISS Payment - Iron Throne",
+            "line": "85660000006 6 67940064007 5 41190025511 7 00010601813 8",
+            "name": "Iron Throne"
+          },
+          "scheduled": "2026-10-28",
+          "type": "tax-payment"
+        },
+        {
+          "id": "82660000002 8 44361143007 7 41190025511 7 00010601813 8",
+          "payment": {
+            "amount": 23456,
+            "barCode": "82660000002443611430074119002551100010601813",
+            "description": "Utility Payment - Light Company",
+            "line": "82660000002 8 44361143007 7 41190025511 7 00010601813 8",
+            "name": "Light Company"
+          },
+          "scheduled": "2026-10-28",
+          "type": "utility-payment"
+        }
+      ]
+    },
     "transfer": {
       "transfer": {
         "accountNumber": "876543-2",
@@ -910,6 +1096,29 @@
             "19827356981273"
           ],
           "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ]
+    },
+    "webhook": {
+      "webhook": {
+        "id": "6178044066660352",
+        "subscriptions": [
+          "transfer",
+          "invoice"
+        ],
+        "url": "https://webhook.site/60e9c18e-4b5c-4369-bda1-ab5fcd8e1b29"
+      }
+    },
+    "webhooks": {
+      "cursor": "",
+      "webhooks": [
+        {
+          "id": "6178044066660352",
+          "subscriptions": [
+            "transfer",
+            "invoice"
+          ],
+          "url": "https://webhook.site/60e9c18e-4b5c-4369-bda1-ab5fcd8e1b29"
         }
       ]
     }

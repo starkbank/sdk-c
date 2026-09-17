@@ -40,6 +40,21 @@
         return starkbankVerbCreate(client, &starkbankTable_##ident, entities, out, errors); \
     }
 
+/*
+ * rest.post_single: one entity, sent as the body itself. Webhook is the only
+ * bank resource with this shape, and the create signature differs from
+ * POST_MULTI's by taking an entity rather than a list - which is the whole
+ * point of it being a separate shape rather than a batch of one.
+ */
+#define STARKBANK_VERB_POST_SINGLE(ident)                                                \
+    STARKBANK_API int STARKBANK_CALL starkbank_##ident##_create(                         \
+        const starkbank_client *client, const starkbank_entity *entity,                  \
+        starkbank_entity **out, starkbank_errors **errors)                               \
+    {                                                                                    \
+        return starkbankVerbCreateSingle(client, &starkbankTable_##ident, entity,        \
+                                         out, errors);                                   \
+    }
+
 #define STARKBANK_VERB_GET_ID(ident)                                                     \
     STARKBANK_API int STARKBANK_CALL starkbank_##ident##_get(                            \
         const starkbank_client *client, const char *id,                                  \

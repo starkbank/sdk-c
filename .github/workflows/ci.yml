@@ -10,11 +10,11 @@ on:
 # developer machine. Both are pinned to tags rather than tracking a branch, so
 # a green build names a fixed dependency revision.
 #
-# NOTE: every job here is red until starkinfra/core-c and starkbank/ecdsa-c are
-# reachable. The automatic GITHUB_TOKEN is scoped to this repository and cannot
-# read a different private one, and a fork PR gets an even more restricted
-# token. This is the same note core-c's own workflow carries about ecdsa-c;
-# publish the two siblings before or together with this repository.
+# The sibling checkouts are private while the C programme is unannounced, and
+# the automatic GITHUB_TOKEN is scoped to this repository, so the cross-repository
+# checkouts read with STARK_SIBLINGS_TOKEN (fine-grained, owner starkbank,
+# contents:read on ecdsa-c and app-docs) and STARK_INFRA_TOKEN (owner starkinfra,
+# contents:read on core-c), falling back to the automatic token once public. A fork PR has neither and stays red.
 env:
   CORE_C_REF: v0.1.0
   ECDSA_C_REF: v0.1.0
@@ -22,7 +22,7 @@ env:
   # pins and app-docs at its default branch. Neither is imported and neither is
   # written; both are inputs.
   SDK_PYTHON_REF: master
-  APP_DOCS_REF: master
+  APP_DOCS_REF: development
 
 jobs:
   build:
@@ -32,19 +32,21 @@ jobs:
         os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           path: starkbank/sdk-c
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           repository: starkinfra/core-c
+          token: ${{ secrets.STARK_INFRA_TOKEN || secrets.STARK_SIBLINGS_TOKEN || github.token }}
           ref: ${{ env.CORE_C_REF }}
           path: starkinfra/core-c
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           repository: starkbank/ecdsa-c
+          token: ${{ secrets.STARK_SIBLINGS_TOKEN || github.token }}
           ref: ${{ env.ECDSA_C_REF }}
           path: starkbank/ecdsa-c
 
@@ -59,7 +61,7 @@ jobs:
 
       - name: Build the siblings
         run: |
-          make -C starkbank/ecdsa-c
+          make -C starkbank/ecdsa-c CFLAGS="-O2 -fPIC"
           make -C starkinfra/core-c
           make -C starkinfra/core-c curl
 
@@ -113,19 +115,21 @@ jobs:
   thread-sanitizer:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           path: starkbank/sdk-c
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           repository: starkinfra/core-c
+          token: ${{ secrets.STARK_INFRA_TOKEN || secrets.STARK_SIBLINGS_TOKEN || github.token }}
           ref: ${{ env.CORE_C_REF }}
           path: starkinfra/core-c
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           repository: starkbank/ecdsa-c
+          token: ${{ secrets.STARK_SIBLINGS_TOKEN || github.token }}
           ref: ${{ env.ECDSA_C_REF }}
           path: starkbank/ecdsa-c
 
@@ -136,7 +140,7 @@ jobs:
 
       - name: Build the siblings
         run: |
-          make -C starkbank/ecdsa-c
+          make -C starkbank/ecdsa-c CFLAGS="-O2 -fPIC"
           make -C starkinfra/core-c
 
       - name: One client, eight threads
@@ -151,19 +155,21 @@ jobs:
   drift:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           path: starkbank/sdk-c
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           repository: starkinfra/core-c
+          token: ${{ secrets.STARK_INFRA_TOKEN || secrets.STARK_SIBLINGS_TOKEN || github.token }}
           ref: ${{ env.CORE_C_REF }}
           path: starkinfra/core-c
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           repository: starkbank/ecdsa-c
+          token: ${{ secrets.STARK_SIBLINGS_TOKEN || github.token }}
           ref: ${{ env.ECDSA_C_REF }}
           path: starkbank/ecdsa-c
 
@@ -173,22 +179,25 @@ jobs:
           git -C starkbank/sdk-python checkout \
             "$(grep -v '^#' starkbank/sdk-c/tests/reference/sdk-python.sha | head -1)"
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           repository: starkbank/app-docs
+          token: ${{ secrets.STARK_SIBLINGS_TOKEN || github.token }}
           ref: ${{ env.APP_DOCS_REF }}
           path: starkbank/app-docs
 
       # The recorder imports these three and nothing else. No pip install:
       # they go on sys.path as checkouts, exactly as they do locally.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           repository: starkinfra/core-python
+          token: ${{ secrets.STARK_SIBLINGS_TOKEN || github.token }}
           path: starkinfra/core-python
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           repository: starkbank/ecdsa-python
+          token: ${{ secrets.STARK_SIBLINGS_TOKEN || github.token }}
           path: starkbank/ecdsa-python
 
       - name: Install libsecp256k1
@@ -198,7 +207,7 @@ jobs:
 
       - name: Build the siblings
         run: |
-          make -C starkbank/ecdsa-c
+          make -C starkbank/ecdsa-c CFLAGS="-O2 -fPIC"
           make -C starkinfra/core-c
 
       - name: Tables against sdk-python and the docs JSON
@@ -219,19 +228,21 @@ jobs:
   windows-compile:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           path: starkbank/sdk-c
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           repository: starkinfra/core-c
+          token: ${{ secrets.STARK_INFRA_TOKEN || secrets.STARK_SIBLINGS_TOKEN || github.token }}
           ref: ${{ env.CORE_C_REF }}
           path: starkinfra/core-c
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           repository: starkbank/ecdsa-c
+          token: ${{ secrets.STARK_SIBLINGS_TOKEN || github.token }}
           ref: ${{ env.ECDSA_C_REF }}
           path: starkbank/ecdsa-c
 

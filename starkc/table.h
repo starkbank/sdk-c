@@ -36,6 +36,30 @@ include this header before the one that took the name, or rename the column."
     { wireKey, STARKBANK_FIELD_##fieldType, fieldRef, (fieldFlags) },
 
 /*
+ * A polymorphic field's variant map, authored as a table for the same reason
+ * the fields are: Event.log and PaymentPreview.payment differ only in which
+ * sibling field names the variant and in what the names are, and a resolver
+ * written in C per resource is per-resource code the house rules do not allow.
+ *
+ * STARKBANK_POLYMORPH(event, "log", "subscription", STARKBANK_EVENT_LOG_VARIANTS)
+ * expands the map and the one-entry list the resource points at; a resource
+ * needing two polymorphic fields gets a second entry, and nothing in the
+ * engine changes.
+ */
+#define STARKBANK_TABLE_VARIANT(discriminatorValue, resourceName) \
+    { discriminatorValue, resourceName },
+
+#define STARKBANK_POLYMORPH(ident, fieldName, discriminatorKey, VARIANTS)  \
+    static const starkbankVariant starkbankVariants_##ident[] = {          \
+        VARIANTS(STARKBANK_TABLE_VARIANT)                                  \
+        { NULL, NULL }                                                     \
+    };                                                                     \
+    static const starkbankPolymorph starkbankPolymorph_##ident[] = {       \
+        { fieldName, discriminatorKey, starkbankVariants_##ident },        \
+        { NULL, NULL, NULL }                                               \
+    }
+
+/*
  * Two resources per table. The second is the query and patch view of the same
  * fields under the name "<Resource>.Params": it shares the rows, so a filter
  * on a typed field is type-checked, and it additionally accepts the resource's
@@ -45,7 +69,7 @@ include this header before the one that took the name, or rename the column."
  * through resource->params, it hydrates nothing, and reflecting it would
  * double every binding generator's output for no caller's benefit.
  */
-#define STARKBANK_RESOURCE_FULL(ident, resourceName, FIELDS, queryKeyList, resolver) \
+#define STARKBANK_RESOURCE_FULL(ident, resourceName, FIELDS, queryKeyList, polymorph) \
     static const starkbankField starkbankRows_##ident[] = {                          \
         FIELDS(STARKBANK_TABLE_ROW)                                                  \
         { NULL, 0, NULL, 0 }                                                         \
@@ -59,7 +83,7 @@ include this header before the one that took the name, or rename the column."
         queryKeyList,                                                                \
         &starkbankParams_##ident,                                                    \
         0,                                                                           \
-        resolver                                                                     \
+        polymorph                                                                    \
     };                                                                               \
     const starkbankResource starkbankParams_##ident = {                              \
         resourceName ".Params",                                                      \

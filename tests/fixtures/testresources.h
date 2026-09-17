@@ -6,8 +6,10 @@
  *
  * Widget is deliberately denser than any real resource: one field of every one
  * of the fourteen types, a LIST_RESOURCE, a nested RESOURCE, a sub-resource,
- * and a legal zero amount. Gadget exists for the polymorphic case Event.log
- * will need. Ledger is the degenerate get-with-no-id shape Balance has.
+ * and a legal zero amount. Gadget carries the two shapes a resource cannot
+ * express with a plain field row: the polymorphic field Event.log and
+ * PaymentPreview.payment both have, and post_single, which Webhook has.
+ * Ledger is the degenerate get-with-no-id shape Balance has.
  */
 
 #ifndef STARKBANK_TEST_RESOURCES_H
@@ -60,6 +62,9 @@ STARKBANK_API int STARKBANK_CALL starkbank_widget_log_get(const starkbank_client
 STARKBANK_API int STARKBANK_CALL starkbank_widget_log_query(const starkbank_client *client,
     const starkbank_entity *params, int limit, starkbank_iter **out);
 
+STARKBANK_API int STARKBANK_CALL starkbank_gadget_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_gadget_create(const starkbank_client *client,
+    const starkbank_entity *entity, starkbank_entity **out, starkbank_errors **errors);
 STARKBANK_API int STARKBANK_CALL starkbank_gadget_get(const starkbank_client *client,
     const char *id, starkbank_entity **out, starkbank_errors **errors);
 

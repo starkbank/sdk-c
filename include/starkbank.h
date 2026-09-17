@@ -1022,6 +1022,185 @@ STARKBANK_API int STARKBANK_CALL starkbank_balance_get(const starkbank_client *c
 /* The workspace's balance. There is no id: python takes the first element of
    the listing endpoint, and so does this. Yours to free. */
 
+/* =========================================================================
+ *                                 Webhook
+ * =========================================================================
+ *
+ * A subscription: the URL we POST an Event to, and which services it hears
+ * about. The delivered body is verified with starkbank_event_parse.
+ *
+ * Fields (wire keys; * = required on create).
+ *
+ *   url* STRING                subscriptions* LIST_STRING
+ *   id STRING (ro)
+ *
+ * Query keys: limit.
+ *
+ * Webhook is the one bank resource created ONE AT A TIME, so
+ * starkbank_webhook_create takes an entity where every other create takes a
+ * list. The body on the wire is that entity's own object: python's
+ * rest.post_single sends api_json(entity) with no wrapper, and the singular
+ * key "webhook" appears only in the response, which core-c unwraps. Neither
+ * tier ever sends {"webhooks": [...]} for this verb.
+ *
+ * A delivery that does not answer 200 is retried at 5, 30 and 120 minutes and
+ * then dropped, so a daily starkbank_event_query with isDelivered false is
+ * part of using this resource rather than an optional extra.
+ */
+#define STARKBANK_WEBHOOK_URL            "url"
+#define STARKBANK_WEBHOOK_SUBSCRIPTIONS  "subscriptions"
+#define STARKBANK_WEBHOOK_ID             "id"
+
+/* The services a subscription may name, from sdk-python's own list. Strings
+   for the reason every vocabulary here is a string: the API grows one without
+   asking us, and an unknown string is merely unrecognised. */
+#define STARKBANK_WEBHOOK_SUBSCRIPTION_TRANSFER        "transfer"
+#define STARKBANK_WEBHOOK_SUBSCRIPTION_INVOICE         "invoice"
+#define STARKBANK_WEBHOOK_SUBSCRIPTION_DEPOSIT         "deposit"
+#define STARKBANK_WEBHOOK_SUBSCRIPTION_BOLETO          "boleto"
+#define STARKBANK_WEBHOOK_SUBSCRIPTION_BOLETO_HOLMES   "boleto-holmes"
+#define STARKBANK_WEBHOOK_SUBSCRIPTION_BOLETO_PAYMENT  "boleto-payment"
+#define STARKBANK_WEBHOOK_SUBSCRIPTION_BRCODE_PAYMENT  "brcode-payment"
+#define STARKBANK_WEBHOOK_SUBSCRIPTION_UTILITY_PAYMENT "utility-payment"
+#define STARKBANK_WEBHOOK_SUBSCRIPTION_DARF_PAYMENT    "darf-payment"
+#define STARKBANK_WEBHOOK_SUBSCRIPTION_TAX_PAYMENT     "tax-payment"
+#define STARKBANK_WEBHOOK_SUBSCRIPTION_PAYMENT_REQUEST "payment-request"
+
+STARKBANK_API int STARKBANK_CALL starkbank_webhook_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_webhook_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_webhook_create(const starkbank_client *client,
+    const starkbank_entity *webhook, starkbank_entity **out, starkbank_errors **errors);
+/* rest.post_single: one Webhook, sent as the body itself. The entity stays
+   yours - this does not take ownership the way starkbank_list_append does -
+   and the Webhook that comes back is a second entity, also yours to free. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_webhook_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_webhook_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_webhook_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_webhook_delete(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+/* Deletion cannot be undone: the subscription stops receiving events. */
+
+/* =========================================================================
+ *                             PaymentPreview
+ * =========================================================================
+ *
+ * What a payment code says before you pay it. The code goes in as id - a BR
+ * Code for Pix, a line or a bar code for a slip - and what comes back is the
+ * preview the code turned out to describe.
+ *
+ * Fields (wire keys; * = required on create).
+ *
+ *   id* STRING                 scheduled DATE
+ *   type STRING (ro)           payment RESOURCE (ro).
+ *
+ * payment is polymorphic: which table it hydrates as is chosen by the sibling
+ * type field, exactly as Event.log is chosen by subscription, and the mapping
+ * is sdk-python's _sub_resource_by_type -
+ *
+ *   "brcode-payment"  -> PaymentPreview.BrcodePreview
+ *   "boleto-payment"  -> PaymentPreview.BoletoPreview
+ *   "utility-payment" -> PaymentPreview.UtilityPreview
+ *   "tax-payment"     -> PaymentPreview.TaxPreview
+ *
+ * A type this build predates leaves payment untagged: still readable through
+ * the accessors, still dumped, and counted by starkbank_entity_unknown_count
+ * as exactly one unknown.
+ *
+ * scheduled is a date and only affects a BrcodePreview, where the amount a Pix
+ * charge asks for depends on the day it is paid.
+ */
+#define STARKBANK_PAYMENT_PREVIEW_ID         "id"
+#define STARKBANK_PAYMENT_PREVIEW_SCHEDULED  "scheduled"
+#define STARKBANK_PAYMENT_PREVIEW_TYPE       "type"
+#define STARKBANK_PAYMENT_PREVIEW_PAYMENT    "payment"
+
+#define STARKBANK_PAYMENT_PREVIEW_TYPE_BRCODE_PAYMENT  "brcode-payment"
+#define STARKBANK_PAYMENT_PREVIEW_TYPE_BOLETO_PAYMENT  "boleto-payment"
+#define STARKBANK_PAYMENT_PREVIEW_TYPE_UTILITY_PAYMENT "utility-payment"
+#define STARKBANK_PAYMENT_PREVIEW_TYPE_TAX_PAYMENT     "tax-payment"
+
+STARKBANK_API int STARKBANK_CALL starkbank_payment_preview_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_payment_preview_create(
+    const starkbank_client *client, const starkbank_list *previews,
+    starkbank_list **out, starkbank_errors **errors);
+/* rest.post_multi. A batch may mix types freely: each preview in the reply
+   resolves its own payment table from its own type. */
+
+/* ------------------------------------------- PaymentPreview.BrcodePreview */
+/*
+ * Fields: status name taxId bankCode accountType reconciliationId description
+ *         STRING (ro); allowChange BOOL (ro); amount nominalAmount
+ *         interestAmount fineAmount reductionAmount discountAmount AMOUNT (ro).
+ *
+ * amount 0 means the charge accepts any amount, and allowChange says whether
+ * the payer may send something other than amount - so 0 and absent are
+ * different answers here, which is why no accessor invents a default.
+ */
+#define STARKBANK_BRCODE_PREVIEW_STATUS            "status"
+#define STARKBANK_BRCODE_PREVIEW_NAME              "name"
+#define STARKBANK_BRCODE_PREVIEW_TAX_ID            "taxId"
+#define STARKBANK_BRCODE_PREVIEW_BANK_CODE         "bankCode"
+#define STARKBANK_BRCODE_PREVIEW_ACCOUNT_TYPE      "accountType"
+#define STARKBANK_BRCODE_PREVIEW_ALLOW_CHANGE      "allowChange"
+#define STARKBANK_BRCODE_PREVIEW_AMOUNT            "amount"
+#define STARKBANK_BRCODE_PREVIEW_NOMINAL_AMOUNT    "nominalAmount"
+#define STARKBANK_BRCODE_PREVIEW_INTEREST_AMOUNT   "interestAmount"
+#define STARKBANK_BRCODE_PREVIEW_FINE_AMOUNT       "fineAmount"
+#define STARKBANK_BRCODE_PREVIEW_REDUCTION_AMOUNT  "reductionAmount"
+#define STARKBANK_BRCODE_PREVIEW_DISCOUNT_AMOUNT   "discountAmount"
+#define STARKBANK_BRCODE_PREVIEW_RECONCILIATION_ID "reconciliationId"
+#define STARKBANK_BRCODE_PREVIEW_DESCRIPTION       "description"
+
+/* ------------------------------------------- PaymentPreview.BoletoPreview */
+/*
+ * Fields: status due expiration name taxId receiverName receiverTaxId
+ *         payerName payerTaxId line barCode STRING (ro);
+ *         amount discountAmount fineAmount interestAmount AMOUNT (ro).
+ *
+ * due and expiration are dates on the wire and STRING here, because
+ * sdk-python's BoletoPreview performs no check_date on them and hands its own
+ * caller the string the API sent. Declaring a coercion python does not make
+ * would be this table inventing a semantic, which tools/drift.py treats as a
+ * hard stop rather than a preference.
+ */
+#define STARKBANK_BOLETO_PREVIEW_STATUS           "status"
+#define STARKBANK_BOLETO_PREVIEW_AMOUNT           "amount"
+#define STARKBANK_BOLETO_PREVIEW_DISCOUNT_AMOUNT  "discountAmount"
+#define STARKBANK_BOLETO_PREVIEW_FINE_AMOUNT      "fineAmount"
+#define STARKBANK_BOLETO_PREVIEW_INTEREST_AMOUNT  "interestAmount"
+#define STARKBANK_BOLETO_PREVIEW_DUE              "due"
+#define STARKBANK_BOLETO_PREVIEW_EXPIRATION       "expiration"
+#define STARKBANK_BOLETO_PREVIEW_NAME             "name"
+#define STARKBANK_BOLETO_PREVIEW_TAX_ID           "taxId"
+#define STARKBANK_BOLETO_PREVIEW_RECEIVER_NAME    "receiverName"
+#define STARKBANK_BOLETO_PREVIEW_RECEIVER_TAX_ID  "receiverTaxId"
+#define STARKBANK_BOLETO_PREVIEW_PAYER_NAME       "payerName"
+#define STARKBANK_BOLETO_PREVIEW_PAYER_TAX_ID     "payerTaxId"
+#define STARKBANK_BOLETO_PREVIEW_LINE             "line"
+#define STARKBANK_BOLETO_PREVIEW_BAR_CODE         "barCode"
+
+/* ---------------------------------------------- PaymentPreview.TaxPreview */
+/* Fields: name description line barCode STRING (ro); amount AMOUNT (ro). */
+#define STARKBANK_TAX_PREVIEW_AMOUNT       "amount"
+#define STARKBANK_TAX_PREVIEW_NAME         "name"
+#define STARKBANK_TAX_PREVIEW_DESCRIPTION  "description"
+#define STARKBANK_TAX_PREVIEW_LINE         "line"
+#define STARKBANK_TAX_PREVIEW_BAR_CODE     "barCode"
+
+/* ------------------------------------------ PaymentPreview.UtilityPreview */
+/* Fields: name description line barCode STRING (ro); amount AMOUNT (ro). */
+#define STARKBANK_UTILITY_PREVIEW_AMOUNT       "amount"
+#define STARKBANK_UTILITY_PREVIEW_NAME         "name"
+#define STARKBANK_UTILITY_PREVIEW_DESCRIPTION  "description"
+#define STARKBANK_UTILITY_PREVIEW_LINE         "line"
+#define STARKBANK_UTILITY_PREVIEW_BAR_CODE     "barCode"
+
 #ifdef __cplusplus
 }
 #endif

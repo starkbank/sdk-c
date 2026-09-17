@@ -29,6 +29,19 @@ name-keyed accessors.
 - First resource slice: Invoice (+ Log, Payment, Rule, Split), Transfer
   (+ Log, Rule), Event (+ Attempt) and Balance, each one field table plus
   `STARKBANK_VERB_*` lines
+- Webhook and PaymentPreview (+ BrcodePreview, BoletoPreview, TaxPreview,
+  UtilityPreview), which close the last two `starkcore_rest_*` shapes the bank
+  SDK uses. Every resource here is still a table and nothing else: the two new
+  shapes are engine work, not per-resource code
+- `STARKBANK_VERB_POST_SINGLE`: `rest.post_single`, where the body is the
+  entity itself rather than a list. `starkbank_webhook_create` therefore takes
+  an entity and borrows it, where every other create takes a list and owns it
+- Polymorphic fields are a table, not a function. A resource declares
+  `STARKBANK_POLYMORPH(ident, field, discriminator, VARIANTS)` and the engine
+  resolves the nested table from a sibling field of the document;
+  `PaymentPreview.payment` by `type` and `Event.log` by `subscription` are now
+  the same mechanism, and `starkbank/event/event.c` lost the only hand-written
+  function any resource had
 - `handwritten/event_parse.c`, behind the linker-enforced opt-out: a judgement
   method is declared in the header, defined by no macro, and the link fails
   when nobody writes it
@@ -48,7 +61,18 @@ name-keyed accessors.
   guard, the loose-query build, ASan/UBSan, leaks/valgrind and a
   ThreadSanitizer job sharing one client across eight threads
 
+### Changed
+- `tests/reference/sdk-python.sha` moved to `be7755a5`, the sdk-python master
+  the Webhook and PaymentPreview tables and the goldens were read from. The
+  two commits it crosses are docstring grammar and CI, and re-recording
+  `tests/reference/slice.json` across the bump reproduced every pre-existing
+  case byte for byte.
+
 ### Notes
+- Webhook's create sends the entity as the body, with no envelope key. python
+  wraps a create payload under the plural key for `post_multi` only; the
+  singular key belongs to the response. The golden carries python's own bytes
+  for that request, so the claim is recorded rather than asserted.
 - `starkinfra/core-c` and `starkbank/ecdsa-c` are required and are not
   vendored. Every CI job is red until both are reachable from this repository.
 - Windows is compile-only in CI and has no runner that links: core-c has no

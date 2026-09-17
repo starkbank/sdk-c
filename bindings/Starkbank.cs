@@ -21,6 +21,35 @@ namespace StarkBank
         public const string StarkbankBalanceCurrency = "currency";
         public const string StarkbankBalanceId = "id";
         public const string StarkbankBalanceUpdated = "updated";
+        public const string StarkbankBoletoPreviewAmount = "amount";
+        public const string StarkbankBoletoPreviewBarCode = "barCode";
+        public const string StarkbankBoletoPreviewDiscountAmount = "discountAmount";
+        public const string StarkbankBoletoPreviewDue = "due";
+        public const string StarkbankBoletoPreviewExpiration = "expiration";
+        public const string StarkbankBoletoPreviewFineAmount = "fineAmount";
+        public const string StarkbankBoletoPreviewInterestAmount = "interestAmount";
+        public const string StarkbankBoletoPreviewLine = "line";
+        public const string StarkbankBoletoPreviewName = "name";
+        public const string StarkbankBoletoPreviewPayerName = "payerName";
+        public const string StarkbankBoletoPreviewPayerTaxId = "payerTaxId";
+        public const string StarkbankBoletoPreviewReceiverName = "receiverName";
+        public const string StarkbankBoletoPreviewReceiverTaxId = "receiverTaxId";
+        public const string StarkbankBoletoPreviewStatus = "status";
+        public const string StarkbankBoletoPreviewTaxId = "taxId";
+        public const string StarkbankBrcodePreviewAccountType = "accountType";
+        public const string StarkbankBrcodePreviewAllowChange = "allowChange";
+        public const string StarkbankBrcodePreviewAmount = "amount";
+        public const string StarkbankBrcodePreviewBankCode = "bankCode";
+        public const string StarkbankBrcodePreviewDescription = "description";
+        public const string StarkbankBrcodePreviewDiscountAmount = "discountAmount";
+        public const string StarkbankBrcodePreviewFineAmount = "fineAmount";
+        public const string StarkbankBrcodePreviewInterestAmount = "interestAmount";
+        public const string StarkbankBrcodePreviewName = "name";
+        public const string StarkbankBrcodePreviewNominalAmount = "nominalAmount";
+        public const string StarkbankBrcodePreviewReconciliationId = "reconciliationId";
+        public const string StarkbankBrcodePreviewReductionAmount = "reductionAmount";
+        public const string StarkbankBrcodePreviewStatus = "status";
+        public const string StarkbankBrcodePreviewTaxId = "taxId";
         public const int StarkbankEnvironmentProduction = 0;
         public const int StarkbankEnvironmentSandbox = 1;
         public const int StarkbankErrorAbi = -106;
@@ -124,6 +153,14 @@ namespace StarkBank
         public const int StarkbankMethodPost = 1;
         public const int StarkbankMethodPut = 2;
         public const int StarkbankOk = 0;
+        public const string StarkbankPaymentPreviewId = "id";
+        public const string StarkbankPaymentPreviewPayment = "payment";
+        public const string StarkbankPaymentPreviewScheduled = "scheduled";
+        public const string StarkbankPaymentPreviewType = "type";
+        public const string StarkbankPaymentPreviewTypeBoletoPayment = "boleto-payment";
+        public const string StarkbankPaymentPreviewTypeBrcodePayment = "brcode-payment";
+        public const string StarkbankPaymentPreviewTypeTaxPayment = "tax-payment";
+        public const string StarkbankPaymentPreviewTypeUtilityPayment = "utility-payment";
         public const string StarkbankSplitAmount = "amount";
         public const string StarkbankSplitCreated = "created";
         public const string StarkbankSplitExternalId = "externalId";
@@ -134,6 +171,11 @@ namespace StarkBank
         public const string StarkbankSplitStatus = "status";
         public const string StarkbankSplitTags = "tags";
         public const string StarkbankSplitUpdated = "updated";
+        public const string StarkbankTaxPreviewAmount = "amount";
+        public const string StarkbankTaxPreviewBarCode = "barCode";
+        public const string StarkbankTaxPreviewDescription = "description";
+        public const string StarkbankTaxPreviewLine = "line";
+        public const string StarkbankTaxPreviewName = "name";
         public const string StarkbankTransferAccountNumber = "accountNumber";
         public const string StarkbankTransferAccountType = "accountType";
         public const string StarkbankTransferAccountTypeChecking = "checking";
@@ -170,7 +212,26 @@ namespace StarkBank
         public const string StarkbankTransferTaxId = "taxId";
         public const string StarkbankTransferTransactionIds = "transactionIds";
         public const string StarkbankTransferUpdated = "updated";
+        public const string StarkbankUtilityPreviewAmount = "amount";
+        public const string StarkbankUtilityPreviewBarCode = "barCode";
+        public const string StarkbankUtilityPreviewDescription = "description";
+        public const string StarkbankUtilityPreviewLine = "line";
+        public const string StarkbankUtilityPreviewName = "name";
         public const string StarkbankVersion = "0.1.0";
+        public const string StarkbankWebhookId = "id";
+        public const string StarkbankWebhookSubscriptions = "subscriptions";
+        public const string StarkbankWebhookSubscriptionBoleto = "boleto";
+        public const string StarkbankWebhookSubscriptionBoletoHolmes = "boleto-holmes";
+        public const string StarkbankWebhookSubscriptionBoletoPayment = "boleto-payment";
+        public const string StarkbankWebhookSubscriptionBrcodePayment = "brcode-payment";
+        public const string StarkbankWebhookSubscriptionDarfPayment = "darf-payment";
+        public const string StarkbankWebhookSubscriptionDeposit = "deposit";
+        public const string StarkbankWebhookSubscriptionInvoice = "invoice";
+        public const string StarkbankWebhookSubscriptionPaymentRequest = "payment-request";
+        public const string StarkbankWebhookSubscriptionTaxPayment = "tax-payment";
+        public const string StarkbankWebhookSubscriptionTransfer = "transfer";
+        public const string StarkbankWebhookSubscriptionUtilityPayment = "utility-payment";
+        public const string StarkbankWebhookUrl = "url";
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate int Transport(IntPtr context, int method,
@@ -438,6 +499,12 @@ namespace StarkBank
         [DllImport(Library, EntryPoint = "starkbank_parse_and_verify", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankParseAndVerify(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string content, UIntPtr content_len, [MarshalAs(UnmanagedType.LPStr)] string signature_base64, out IntPtr @out, out IntPtr errors);
 
+        [DllImport(Library, EntryPoint = "starkbank_payment_preview_create", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankPaymentPreviewCreate(IntPtr client, IntPtr previews, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_payment_preview_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankPaymentPreviewNew(out IntPtr @out);
+
         [DllImport(Library, EntryPoint = "starkbank_project_new", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankProjectNew([MarshalAs(UnmanagedType.LPStr)] string id, int environment, [MarshalAs(UnmanagedType.LPStr)] string private_key_pem, out IntPtr @out);
 
@@ -518,6 +585,27 @@ namespace StarkBank
 
         [DllImport(Library, EntryPoint = "starkbank_version", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr StarkbankVersion();
+
+        [DllImport(Library, EntryPoint = "starkbank_webhook_create", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankWebhookCreate(IntPtr client, IntPtr webhook, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_webhook_delete", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankWebhookDelete(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_webhook_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankWebhookGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_webhook_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankWebhookNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_webhook_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankWebhookPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_webhook_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankWebhookParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_webhook_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankWebhookQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
 
     }
 }

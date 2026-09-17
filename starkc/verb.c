@@ -86,6 +86,51 @@ int starkbankVerbCreate(const starkbank_client *client, const starkbankResource 
     return starkbankListFromJson(resource, reply, out);
 }
 
+/*
+ * rest.post_single. One entity, and the body is that entity - python's
+ * post_single sends api_json(entity) itself, with no envelope key and no
+ * one-element list, and core-c's starkcore_rest_post_single does the same.
+ * The singular envelope key is on the RESPONSE, where core-c unwraps it.
+ * tests/reference/slice.json records python's own bytes for webhook.create,
+ * which is the only reason this comment can be believed.
+ */
+int starkbankVerbCreateSingle(const starkbank_client *client, const starkbankResource *resource,
+                              const starkbank_entity *entity, starkbank_entity **out,
+                              starkbank_errors **errors)
+{
+    starkcore_json *payload = NULL;
+    starkcore_json *reply = NULL;
+    int status;
+
+    if (out == NULL) {
+        return STARKCORE_ERROR_ARGUMENT;
+    }
+    *out = NULL;
+    status = checkVerb(client, errors);
+    if (status != STARKCORE_OK) {
+        return status;
+    }
+    /* Through the public reader, which checks the handle: this entity came
+       straight from a caller rather than out of a list we built. */
+    if (starkbank_entity_json(entity) == NULL) {
+        return STARKCORE_ERROR_ARGUMENT;
+    }
+    if (entity->resource != resource) {
+        return STARKBANK_ERROR_RESOURCE;
+    }
+    status = starkbankEntityDehydrate(entity, STARKBANK_FLAG_CREATE, &payload);
+    if (status != STARKCORE_OK) {
+        return status;
+    }
+    status = starkcore_rest_post_single(starkbankClientCore(client), resource->name,
+                                        payload, NULL, &reply, errors);
+    starkcore_json_free(payload);
+    if (status != STARKCORE_OK) {
+        return status;
+    }
+    return wrapOwned(resource, reply, out);
+}
+
 int starkbankVerbGetId(const starkbank_client *client, const starkbankResource *resource,
                        const char *id, starkbank_entity **out, starkbank_errors **errors)
 {

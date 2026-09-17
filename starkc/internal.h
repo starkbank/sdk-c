@@ -30,15 +30,29 @@ typedef struct starkbankField {
 struct starkbankResource;
 
 /*
- * Event.log is an InvoiceLog, a TransferLog or one of eight others, and which
- * one is written in the sibling "subscription" field rather than in any table.
- * A resource with a polymorphic field carries one of these and the engine calls
- * it instead of resolving field->ref; returning NULL leaves the nested entity
- * untagged and permissive, which is how a subscription this build predates
- * still hydrates.
+ * Event.log is an InvoiceLog, a TransferLog or one of eight others, and
+ * PaymentPreview.payment is one of four previews: in both cases the table the
+ * nested object hydrates as is written in a sibling field of the document
+ * rather than in any row. That is one shape, "resolve a RESOURCE field by a
+ * sibling discriminator", so it is one table and not one function per
+ * resource - a resolver spelled in C is per-resource code, and the house rule
+ * is that a resource is data.
+ *
+ * A discriminator value this build has no table for resolves to NULL, which
+ * leaves the nested entity untagged, permissive and counted as exactly one
+ * unknown - the path an Event subscription or a preview type invented after
+ * this build ships will take.
  */
-typedef const struct starkbankResource *(*starkbankRefFn)(const starkcore_json *object,
-                                                          const char *field);
+typedef struct starkbankVariant {
+    const char *value;                      /* what the discriminator field says */
+    const char *resource;                   /* the table to hydrate as, by name */
+} starkbankVariant;
+
+typedef struct starkbankPolymorph {
+    const char *field;                      /* the RESOURCE field whose table varies */
+    const char *discriminator;              /* the sibling field that chooses it */
+    const starkbankVariant *variants;       /* NULL-terminated */
+} starkbankPolymorph;
 
 typedef struct starkbankResource {
     const char *name;                       /* "Invoice", "InvoiceLog", "Invoice.Rule" */
@@ -47,7 +61,7 @@ typedef struct starkbankResource {
     const char *const *queryKeys;           /* NULL-terminated; NULL for none */
     const struct starkbankResource *params; /* the query/patch view of this table */
     int isParams;                           /* nonzero on that view itself */
-    starkbankRefFn refResolve;
+    const starkbankPolymorph *polymorph;    /* NULL-terminated; NULL for none */
 } starkbankResource;
 
 /* --------------------------------------------------------------- handles */
@@ -167,6 +181,9 @@ starkcore_client * starkbankClientCore(const starkbank_client *client);
 int starkbankVerbCreate(const starkbank_client *client, const starkbankResource *resource,
                         const starkbank_list *entities, starkbank_list **out,
                         starkbank_errors **errors);
+int starkbankVerbCreateSingle(const starkbank_client *client, const starkbankResource *resource,
+                              const starkbank_entity *entity, starkbank_entity **out,
+                              starkbank_errors **errors);
 int starkbankVerbGetId(const starkbank_client *client, const starkbankResource *resource,
                        const char *id, starkbank_entity **out, starkbank_errors **errors);
 int starkbankVerbGetFirst(const starkbank_client *client, const starkbankResource *resource,

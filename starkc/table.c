@@ -65,6 +65,46 @@ int starkbankQueryKeyKnown(const starkbankResource *resource, const char *key)
     return 0;
 }
 
+/*
+ * A row with no ref on a resource that declares a polymorph: the table is
+ * named by a sibling field of the document being read, not by the row. Event
+ * resolves "log" by "subscription" and PaymentPreview resolves "payment" by
+ * "type", and neither spells a line of C to do it.
+ *
+ * A discriminator the map does not carry returns NULL on purpose: the nested
+ * entity then hydrates untagged and permissive and counts as one unknown,
+ * which is how a variant invented after this build ships stays readable.
+ */
+static const starkbankResource * variantRef(const starkbankResource *resource,
+                                            const char *key, const starkcore_json *object)
+{
+    const starkbankPolymorph *entry;
+    const starkcore_json *discriminator;
+    const char *value;
+    int index;
+
+    if (resource == NULL || resource->polymorph == NULL || object == NULL) {
+        return NULL;
+    }
+    for (entry = resource->polymorph; entry->field != NULL; entry++) {
+        if (strcmp(entry->field, key) != 0) {
+            continue;
+        }
+        discriminator = starkcore_json_get(object, entry->discriminator);
+        value = discriminator != NULL ? starkcore_json_string(discriminator) : NULL;
+        if (value == NULL) {
+            return NULL;
+        }
+        for (index = 0; entry->variants[index].value != NULL; index++) {
+            if (strcmp(entry->variants[index].value, value) == 0) {
+                return starkbankRegistryFind(entry->variants[index].resource);
+            }
+        }
+        return NULL;
+    }
+    return NULL;
+}
+
 const starkbankResource * starkbankFieldRef(const starkbankResource *resource,
                                             const starkbankField *field,
                                             const starkcore_json *object)
@@ -78,10 +118,7 @@ const starkbankResource * starkbankFieldRef(const starkbankResource *resource,
     if (field->ref != NULL) {
         return starkbankRegistryFind(field->ref);
     }
-    if (resource != NULL && resource->refResolve != NULL) {
-        return resource->refResolve(object, field->key);
-    }
-    return NULL;
+    return variantRef(resource, field->key, object);
 }
 
 /*

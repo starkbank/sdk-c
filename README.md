@@ -3,8 +3,8 @@
 ### Overview
 
 The Stark Bank resource tier in C, over `starkcore` and `ecdsa-c`: invoices,
-transfers, events and the rest of the API surface as tables the preprocessor
-expands against one hand-written engine.
+transfers, events, webhooks, payment previews and the rest of the API surface
+as tables the preprocessor expands against one hand-written engine.
 
 It re-implements nothing that `core-c` owns. Casing, endpoint derivation,
 envelope keys, pagination arithmetic, request signing and status mapping are
@@ -37,6 +37,40 @@ rules, the field tables per resource and what each return code means. It is
 C89-clean, uses no `long`, no `bool` and no stdint, and every declaration
 carries `STARKBANK_API` and `STARKBANK_CALL` - so a Delphi header translator,
 an FFI generator and MSVC can all read it. `make check-header` proves that.
+
+### Resources in this build
+
+| resource | verbs | notes |
+|---|---|---|
+| Invoice | create get query page update pdf qrcode payment | + `invoice.Log` (get query page pdf), `Invoice.Rule`, `Invoice.Payment`, `Split` |
+| Transfer | create get delete query page pdf | + `transfer.Log` (get query page), `Transfer.Rule` |
+| Event | get query page update delete parse | `log` is polymorphic: the table comes from `subscription` |
+| Balance | get | no id: the head of the listing endpoint |
+| Webhook | create get query page delete | `create` is `post_single` and takes one entity, not a list |
+| PaymentPreview | create | `payment` is polymorphic: the table comes from `type`, into `BrcodePreview`, `BoletoPreview`, `TaxPreview` or `UtilityPreview` |
+
+Those six between them use every `starkcore_rest_*` shape the bank SDK needs:
+`post_multi`, `post_single`, `get_id`, `get_page`, the stream, `patch_id`,
+`delete_id`, `get_content` and `get_sub_resource`. The remaining bank
+resources are tables on top of exactly this engine.
+
+Two fields in the surface are polymorphic, and neither costs a line of C. A
+resource declares the map beside its field table -
+
+```c
+#define STARKBANK_PAYMENT_PREVIEW_VARIANTS(V)             \
+    V("brcode-payment",  "PaymentPreview.BrcodePreview")  \
+    V("boleto-payment",  "PaymentPreview.BoletoPreview")  \
+    ...
+
+STARKBANK_POLYMORPH(payment_preview, "payment", "type",
+                    STARKBANK_PAYMENT_PREVIEW_VARIANTS);
+```
+
+- and the engine reads the discriminator out of the document being hydrated. A
+value the map does not carry leaves the nested object untagged, permissive and
+counted as exactly one unknown, so a variant invented after this build ships
+is still readable and still shows up in CI.
 
 ### Layout
 
