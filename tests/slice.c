@@ -487,8 +487,9 @@ static void testRegistry(void)
         "Invoice.Payment", "Invoice.Rule", "PaymentPreview",
         "PaymentPreview.BoletoPreview", "PaymentPreview.BrcodePreview",
         "PaymentPreview.TaxPreview", "PaymentPreview.UtilityPreview",
-        "Split", "TaxPayment", "TaxPaymentLog", "Transfer", "TransferLog",
-        "Transfer.Rule", "UtilityPayment", "UtilityPaymentLog", "Webhook"
+        "Split", "TaxPayment", "TaxPaymentLog", "Transaction", "Transfer",
+        "TransferLog", "Transfer.Rule", "UtilityPayment", "UtilityPaymentLog",
+        "Webhook"
     };
     char label[160];
     size_t index;
@@ -2168,6 +2169,54 @@ static void testTaxPaymentLog(void)
     starkbank_client_free(client);
 }
 
+/* =========================================================== Transaction */
+
+static void testTransaction(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *transaction = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_list *page = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+
+    startGroup("Transaction - create() is deprecated in python, so there is none here");
+    client = newClient(&fake);
+    replies(&fake, responseBody("transaction"), NULL);
+    starkbank_transaction_get(client, "7656565656565656", &transaction, NULL);
+    checkRequests("transaction.get", &fake);
+    checkHydration("transaction.get", 0, transaction);
+    starkbank_entity_free(transaction);
+    transaction = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("transactions"), NULL);
+    starkbank_transaction_params_new(&params);
+    starkbank_entity_append_string(params, "tags", "abc");
+    starkbank_entity_append_string(params, "tags", "test");
+    starkbank_entity_append_string(params, "externalIds", "transaction ABC 2026-09-17");
+    starkbank_transaction_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("transaction.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("transactions"), NULL);
+    starkbank_transaction_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_transaction_page(client, params, &page, NULL, NULL);
+    checkRequests("transaction.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
 /* ======================================================= UtilityPayment */
 
 static void testUtilityPayment(void)
@@ -2763,6 +2812,7 @@ int main(void)
     testInstitution();
     testTaxPayment();
     testTaxPaymentLog();
+    testTransaction();
     testUtilityPayment();
     testUtilityPaymentLog();
     testNegatives();

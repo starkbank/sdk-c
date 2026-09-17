@@ -1999,6 +1999,48 @@ STARKBANK_API int STARKBANK_CALL starkbank_institution_page(const starkbank_clie
     const starkbank_entity *params, starkbank_list **out, char **out_cursor,
     starkbank_errors **errors);
 
+/* =========================================================================
+ *                                Transaction
+ * =========================================================================
+ *
+ * sdk-python's create() is deprecated since v2.31.0 and unconditionally
+ * raises StarkError("deprecated") - it is not a working create, it is a
+ * tombstone. Transactions now arise only as a side effect of other
+ * operations (a Transfer, a paid charge...), so this table has no NEW and no
+ * create verb: adding one would let a C caller do, over the wire, exactly
+ * what sdk-python refuses to do at all.
+ *
+ * Fields (all return-only): amount fee balance AMOUNT (ro)
+ *   description externalId receiverId senderId source id STRING (ro)
+ *   tags LIST_STRING (ro)
+ *   created DATETIME (ro)
+ *
+ * Query keys: limit, after, before, tags, externalIds, ids.
+ */
+#define STARKBANK_TRANSACTION_AMOUNT        "amount"
+#define STARKBANK_TRANSACTION_DESCRIPTION   "description"
+#define STARKBANK_TRANSACTION_EXTERNAL_ID   "externalId"
+#define STARKBANK_TRANSACTION_RECEIVER_ID   "receiverId"
+#define STARKBANK_TRANSACTION_SENDER_ID     "senderId"
+#define STARKBANK_TRANSACTION_TAGS          "tags"
+#define STARKBANK_TRANSACTION_ID            "id"
+#define STARKBANK_TRANSACTION_FEE           "fee"
+#define STARKBANK_TRANSACTION_CREATED       "created"
+#define STARKBANK_TRANSACTION_SOURCE        "source"
+#define STARKBANK_TRANSACTION_BALANCE       "balance"
+
+STARKBANK_API int STARKBANK_CALL starkbank_transaction_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_transaction_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_transaction_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_transaction_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
 #ifdef __cplusplus
 }
 #endif

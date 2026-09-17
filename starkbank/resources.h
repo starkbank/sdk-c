@@ -39,6 +39,7 @@
     R(tax_payment)             \
     R(tax_payment_log)         \
     R(tax_preview)             \
+    R(transaction)             \
     R(transfer)                \
     R(transfer_log)            \
     R(transfer_rule)           \

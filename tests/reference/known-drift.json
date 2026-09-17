@@ -103,6 +103,41 @@
       "key": "verb.new:Institution:query",
       "owner": "eduardo.santos@starkbank.com",
       "reason": "sdk-python's institution.query() is itself rest.get_page(...)[0]: one page call, cursor discarded, no looping across pages - the PAGE shape wearing a different name. sdk-c exposes starkbank_institution_page directly instead of inventing an iterator python's own code never builds; pass NULL for out_cursor to match python's query() exactly."
+    },
+    {
+      "key": "verb.new:Transaction:create",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "sdk-python's create() is deprecated since v2.31.0 and unconditionally raises StarkError('deprecated'); it is a tombstone, not a working verb. Adding a create here would let a C caller do, over the wire, exactly what sdk-python refuses to do at all - so sdk-c has no create verb for Transaction and none is planned unless python's own create() starts working again."
+    },
+    {
+      "key": "flag.conflict:Transaction:amount",
+      "owner": "eduardo.santos@starkbank.com",
+      "resolution": "table",
+      "reason": "sdk-python's Transaction.__init__ lists amount, description, external_id, receiver_id and tags under '## Parameters (required)'/'(optional)', but Transaction.create() is deprecated since v2.31.0 and unconditionally raises StarkError('deprecated') - there is no working create endpoint left for these to be sent to. The docstring describes the constructor signature that create() used to serialize before it was turned into a tombstone; the table follows the live behaviour and marks every field RO. See starkbank/transaction/transaction.h for the full reasoning, which covers all five conflicting fields."
+    },
+    {
+      "key": "flag.conflict:Transaction:description",
+      "owner": "eduardo.santos@starkbank.com",
+      "resolution": "table",
+      "reason": "As flag.conflict:Transaction:amount - create() is deprecated and always raises, so every '## Parameters' field is RO in the table regardless of the docstring's stale Parameters section."
+    },
+    {
+      "key": "flag.conflict:Transaction:externalId",
+      "owner": "eduardo.santos@starkbank.com",
+      "resolution": "table",
+      "reason": "As flag.conflict:Transaction:amount - create() is deprecated and always raises, so every '## Parameters' field is RO in the table regardless of the docstring's stale Parameters section."
+    },
+    {
+      "key": "flag.conflict:Transaction:receiverId",
+      "owner": "eduardo.santos@starkbank.com",
+      "resolution": "table",
+      "reason": "As flag.conflict:Transaction:amount - create() is deprecated and always raises, so every '## Parameters' field is RO in the table regardless of the docstring's stale Parameters section."
+    },
+    {
+      "key": "flag.conflict:Transaction:tags",
+      "owner": "eduardo.santos@starkbank.com",
+      "resolution": "table",
+      "reason": "As flag.conflict:Transaction:amount - create() is deprecated and always raises, so every '## Parameters' field is RO in the table regardless of the docstring's stale Parameters section."
     }
   ]
 }
