@@ -111,6 +111,8 @@ RESOURCE_SOURCES = \
 	starkbank/brcodepayment/log.c \
 	starkbank/brcodepayment/rule.c \
 	starkbank/corporatebalance/corporatebalance.c \
+	starkbank/corporatecard/corporatecard.c \
+	starkbank/corporatecard/log.c \
 	starkbank/corporateholder/corporateholder.c \
 	starkbank/corporateholder/log.c \
 	starkbank/corporateholder/permission.c \

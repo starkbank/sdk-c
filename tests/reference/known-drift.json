@@ -184,6 +184,36 @@
       "owner": "eduardo.santos@starkbank.com",
       "resolution": "table",
       "reason": "sdk-python's CorporateBalance.__init__ does 'self.updated = updated' with no check_datetime call at all, unlike every other resource's updated/created field - a bug of omission in sdk-python, not a documented STRING semantic: the class docstring's own example is a datetime.datetime, and CorporateBalance.get() hydrates the same ISO-8601 timestamp every other DATETIME field on the wire uses. The table follows the wire format and the docstring; python's missing coercion is the divergence."
+    },
+    {
+      "key": "field.gone:CorporateCard:pin",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "pin is a real wire key sdk-python's update() sends, but it is never an attribute of the CorporateCard class - update() takes it as a bare keyword argument and stores it nowhere on the object. The table carries it as a PATCH-only field so the engine can validate a write to it; python simply has no field of that name to compare against. Same shape as sdk-c4's field.gone:Workspace:picture."
+    },
+    {
+      "key": "query.new:CorporateCard:search",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "The docs list search as a GET /v2/corporate-card filter; sdk-python's card.query()/page() accept no such keyword. python is normative for the verb surface."
+    },
+    {
+      "key": "query.new:CorporateCard:merchantIds",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "As query.new:CorporateCard:search - merchantIds is documented and sdk-python's query()/page() do not accept it."
+    },
+    {
+      "key": "verb.new:CorporateCard:cancel",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "As verb.new:CorporateHolder:cancel - sdk-python spells DELETE /v2/corporate-card/:id cancel(); sdk-c keeps the uniform starkbank_corporate_card_delete spelling."
+    },
+    {
+      "key": "verb.gone:CorporateCard:delete",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "The other half of verb.new:CorporateCard:cancel."
+    },
+    {
+      "key": "query.gone:CorporateCardLog:ids",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "sdk-python's corporatecard.log.query()/page() accept ids and the docs' GET /v2/corporate-card/log endpoint does not list it, the same shape as query.gone:CorporateHolderLog:ids."
     }
   ]
 }

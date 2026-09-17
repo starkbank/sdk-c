@@ -496,7 +496,7 @@ def sampleBody(ident, table, verb, shape):
     printf("created %%s\\n", id);
     starkbank_list_free(created);
 """ % {"ident": ident, "setters": setters, "call": call})
-    if shape == "POST_SINGLE":
+    if shape in ("POST_SINGLE", "POST_SINGLE_SUB"):
         setters = "\n".join(requiredSetters(ident, table))
         return ("""    starkbank_entity *%(ident)s = NULL;
     starkbank_entity *created = NULL;

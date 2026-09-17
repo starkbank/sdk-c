@@ -184,6 +184,9 @@ int starkbankVerbCreate(const starkbank_client *client, const starkbankResource 
 int starkbankVerbCreateSingle(const starkbank_client *client, const starkbankResource *resource,
                               const starkbank_entity *entity, starkbank_entity **out,
                               starkbank_errors **errors);
+int starkbankVerbCreateSub(const starkbank_client *client, const starkbankResource *resource,
+                           const char *subPath, const starkbank_entity *entity,
+                           starkbank_entity **out, starkbank_errors **errors);
 int starkbankVerbGetId(const starkbank_client *client, const starkbankResource *resource,
                        const char *id, starkbank_entity **out, starkbank_errors **errors);
 int starkbankVerbGetFirst(const starkbank_client *client, const starkbankResource *resource,

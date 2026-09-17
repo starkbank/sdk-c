@@ -1721,6 +1721,125 @@ STARKBANK_API int STARKBANK_CALL starkbank_tax_payment_log_page(const starkbank_
     starkbank_errors **errors);
 
 /* =========================================================================
+ *                              CorporateCard
+ * =========================================================================
+ *
+ * create() posts to "corporate-card/token", not "corporate-card" - see
+ * starkbankVerbCreateSub in starkc/verb.c and the header comment in
+ * starkbank/corporatecard/corporatecard.h for why that needs its own verb
+ * macro, STARKBANK_VERB_POST_SINGLE_SUB, rather than STARKBANK_VERB_POST_SINGLE.
+ *
+ * Fields (wire keys; * = required on create, + = also accepted in an update).
+ *
+ *   holderId*  STRING
+ *   holderName streetLine1 streetLine2 district city stateCode zipCode
+ *     type number securityCode STRING (ro)
+ *   displayName+ status+ STRING
+ *   rules+ LIST_RESOURCE("CorporateRule")             tags+ LIST_STRING
+ *   pin+ STRING
+ *   expiration updated created DATETIME (ro)
+ *   id STRING (ro).
+ *
+ * Query keys: limit, after, before, status, types, holderIds, ids, tags, expand.
+ *
+ * pin has no field in sdk-python's CorporateCard class - update() sends it
+ * straight from a keyword argument and nothing ever reads it back - so it
+ * carries PATCH and nothing else; see known-drift.json's
+ * field.gone:CorporateCard:pin.
+ *
+ * number, securityCode and expiration are masked unless a caller passes
+ * expand, which create() and get() do not yet forward for the reason
+ * CorporateHolder's section explains; query() and page() do, through the
+ * "expand" query key above.
+ */
+
+#define STARKBANK_CORPORATE_CARD_HOLDER_ID      "holderId"
+#define STARKBANK_CORPORATE_CARD_HOLDER_NAME    "holderName"
+#define STARKBANK_CORPORATE_CARD_DISPLAY_NAME   "displayName"
+#define STARKBANK_CORPORATE_CARD_RULES          "rules"
+#define STARKBANK_CORPORATE_CARD_TAGS           "tags"
+#define STARKBANK_CORPORATE_CARD_PIN            "pin"
+#define STARKBANK_CORPORATE_CARD_STREET_LINE_1  "streetLine1"
+#define STARKBANK_CORPORATE_CARD_STREET_LINE_2  "streetLine2"
+#define STARKBANK_CORPORATE_CARD_DISTRICT       "district"
+#define STARKBANK_CORPORATE_CARD_CITY           "city"
+#define STARKBANK_CORPORATE_CARD_STATE_CODE     "stateCode"
+#define STARKBANK_CORPORATE_CARD_ZIP_CODE       "zipCode"
+#define STARKBANK_CORPORATE_CARD_TYPE           "type"
+#define STARKBANK_CORPORATE_CARD_STATUS         "status"
+#define STARKBANK_CORPORATE_CARD_NUMBER         "number"
+#define STARKBANK_CORPORATE_CARD_SECURITY_CODE  "securityCode"
+#define STARKBANK_CORPORATE_CARD_EXPIRATION     "expiration"
+#define STARKBANK_CORPORATE_CARD_ID             "id"
+#define STARKBANK_CORPORATE_CARD_UPDATED        "updated"
+#define STARKBANK_CORPORATE_CARD_CREATED        "created"
+
+/* Types and statuses, from the docs' enums. */
+#define STARKBANK_CORPORATE_CARD_TYPE_VIRTUAL   "virtual"
+#define STARKBANK_CORPORATE_CARD_TYPE_PHYSICAL  "physical"
+#define STARKBANK_CORPORATE_CARD_TYPE_WALLET    "wallet"
+
+#define STARKBANK_CORPORATE_CARD_STATUS_PENDING  "pending"
+#define STARKBANK_CORPORATE_CARD_STATUS_ACTIVE   "active"
+#define STARKBANK_CORPORATE_CARD_STATUS_BLOCKED  "blocked"
+#define STARKBANK_CORPORATE_CARD_STATUS_EXPIRED  "expired"
+#define STARKBANK_CORPORATE_CARD_STATUS_CANCELED "canceled"
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_card_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_card_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_card_create(const starkbank_client *client,
+    const starkbank_entity *card, starkbank_entity **out, starkbank_errors **errors);
+/* One card, posted to corporate-card/token. Free card with
+   starkbank_entity_free; unlike POST_MULTI's list, this call borrows it. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_card_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_card_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_card_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_card_update(const starkbank_client *client,
+    const char *id, const starkbank_entity *patch, starkbank_entity **out,
+    starkbank_errors **errors);
+/* Every key in patch must carry STARKBANK_FLAG_PATCH: displayName, rules,
+   tags, pin, status. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_card_delete(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+/* sdk-python names this cancel(); see CorporateHolder's section header. */
+
+/* ------------------------------------------------------- CorporateCardLog */
+/*
+ * Resource "CorporateCardLog"; endpoint "corporate-card/log", derived at run
+ * time.
+ * Fields: id STRING (ro), created DATETIME (ro), type STRING (ro),
+ *         card RESOURCE("CorporateCard") (ro).
+ * Query keys: limit, after, before, types, cardIds, ids.
+ *
+ * There is no corporatecard.Log pdf: sdk-python does not have one.
+ */
+#define STARKBANK_CORPORATE_CARD_LOG_ID       "id"
+#define STARKBANK_CORPORATE_CARD_LOG_CREATED  "created"
+#define STARKBANK_CORPORATE_CARD_LOG_TYPE     "type"
+#define STARKBANK_CORPORATE_CARD_LOG_CARD     "card"
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_card_log_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_card_log_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_card_log_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_card_log_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+
+/* =========================================================================
  *                              CorporateHolder
  * =========================================================================
  *

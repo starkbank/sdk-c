@@ -149,6 +149,38 @@ const
   STARKBANK_CORPORATE_BALANCE_LIMIT = 'limit';
   STARKBANK_CORPORATE_BALANCE_MAX_LIMIT = 'maxLimit';
   STARKBANK_CORPORATE_BALANCE_UPDATED = 'updated';
+  STARKBANK_CORPORATE_CARD_CITY = 'city';
+  STARKBANK_CORPORATE_CARD_CREATED = 'created';
+  STARKBANK_CORPORATE_CARD_DISPLAY_NAME = 'displayName';
+  STARKBANK_CORPORATE_CARD_DISTRICT = 'district';
+  STARKBANK_CORPORATE_CARD_EXPIRATION = 'expiration';
+  STARKBANK_CORPORATE_CARD_HOLDER_ID = 'holderId';
+  STARKBANK_CORPORATE_CARD_HOLDER_NAME = 'holderName';
+  STARKBANK_CORPORATE_CARD_ID = 'id';
+  STARKBANK_CORPORATE_CARD_LOG_CARD = 'card';
+  STARKBANK_CORPORATE_CARD_LOG_CREATED = 'created';
+  STARKBANK_CORPORATE_CARD_LOG_ID = 'id';
+  STARKBANK_CORPORATE_CARD_LOG_TYPE = 'type';
+  STARKBANK_CORPORATE_CARD_NUMBER = 'number';
+  STARKBANK_CORPORATE_CARD_PIN = 'pin';
+  STARKBANK_CORPORATE_CARD_RULES = 'rules';
+  STARKBANK_CORPORATE_CARD_SECURITY_CODE = 'securityCode';
+  STARKBANK_CORPORATE_CARD_STATE_CODE = 'stateCode';
+  STARKBANK_CORPORATE_CARD_STATUS = 'status';
+  STARKBANK_CORPORATE_CARD_STATUS_ACTIVE = 'active';
+  STARKBANK_CORPORATE_CARD_STATUS_BLOCKED = 'blocked';
+  STARKBANK_CORPORATE_CARD_STATUS_CANCELED = 'canceled';
+  STARKBANK_CORPORATE_CARD_STATUS_EXPIRED = 'expired';
+  STARKBANK_CORPORATE_CARD_STATUS_PENDING = 'pending';
+  STARKBANK_CORPORATE_CARD_STREET_LINE_1 = 'streetLine1';
+  STARKBANK_CORPORATE_CARD_STREET_LINE_2 = 'streetLine2';
+  STARKBANK_CORPORATE_CARD_TAGS = 'tags';
+  STARKBANK_CORPORATE_CARD_TYPE = 'type';
+  STARKBANK_CORPORATE_CARD_TYPE_PHYSICAL = 'physical';
+  STARKBANK_CORPORATE_CARD_TYPE_VIRTUAL = 'virtual';
+  STARKBANK_CORPORATE_CARD_TYPE_WALLET = 'wallet';
+  STARKBANK_CORPORATE_CARD_UPDATED = 'updated';
+  STARKBANK_CORPORATE_CARD_ZIP_CODE = 'zipCode';
   STARKBANK_CORPORATE_HOLDER_CENTER_ID = 'centerId';
   STARKBANK_CORPORATE_HOLDER_CREATED = 'created';
   STARKBANK_CORPORATE_HOLDER_ID = 'id';
@@ -652,6 +684,30 @@ function starkbank_client_set_user_agent_prefix(client: Pstarkbank_client; prefi
 function starkbank_core_version: PAnsiChar; cdecl; external StarkbankLib name 'starkbank_core_version';
 
 function starkbank_corporate_balance_get(client: Pstarkbank_client; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_balance_get';
+
+function starkbank_corporate_card_create(client: Pstarkbank_client; card: Pstarkbank_entity; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_card_create';
+
+function starkbank_corporate_card_delete(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_card_delete';
+
+function starkbank_corporate_card_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_card_get';
+
+function starkbank_corporate_card_log_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_card_log_get';
+
+function starkbank_corporate_card_log_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_card_log_page';
+
+function starkbank_corporate_card_log_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_card_log_params_new';
+
+function starkbank_corporate_card_log_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_card_log_query';
+
+function starkbank_corporate_card_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_card_new';
+
+function starkbank_corporate_card_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_card_page';
+
+function starkbank_corporate_card_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_card_params_new';
+
+function starkbank_corporate_card_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_card_query';
+
+function starkbank_corporate_card_update(client: Pstarkbank_client; id: PAnsiChar; patch: Pstarkbank_entity; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_card_update';
 
 function starkbank_corporate_holder_create(client: Pstarkbank_client; holders: Pstarkbank_list; &out: PPstarkbank_list; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_holder_create';
 

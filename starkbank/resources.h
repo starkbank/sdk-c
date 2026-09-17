@@ -23,6 +23,8 @@
     R(brcode_payment_rule)     \
     R(brcode_preview)          \
     R(corporate_balance)       \
+    R(corporate_card)          \
+    R(corporate_card_log)      \
     R(corporate_holder)        \
     R(corporate_holder_log)    \
     R(corporate_rule)          \
