@@ -12,9 +12,9 @@ on:
 #
 # The sibling checkouts are private while the C programme is unannounced, and
 # the automatic GITHUB_TOKEN is scoped to this repository, so the cross-repository
-# checkouts read with STARK_SIBLINGS_TOKEN (fine-grained, contents:read on
-# starkinfra/core-c, starkbank/ecdsa-c and starkbank/app-docs) and fall back to
-# the automatic token once they are public. A fork PR has neither and stays red.
+# checkouts read with STARK_SIBLINGS_TOKEN (fine-grained, owner starkbank,
+# contents:read on ecdsa-c and app-docs) and STARK_INFRA_TOKEN (owner starkinfra,
+# contents:read on core-c), falling back to the automatic token once public. A fork PR has neither and stays red.
 env:
   CORE_C_REF: v0.1.0
   ECDSA_C_REF: v0.1.0
@@ -39,7 +39,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: starkinfra/core-c
-          token: ${{ secrets.STARK_SIBLINGS_TOKEN || github.token }}
+          token: ${{ secrets.STARK_INFRA_TOKEN || secrets.STARK_SIBLINGS_TOKEN || github.token }}
           ref: ${{ env.CORE_C_REF }}
           path: starkinfra/core-c
 
@@ -122,7 +122,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: starkinfra/core-c
-          token: ${{ secrets.STARK_SIBLINGS_TOKEN || github.token }}
+          token: ${{ secrets.STARK_INFRA_TOKEN || secrets.STARK_SIBLINGS_TOKEN || github.token }}
           ref: ${{ env.CORE_C_REF }}
           path: starkinfra/core-c
 
@@ -162,7 +162,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: starkinfra/core-c
-          token: ${{ secrets.STARK_SIBLINGS_TOKEN || github.token }}
+          token: ${{ secrets.STARK_INFRA_TOKEN || secrets.STARK_SIBLINGS_TOKEN || github.token }}
           ref: ${{ env.CORE_C_REF }}
           path: starkinfra/core-c
 
@@ -235,7 +235,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: starkinfra/core-c
-          token: ${{ secrets.STARK_SIBLINGS_TOKEN || github.token }}
+          token: ${{ secrets.STARK_INFRA_TOKEN || secrets.STARK_SIBLINGS_TOKEN || github.token }}
           ref: ${{ env.CORE_C_REF }}
           path: starkinfra/core-c
 
