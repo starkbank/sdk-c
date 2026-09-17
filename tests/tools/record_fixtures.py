@@ -545,6 +545,88 @@ BALANCE = {
     "updated": "2026-09-16T12:00:00+00:00",
 }
 
+# line and barCode are the conditionally-required pair: both are sent below,
+# and both come back on the reply, exactly as boleto payment's line/barCode
+# do. scheduled is a plain date, not a datetime.
+UTILITY_PAYMENT = {
+    "id": "5155165527080960",
+    "line": "82660000002 8 44361143007 7 41190025511 7 00010601813 8",
+    "barCode": "82660000002443611430074119002551100010601813",
+    "description": "Utility Payment - Light Company",
+    "scheduled": "2026-09-20",
+    "tags": ["electricity", "light"],
+    "status": "success",
+    "amount": 23456,
+    "fee": 200,
+    "type": "utility",
+    "transactionIds": ["19827356981273"],
+    "created": "2026-09-16T12:00:00+00:00",
+    "updated": "2026-09-17T12:00:00+00:00",
+}
+
+UTILITY_PAYMENT_LOG = {
+    "id": "6341320293482496",
+    "created": "2026-09-16T12:00:00+00:00",
+    "type": "success",
+    "errors": [],
+    "payment": UTILITY_PAYMENT,
+}
+
+TAX_PAYMENT = {
+    "id": "5155165527080961",
+    "line": "85660000006 6 67940064007 5 41190025511 7 00010601813 8",
+    "barCode": "85660000006679400640074119002551100010601813",
+    "description": "ISS Payment - Iron Throne",
+    "scheduled": "2026-09-21",
+    "tags": ["iss", "throne"],
+    "type": "iss",
+    "status": "success",
+    "amount": 23456,
+    "fee": 150,
+    "transactionIds": ["19827356981274"],
+    "updated": "2026-09-17T12:00:00+00:00",
+    "created": "2026-09-16T12:00:00+00:00",
+}
+
+TAX_PAYMENT_LOG = {
+    "id": "6341320293482497",
+    "created": "2026-09-16T12:00:00+00:00",
+    "type": "success",
+    "errors": [],
+    "payment": TAX_PAYMENT,
+}
+
+# Fully structured: no line/barCode pair, and every required field is
+# present - the contrast case to UtilityPayment/TaxPayment's conditional pair.
+DARF_PAYMENT = {
+    "id": "5155165527080962",
+    "revenueCode": "5948",
+    "taxId": "20.018.183/0001-80",
+    "competence": "2026-08-31",
+    "referenceNumber": "08.1.17.00-4",
+    "fineAmount": 234,
+    "interestAmount": 456,
+    "due": "2026-10-17",
+    "description": "DARF Payment - competence August",
+    "tags": ["darf", "federal"],
+    "scheduled": "2026-09-22",
+    "status": "success",
+    "amount": 24146,
+    "nominalAmount": 23456,
+    "fee": 0,
+    "transactionIds": ["19827356981275"],
+    "updated": "2026-09-17T12:00:00+00:00",
+    "created": "2026-09-16T12:00:00+00:00",
+}
+
+DARF_PAYMENT_LOG = {
+    "id": "6341320293482498",
+    "created": "2026-09-16T12:00:00+00:00",
+    "type": "success",
+    "errors": [],
+    "payment": DARF_PAYMENT,
+}
+
 PDF = b"%PDF-1.4 fake"
 PNG = b"\x89PNG\r\n\x1a\n fake"
 
@@ -795,6 +877,99 @@ def main():
     record("balance.get", [{"balances": [BALANCE], "cursor": ""}],
            lambda: starkbank.balance.get())
 
+    utilityPayment = starkbank.UtilityPayment(
+        description="Utility Payment - Light Company",
+        line="82660000002 8 44361143007 7 41190025511 7 00010601813 8",
+        bar_code="82660000002443611430074119002551100010601813",
+        scheduled="2026-09-20",
+        tags=["electricity", "light"],
+    )
+
+    record("utilitypayment.create", [{"payments": [UTILITY_PAYMENT]}],
+           lambda: starkbank.utilitypayment.create([utilityPayment]))
+    record("utilitypayment.get", [{"payment": UTILITY_PAYMENT}],
+           lambda: starkbank.utilitypayment.get("5155165527080960"))
+    record("utilitypayment.delete", [{"payment": UTILITY_PAYMENT}],
+           lambda: starkbank.utilitypayment.delete("5155165527080960"))
+    record("utilitypayment.query", [{"payments": [UTILITY_PAYMENT], "cursor": ""}],
+           lambda: list(starkbank.utilitypayment.query(limit=5, status="success",
+                                                        tags=["electricity"])))
+    record("utilitypayment.page", [{"payments": [UTILITY_PAYMENT], "cursor": ""}],
+           lambda: starkbank.utilitypayment.page(limit=5)[0])
+    record("utilitypayment.pdf", [PDF],
+           lambda: None if starkbank.utilitypayment.pdf("5155165527080960") else None)
+    record("utilitypayment.log.get", [{"log": UTILITY_PAYMENT_LOG}],
+           lambda: starkbank.utilitypayment.log.get("6341320293482496"))
+    record("utilitypayment.log.query", [{"logs": [UTILITY_PAYMENT_LOG], "cursor": ""}],
+           lambda: list(starkbank.utilitypayment.log.query(
+               limit=5, types=["success"], payment_ids=["5155165527080960"])))
+    record("utilitypayment.log.page", [{"logs": [UTILITY_PAYMENT_LOG], "cursor": ""}],
+           lambda: starkbank.utilitypayment.log.page(limit=5)[0])
+
+    taxPayment = starkbank.TaxPayment(
+        description="ISS Payment - Iron Throne",
+        line="85660000006 6 67940064007 5 41190025511 7 00010601813 8",
+        bar_code="85660000006679400640074119002551100010601813",
+        scheduled="2026-09-21",
+        tags=["iss", "throne"],
+    )
+
+    record("taxpayment.create", [{"payments": [TAX_PAYMENT]}],
+           lambda: starkbank.taxpayment.create([taxPayment]))
+    record("taxpayment.get", [{"payment": TAX_PAYMENT}],
+           lambda: starkbank.taxpayment.get("5155165527080961"))
+    record("taxpayment.delete", [{"payment": TAX_PAYMENT}],
+           lambda: starkbank.taxpayment.delete("5155165527080961"))
+    record("taxpayment.query", [{"payments": [TAX_PAYMENT], "cursor": ""}],
+           lambda: list(starkbank.taxpayment.query(limit=5, status="success",
+                                                    tags=["iss"])))
+    record("taxpayment.page", [{"payments": [TAX_PAYMENT], "cursor": ""}],
+           lambda: starkbank.taxpayment.page(limit=5)[0])
+    record("taxpayment.pdf", [PDF],
+           lambda: None if starkbank.taxpayment.pdf("5155165527080961") else None)
+    record("taxpayment.log.get", [{"log": TAX_PAYMENT_LOG}],
+           lambda: starkbank.taxpayment.log.get("6341320293482497"))
+    record("taxpayment.log.query", [{"logs": [TAX_PAYMENT_LOG], "cursor": ""}],
+           lambda: list(starkbank.taxpayment.log.query(
+               limit=5, types=["success"], payment_ids=["5155165527080961"])))
+    record("taxpayment.log.page", [{"logs": [TAX_PAYMENT_LOG], "cursor": ""}],
+           lambda: starkbank.taxpayment.log.page(limit=5)[0])
+
+    darfPayment = starkbank.DarfPayment(
+        description="DARF Payment - competence August",
+        revenue_code="5948",
+        tax_id="20.018.183/0001-80",
+        competence="2026-08-31",
+        nominal_amount=23456,
+        fine_amount=234,
+        interest_amount=456,
+        due="2026-10-17",
+        reference_number="08.1.17.00-4",
+        scheduled="2026-09-22",
+        tags=["darf", "federal"],
+    )
+
+    record("darfpayment.create", [{"payments": [DARF_PAYMENT]}],
+           lambda: starkbank.darfpayment.create([darfPayment]))
+    record("darfpayment.get", [{"payment": DARF_PAYMENT}],
+           lambda: starkbank.darfpayment.get("5155165527080962"))
+    record("darfpayment.delete", [{"payment": DARF_PAYMENT}],
+           lambda: starkbank.darfpayment.delete("5155165527080962"))
+    record("darfpayment.query", [{"payments": [DARF_PAYMENT], "cursor": ""}],
+           lambda: list(starkbank.darfpayment.query(limit=5, status="success",
+                                                     tags=["darf"])))
+    record("darfpayment.page", [{"payments": [DARF_PAYMENT], "cursor": ""}],
+           lambda: starkbank.darfpayment.page(limit=5)[0])
+    record("darfpayment.pdf", [PDF],
+           lambda: None if starkbank.darfpayment.pdf("5155165527080962") else None)
+    record("darfpayment.log.get", [{"log": DARF_PAYMENT_LOG}],
+           lambda: starkbank.darfpayment.log.get("6341320293482498"))
+    record("darfpayment.log.query", [{"logs": [DARF_PAYMENT_LOG], "cursor": ""}],
+           lambda: list(starkbank.darfpayment.log.query(
+               limit=5, types=["success"], payment_ids=["5155165527080962"])))
+    record("darfpayment.log.page", [{"logs": [DARF_PAYMENT_LOG], "cursor": ""}],
+           lambda: starkbank.darfpayment.log.page(limit=5)[0])
+
     document = {
         "cases": CASES,
         "responses": {
@@ -824,6 +999,15 @@ def main():
                                       PAYMENT_PREVIEW_TAX, PAYMENT_PREVIEW_UTILITY]},
             "previewUnknown": {"previews": [PAYMENT_PREVIEW_UNKNOWN]},
             "balances": {"balances": [BALANCE], "cursor": ""},
+            "utilityPayment": {"payment": UTILITY_PAYMENT},
+            "utilityPayments": {"payments": [UTILITY_PAYMENT], "cursor": ""},
+            "utilityPaymentLog": {"log": UTILITY_PAYMENT_LOG},
+            "taxPayment": {"payment": TAX_PAYMENT},
+            "taxPayments": {"payments": [TAX_PAYMENT], "cursor": ""},
+            "taxPaymentLog": {"log": TAX_PAYMENT_LOG},
+            "darfPayment": {"payment": DARF_PAYMENT},
+            "darfPayments": {"payments": [DARF_PAYMENT], "cursor": ""},
+            "darfPaymentLog": {"log": DARF_PAYMENT_LOG},
         },
     }
     with open(OUT, "w") as handle:

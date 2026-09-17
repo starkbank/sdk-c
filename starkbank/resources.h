@@ -22,6 +22,8 @@
     R(brcode_payment_log)      \
     R(brcode_payment_rule)     \
     R(brcode_preview)          \
+    R(darf_payment)            \
+    R(darf_payment_log)        \
     R(event)                   \
     R(event_attempt)           \
     R(invoice)                 \
@@ -30,10 +32,14 @@
     R(invoice_rule)            \
     R(payment_preview)         \
     R(split)                   \
+    R(tax_payment)             \
+    R(tax_payment_log)         \
     R(tax_preview)             \
     R(transfer)                \
     R(transfer_log)            \
     R(transfer_rule)           \
+    R(utility_payment)         \
+    R(utility_payment_log)     \
     R(utility_preview)         \
     R(webhook)
 

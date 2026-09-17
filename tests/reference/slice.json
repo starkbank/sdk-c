@@ -391,6 +391,132 @@
         }
       ]
     },
+    "darfpayment.create": {
+      "hydrated": [
+        "{\"amount\":24146,\"competence\":\"2026-08-31\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"DARF Payment - competence August\",\"due\":\"2026-10-17\",\"fee\":0,\"fineAmount\":234,\"id\":\"5155165527080962\",\"interestAmount\":456,\"nominalAmount\":23456,\"referenceNumber\":\"08.1.17.00-4\",\"revenueCode\":\"5948\",\"scheduled\":\"2026-09-22\",\"status\":\"success\",\"tags\":[\"darf\",\"federal\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981275\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "{\"payments\":[{\"competence\":\"2026-08-31\",\"description\":\"DARF Payment - competence August\",\"due\":\"2026-10-17\",\"fineAmount\":234,\"interestAmount\":456,\"nominalAmount\":23456,\"referenceNumber\":\"08.1.17.00-4\",\"revenueCode\":\"5948\",\"scheduled\":\"2026-09-22\",\"tags\":[\"darf\",\"federal\"],\"taxId\":\"20.018.183/0001-80\"}]}",
+          "bodyRaw": "{\"payments\": [{\"competence\": \"2026-08-31\", \"description\": \"DARF Payment - competence August\", \"due\": \"2026-10-17\", \"fineAmount\": 234, \"interestAmount\": 456, \"nominalAmount\": 23456, \"referenceNumber\": \"08.1.17.00-4\", \"revenueCode\": \"5948\", \"scheduled\": \"2026-09-22\", \"tags\": [\"darf\", \"federal\"], \"taxId\": \"20.018.183/0001-80\"}]}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/darf-payment"
+        }
+      ]
+    },
+    "darfpayment.delete": {
+      "hydrated": "{\"amount\":24146,\"competence\":\"2026-08-31\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"DARF Payment - competence August\",\"due\":\"2026-10-17\",\"fee\":0,\"fineAmount\":234,\"id\":\"5155165527080962\",\"interestAmount\":456,\"nominalAmount\":23456,\"referenceNumber\":\"08.1.17.00-4\",\"revenueCode\":\"5948\",\"scheduled\":\"2026-09-22\",\"status\":\"success\",\"tags\":[\"darf\",\"federal\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981275\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "DELETE",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/darf-payment/5155165527080962"
+        }
+      ]
+    },
+    "darfpayment.get": {
+      "hydrated": "{\"amount\":24146,\"competence\":\"2026-08-31\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"DARF Payment - competence August\",\"due\":\"2026-10-17\",\"fee\":0,\"fineAmount\":234,\"id\":\"5155165527080962\",\"interestAmount\":456,\"nominalAmount\":23456,\"referenceNumber\":\"08.1.17.00-4\",\"revenueCode\":\"5948\",\"scheduled\":\"2026-09-22\",\"status\":\"success\",\"tags\":[\"darf\",\"federal\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981275\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/darf-payment/5155165527080962"
+        }
+      ]
+    },
+    "darfpayment.log.get": {
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482498\",\"payment\":{\"amount\":24146,\"competence\":\"2026-08-31\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"DARF Payment - competence August\",\"due\":\"2026-10-17\",\"fee\":0,\"fineAmount\":234,\"id\":\"5155165527080962\",\"interestAmount\":456,\"nominalAmount\":23456,\"referenceNumber\":\"08.1.17.00-4\",\"revenueCode\":\"5948\",\"scheduled\":\"2026-09-22\",\"status\":\"success\",\"tags\":[\"darf\",\"federal\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981275\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"success\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/darf-payment/log/6341320293482498"
+        }
+      ]
+    },
+    "darfpayment.log.page": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482498\",\"payment\":{\"amount\":24146,\"competence\":\"2026-08-31\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"DARF Payment - competence August\",\"due\":\"2026-10-17\",\"fee\":0,\"fineAmount\":234,\"id\":\"5155165527080962\",\"interestAmount\":456,\"nominalAmount\":23456,\"referenceNumber\":\"08.1.17.00-4\",\"revenueCode\":\"5948\",\"scheduled\":\"2026-09-22\",\"status\":\"success\",\"tags\":[\"darf\",\"federal\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981275\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"success\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/darf-payment/log"
+        }
+      ]
+    },
+    "darfpayment.log.query": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482498\",\"payment\":{\"amount\":24146,\"competence\":\"2026-08-31\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"DARF Payment - competence August\",\"due\":\"2026-10-17\",\"fee\":0,\"fineAmount\":234,\"id\":\"5155165527080962\",\"interestAmount\":456,\"nominalAmount\":23456,\"referenceNumber\":\"08.1.17.00-4\",\"revenueCode\":\"5948\",\"scheduled\":\"2026-09-22\",\"status\":\"success\",\"tags\":[\"darf\",\"federal\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981275\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"success\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&paymentIds=5155165527080962&types=success",
+          "queryRaw": "limit=5&types=success&paymentIds=5155165527080962",
+          "url": "https://sandbox.api.starkbank.com/v2/darf-payment/log"
+        }
+      ]
+    },
+    "darfpayment.page": {
+      "hydrated": [
+        "{\"amount\":24146,\"competence\":\"2026-08-31\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"DARF Payment - competence August\",\"due\":\"2026-10-17\",\"fee\":0,\"fineAmount\":234,\"id\":\"5155165527080962\",\"interestAmount\":456,\"nominalAmount\":23456,\"referenceNumber\":\"08.1.17.00-4\",\"revenueCode\":\"5948\",\"scheduled\":\"2026-09-22\",\"status\":\"success\",\"tags\":[\"darf\",\"federal\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981275\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/darf-payment"
+        }
+      ]
+    },
+    "darfpayment.pdf": {
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/darf-payment/5155165527080962/pdf"
+        }
+      ]
+    },
+    "darfpayment.query": {
+      "hydrated": [
+        "{\"amount\":24146,\"competence\":\"2026-08-31\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"DARF Payment - competence August\",\"due\":\"2026-10-17\",\"fee\":0,\"fineAmount\":234,\"id\":\"5155165527080962\",\"interestAmount\":456,\"nominalAmount\":23456,\"referenceNumber\":\"08.1.17.00-4\",\"revenueCode\":\"5948\",\"scheduled\":\"2026-09-22\",\"status\":\"success\",\"tags\":[\"darf\",\"federal\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981275\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&status=success&tags=darf",
+          "queryRaw": "limit=5&tags=darf&status=success",
+          "url": "https://sandbox.api.starkbank.com/v2/darf-payment"
+        }
+      ]
+    },
     "event.attempt.get": {
       "hydrated": "{\"code\":\"500\",\"created\":\"2026-09-16T12:00:00+00:00\",\"eventId\":\"5764898044149760\",\"id\":\"1616161616161616\",\"message\":\"Internal Server Error\",\"webhookId\":\"6178044066660352\"}",
       "requests": [
@@ -734,6 +860,132 @@
         }
       ]
     },
+    "taxpayment.create": {
+      "hydrated": [
+        "{\"amount\":23456,\"barCode\":\"85660000006679400640074119002551100010601813\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"ISS Payment - Iron Throne\",\"fee\":150,\"id\":\"5155165527080961\",\"line\":\"85660000006 6 67940064007 5 41190025511 7 00010601813 8\",\"scheduled\":\"2026-09-21\",\"status\":\"success\",\"tags\":[\"iss\",\"throne\"],\"transactionIds\":[\"19827356981274\"],\"type\":\"iss\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "{\"payments\":[{\"barCode\":\"85660000006679400640074119002551100010601813\",\"description\":\"ISS Payment - Iron Throne\",\"line\":\"85660000006 6 67940064007 5 41190025511 7 00010601813 8\",\"scheduled\":\"2026-09-21\",\"tags\":[\"iss\",\"throne\"]}]}",
+          "bodyRaw": "{\"payments\": [{\"barCode\": \"85660000006679400640074119002551100010601813\", \"description\": \"ISS Payment - Iron Throne\", \"line\": \"85660000006 6 67940064007 5 41190025511 7 00010601813 8\", \"scheduled\": \"2026-09-21\", \"tags\": [\"iss\", \"throne\"]}]}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/tax-payment"
+        }
+      ]
+    },
+    "taxpayment.delete": {
+      "hydrated": "{\"amount\":23456,\"barCode\":\"85660000006679400640074119002551100010601813\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"ISS Payment - Iron Throne\",\"fee\":150,\"id\":\"5155165527080961\",\"line\":\"85660000006 6 67940064007 5 41190025511 7 00010601813 8\",\"scheduled\":\"2026-09-21\",\"status\":\"success\",\"tags\":[\"iss\",\"throne\"],\"transactionIds\":[\"19827356981274\"],\"type\":\"iss\",\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "DELETE",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/tax-payment/5155165527080961"
+        }
+      ]
+    },
+    "taxpayment.get": {
+      "hydrated": "{\"amount\":23456,\"barCode\":\"85660000006679400640074119002551100010601813\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"ISS Payment - Iron Throne\",\"fee\":150,\"id\":\"5155165527080961\",\"line\":\"85660000006 6 67940064007 5 41190025511 7 00010601813 8\",\"scheduled\":\"2026-09-21\",\"status\":\"success\",\"tags\":[\"iss\",\"throne\"],\"transactionIds\":[\"19827356981274\"],\"type\":\"iss\",\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/tax-payment/5155165527080961"
+        }
+      ]
+    },
+    "taxpayment.log.get": {
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482497\",\"payment\":{\"amount\":23456,\"barCode\":\"85660000006679400640074119002551100010601813\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"ISS Payment - Iron Throne\",\"fee\":150,\"id\":\"5155165527080961\",\"line\":\"85660000006 6 67940064007 5 41190025511 7 00010601813 8\",\"scheduled\":\"2026-09-21\",\"status\":\"success\",\"tags\":[\"iss\",\"throne\"],\"transactionIds\":[\"19827356981274\"],\"type\":\"iss\",\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"success\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/tax-payment/log/6341320293482497"
+        }
+      ]
+    },
+    "taxpayment.log.page": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482497\",\"payment\":{\"amount\":23456,\"barCode\":\"85660000006679400640074119002551100010601813\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"ISS Payment - Iron Throne\",\"fee\":150,\"id\":\"5155165527080961\",\"line\":\"85660000006 6 67940064007 5 41190025511 7 00010601813 8\",\"scheduled\":\"2026-09-21\",\"status\":\"success\",\"tags\":[\"iss\",\"throne\"],\"transactionIds\":[\"19827356981274\"],\"type\":\"iss\",\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"success\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/tax-payment/log"
+        }
+      ]
+    },
+    "taxpayment.log.query": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482497\",\"payment\":{\"amount\":23456,\"barCode\":\"85660000006679400640074119002551100010601813\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"ISS Payment - Iron Throne\",\"fee\":150,\"id\":\"5155165527080961\",\"line\":\"85660000006 6 67940064007 5 41190025511 7 00010601813 8\",\"scheduled\":\"2026-09-21\",\"status\":\"success\",\"tags\":[\"iss\",\"throne\"],\"transactionIds\":[\"19827356981274\"],\"type\":\"iss\",\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"success\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&paymentIds=5155165527080961&types=success",
+          "queryRaw": "limit=5&types=success&paymentIds=5155165527080961",
+          "url": "https://sandbox.api.starkbank.com/v2/tax-payment/log"
+        }
+      ]
+    },
+    "taxpayment.page": {
+      "hydrated": [
+        "{\"amount\":23456,\"barCode\":\"85660000006679400640074119002551100010601813\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"ISS Payment - Iron Throne\",\"fee\":150,\"id\":\"5155165527080961\",\"line\":\"85660000006 6 67940064007 5 41190025511 7 00010601813 8\",\"scheduled\":\"2026-09-21\",\"status\":\"success\",\"tags\":[\"iss\",\"throne\"],\"transactionIds\":[\"19827356981274\"],\"type\":\"iss\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/tax-payment"
+        }
+      ]
+    },
+    "taxpayment.pdf": {
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/tax-payment/5155165527080961/pdf"
+        }
+      ]
+    },
+    "taxpayment.query": {
+      "hydrated": [
+        "{\"amount\":23456,\"barCode\":\"85660000006679400640074119002551100010601813\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"ISS Payment - Iron Throne\",\"fee\":150,\"id\":\"5155165527080961\",\"line\":\"85660000006 6 67940064007 5 41190025511 7 00010601813 8\",\"scheduled\":\"2026-09-21\",\"status\":\"success\",\"tags\":[\"iss\",\"throne\"],\"transactionIds\":[\"19827356981274\"],\"type\":\"iss\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&status=success&tags=iss",
+          "queryRaw": "limit=5&tags=iss&status=success",
+          "url": "https://sandbox.api.starkbank.com/v2/tax-payment"
+        }
+      ]
+    },
     "transfer.create": {
       "hydrated": [
         "{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"amount\":1000,\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Payment for service #1234\",\"displayDescription\":\"Sword sharpening\",\"externalId\":\"my-internal-id-123456\",\"fee\":200,\"id\":\"5155165527080960\",\"metadata\":{\"attempt\":2,\"tracker\":\"abc\"},\"name\":\"Daenerys Targaryen Stormborn\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28T17:59:26+00:00\",\"status\":\"processing\",\"tags\":[\"daenerys\",\"invoice/1234\"],\"taxId\":\"594.739.480-42\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
@@ -842,6 +1094,132 @@
           "query": "limit=5&sort=-created&status=processing&taxId=594.739.480-42",
           "queryRaw": "limit=5&status=processing&taxId=594.739.480-42&sort=-created",
           "url": "https://sandbox.api.starkbank.com/v2/transfer"
+        }
+      ]
+    },
+    "utilitypayment.create": {
+      "hydrated": [
+        "{\"amount\":23456,\"barCode\":\"82660000002443611430074119002551100010601813\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Utility Payment - Light Company\",\"fee\":200,\"id\":\"5155165527080960\",\"line\":\"82660000002 8 44361143007 7 41190025511 7 00010601813 8\",\"scheduled\":\"2026-09-20\",\"status\":\"success\",\"tags\":[\"electricity\",\"light\"],\"transactionIds\":[\"19827356981273\"],\"type\":\"utility\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "{\"payments\":[{\"barCode\":\"82660000002443611430074119002551100010601813\",\"description\":\"Utility Payment - Light Company\",\"line\":\"82660000002 8 44361143007 7 41190025511 7 00010601813 8\",\"scheduled\":\"2026-09-20\",\"tags\":[\"electricity\",\"light\"]}]}",
+          "bodyRaw": "{\"payments\": [{\"barCode\": \"82660000002443611430074119002551100010601813\", \"description\": \"Utility Payment - Light Company\", \"line\": \"82660000002 8 44361143007 7 41190025511 7 00010601813 8\", \"scheduled\": \"2026-09-20\", \"tags\": [\"electricity\", \"light\"]}]}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/utility-payment"
+        }
+      ]
+    },
+    "utilitypayment.delete": {
+      "hydrated": "{\"amount\":23456,\"barCode\":\"82660000002443611430074119002551100010601813\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Utility Payment - Light Company\",\"fee\":200,\"id\":\"5155165527080960\",\"line\":\"82660000002 8 44361143007 7 41190025511 7 00010601813 8\",\"scheduled\":\"2026-09-20\",\"status\":\"success\",\"tags\":[\"electricity\",\"light\"],\"transactionIds\":[\"19827356981273\"],\"type\":\"utility\",\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "DELETE",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/utility-payment/5155165527080960"
+        }
+      ]
+    },
+    "utilitypayment.get": {
+      "hydrated": "{\"amount\":23456,\"barCode\":\"82660000002443611430074119002551100010601813\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Utility Payment - Light Company\",\"fee\":200,\"id\":\"5155165527080960\",\"line\":\"82660000002 8 44361143007 7 41190025511 7 00010601813 8\",\"scheduled\":\"2026-09-20\",\"status\":\"success\",\"tags\":[\"electricity\",\"light\"],\"transactionIds\":[\"19827356981273\"],\"type\":\"utility\",\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/utility-payment/5155165527080960"
+        }
+      ]
+    },
+    "utilitypayment.log.get": {
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482496\",\"payment\":{\"amount\":23456,\"barCode\":\"82660000002443611430074119002551100010601813\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Utility Payment - Light Company\",\"fee\":200,\"id\":\"5155165527080960\",\"line\":\"82660000002 8 44361143007 7 41190025511 7 00010601813 8\",\"scheduled\":\"2026-09-20\",\"status\":\"success\",\"tags\":[\"electricity\",\"light\"],\"transactionIds\":[\"19827356981273\"],\"type\":\"utility\",\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"success\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/utility-payment/log/6341320293482496"
+        }
+      ]
+    },
+    "utilitypayment.log.page": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482496\",\"payment\":{\"amount\":23456,\"barCode\":\"82660000002443611430074119002551100010601813\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Utility Payment - Light Company\",\"fee\":200,\"id\":\"5155165527080960\",\"line\":\"82660000002 8 44361143007 7 41190025511 7 00010601813 8\",\"scheduled\":\"2026-09-20\",\"status\":\"success\",\"tags\":[\"electricity\",\"light\"],\"transactionIds\":[\"19827356981273\"],\"type\":\"utility\",\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"success\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/utility-payment/log"
+        }
+      ]
+    },
+    "utilitypayment.log.query": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482496\",\"payment\":{\"amount\":23456,\"barCode\":\"82660000002443611430074119002551100010601813\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Utility Payment - Light Company\",\"fee\":200,\"id\":\"5155165527080960\",\"line\":\"82660000002 8 44361143007 7 41190025511 7 00010601813 8\",\"scheduled\":\"2026-09-20\",\"status\":\"success\",\"tags\":[\"electricity\",\"light\"],\"transactionIds\":[\"19827356981273\"],\"type\":\"utility\",\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"success\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&paymentIds=5155165527080960&types=success",
+          "queryRaw": "limit=5&types=success&paymentIds=5155165527080960",
+          "url": "https://sandbox.api.starkbank.com/v2/utility-payment/log"
+        }
+      ]
+    },
+    "utilitypayment.page": {
+      "hydrated": [
+        "{\"amount\":23456,\"barCode\":\"82660000002443611430074119002551100010601813\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Utility Payment - Light Company\",\"fee\":200,\"id\":\"5155165527080960\",\"line\":\"82660000002 8 44361143007 7 41190025511 7 00010601813 8\",\"scheduled\":\"2026-09-20\",\"status\":\"success\",\"tags\":[\"electricity\",\"light\"],\"transactionIds\":[\"19827356981273\"],\"type\":\"utility\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/utility-payment"
+        }
+      ]
+    },
+    "utilitypayment.pdf": {
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/utility-payment/5155165527080960/pdf"
+        }
+      ]
+    },
+    "utilitypayment.query": {
+      "hydrated": [
+        "{\"amount\":23456,\"barCode\":\"82660000002443611430074119002551100010601813\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Utility Payment - Light Company\",\"fee\":200,\"id\":\"5155165527080960\",\"line\":\"82660000002 8 44361143007 7 41190025511 7 00010601813 8\",\"scheduled\":\"2026-09-20\",\"status\":\"success\",\"tags\":[\"electricity\",\"light\"],\"transactionIds\":[\"19827356981273\"],\"type\":\"utility\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&status=success&tags=electricity",
+          "queryRaw": "limit=5&tags=electricity&status=success",
+          "url": "https://sandbox.api.starkbank.com/v2/utility-payment"
         }
       ]
     },
@@ -1235,6 +1613,96 @@
             "19827356981273"
           ],
           "type": "dynamic",
+          "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ]
+    },
+    "darfPayment": {
+      "payment": {
+        "amount": 24146,
+        "competence": "2026-08-31",
+        "created": "2026-09-16T12:00:00+00:00",
+        "description": "DARF Payment - competence August",
+        "due": "2026-10-17",
+        "fee": 0,
+        "fineAmount": 234,
+        "id": "5155165527080962",
+        "interestAmount": 456,
+        "nominalAmount": 23456,
+        "referenceNumber": "08.1.17.00-4",
+        "revenueCode": "5948",
+        "scheduled": "2026-09-22",
+        "status": "success",
+        "tags": [
+          "darf",
+          "federal"
+        ],
+        "taxId": "20.018.183/0001-80",
+        "transactionIds": [
+          "19827356981275"
+        ],
+        "updated": "2026-09-17T12:00:00+00:00"
+      }
+    },
+    "darfPaymentLog": {
+      "log": {
+        "created": "2026-09-16T12:00:00+00:00",
+        "errors": [],
+        "id": "6341320293482498",
+        "payment": {
+          "amount": 24146,
+          "competence": "2026-08-31",
+          "created": "2026-09-16T12:00:00+00:00",
+          "description": "DARF Payment - competence August",
+          "due": "2026-10-17",
+          "fee": 0,
+          "fineAmount": 234,
+          "id": "5155165527080962",
+          "interestAmount": 456,
+          "nominalAmount": 23456,
+          "referenceNumber": "08.1.17.00-4",
+          "revenueCode": "5948",
+          "scheduled": "2026-09-22",
+          "status": "success",
+          "tags": [
+            "darf",
+            "federal"
+          ],
+          "taxId": "20.018.183/0001-80",
+          "transactionIds": [
+            "19827356981275"
+          ],
+          "updated": "2026-09-17T12:00:00+00:00"
+        },
+        "type": "success"
+      }
+    },
+    "darfPayments": {
+      "cursor": "",
+      "payments": [
+        {
+          "amount": 24146,
+          "competence": "2026-08-31",
+          "created": "2026-09-16T12:00:00+00:00",
+          "description": "DARF Payment - competence August",
+          "due": "2026-10-17",
+          "fee": 0,
+          "fineAmount": 234,
+          "id": "5155165527080962",
+          "interestAmount": 456,
+          "nominalAmount": 23456,
+          "referenceNumber": "08.1.17.00-4",
+          "revenueCode": "5948",
+          "scheduled": "2026-09-22",
+          "status": "success",
+          "tags": [
+            "darf",
+            "federal"
+          ],
+          "taxId": "20.018.183/0001-80",
+          "transactionIds": [
+            "19827356981275"
+          ],
           "updated": "2026-09-17T12:00:00+00:00"
         }
       ]
@@ -1670,6 +2138,81 @@
         }
       ]
     },
+    "taxPayment": {
+      "payment": {
+        "amount": 23456,
+        "barCode": "85660000006679400640074119002551100010601813",
+        "created": "2026-09-16T12:00:00+00:00",
+        "description": "ISS Payment - Iron Throne",
+        "fee": 150,
+        "id": "5155165527080961",
+        "line": "85660000006 6 67940064007 5 41190025511 7 00010601813 8",
+        "scheduled": "2026-09-21",
+        "status": "success",
+        "tags": [
+          "iss",
+          "throne"
+        ],
+        "transactionIds": [
+          "19827356981274"
+        ],
+        "type": "iss",
+        "updated": "2026-09-17T12:00:00+00:00"
+      }
+    },
+    "taxPaymentLog": {
+      "log": {
+        "created": "2026-09-16T12:00:00+00:00",
+        "errors": [],
+        "id": "6341320293482497",
+        "payment": {
+          "amount": 23456,
+          "barCode": "85660000006679400640074119002551100010601813",
+          "created": "2026-09-16T12:00:00+00:00",
+          "description": "ISS Payment - Iron Throne",
+          "fee": 150,
+          "id": "5155165527080961",
+          "line": "85660000006 6 67940064007 5 41190025511 7 00010601813 8",
+          "scheduled": "2026-09-21",
+          "status": "success",
+          "tags": [
+            "iss",
+            "throne"
+          ],
+          "transactionIds": [
+            "19827356981274"
+          ],
+          "type": "iss",
+          "updated": "2026-09-17T12:00:00+00:00"
+        },
+        "type": "success"
+      }
+    },
+    "taxPayments": {
+      "cursor": "",
+      "payments": [
+        {
+          "amount": 23456,
+          "barCode": "85660000006679400640074119002551100010601813",
+          "created": "2026-09-16T12:00:00+00:00",
+          "description": "ISS Payment - Iron Throne",
+          "fee": 150,
+          "id": "5155165527080961",
+          "line": "85660000006 6 67940064007 5 41190025511 7 00010601813 8",
+          "scheduled": "2026-09-21",
+          "status": "success",
+          "tags": [
+            "iss",
+            "throne"
+          ],
+          "transactionIds": [
+            "19827356981274"
+          ],
+          "type": "iss",
+          "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ]
+    },
     "transfer": {
       "transfer": {
         "accountNumber": "876543-2",
@@ -1785,6 +2328,81 @@
           "transactionIds": [
             "19827356981273"
           ],
+          "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ]
+    },
+    "utilityPayment": {
+      "payment": {
+        "amount": 23456,
+        "barCode": "82660000002443611430074119002551100010601813",
+        "created": "2026-09-16T12:00:00+00:00",
+        "description": "Utility Payment - Light Company",
+        "fee": 200,
+        "id": "5155165527080960",
+        "line": "82660000002 8 44361143007 7 41190025511 7 00010601813 8",
+        "scheduled": "2026-09-20",
+        "status": "success",
+        "tags": [
+          "electricity",
+          "light"
+        ],
+        "transactionIds": [
+          "19827356981273"
+        ],
+        "type": "utility",
+        "updated": "2026-09-17T12:00:00+00:00"
+      }
+    },
+    "utilityPaymentLog": {
+      "log": {
+        "created": "2026-09-16T12:00:00+00:00",
+        "errors": [],
+        "id": "6341320293482496",
+        "payment": {
+          "amount": 23456,
+          "barCode": "82660000002443611430074119002551100010601813",
+          "created": "2026-09-16T12:00:00+00:00",
+          "description": "Utility Payment - Light Company",
+          "fee": 200,
+          "id": "5155165527080960",
+          "line": "82660000002 8 44361143007 7 41190025511 7 00010601813 8",
+          "scheduled": "2026-09-20",
+          "status": "success",
+          "tags": [
+            "electricity",
+            "light"
+          ],
+          "transactionIds": [
+            "19827356981273"
+          ],
+          "type": "utility",
+          "updated": "2026-09-17T12:00:00+00:00"
+        },
+        "type": "success"
+      }
+    },
+    "utilityPayments": {
+      "cursor": "",
+      "payments": [
+        {
+          "amount": 23456,
+          "barCode": "82660000002443611430074119002551100010601813",
+          "created": "2026-09-16T12:00:00+00:00",
+          "description": "Utility Payment - Light Company",
+          "fee": 200,
+          "id": "5155165527080960",
+          "line": "82660000002 8 44361143007 7 41190025511 7 00010601813 8",
+          "scheduled": "2026-09-20",
+          "status": "success",
+          "tags": [
+            "electricity",
+            "light"
+          ],
+          "transactionIds": [
+            "19827356981273"
+          ],
+          "type": "utility",
           "updated": "2026-09-17T12:00:00+00:00"
         }
       ]

@@ -110,6 +110,8 @@ RESOURCE_SOURCES = \
 	starkbank/brcodepayment/brcodepayment.c \
 	starkbank/brcodepayment/log.c \
 	starkbank/brcodepayment/rule.c \
+	starkbank/darfpayment/darfpayment.c \
+	starkbank/darfpayment/log.c \
 	starkbank/event/attempt.c \
 	starkbank/event/event.c \
 	starkbank/invoice/invoice.c \
@@ -122,9 +124,13 @@ RESOURCE_SOURCES = \
 	starkbank/paymentpreview/taxpreview.c \
 	starkbank/paymentpreview/utilitypreview.c \
 	starkbank/split/split.c \
+	starkbank/taxpayment/log.c \
+	starkbank/taxpayment/taxpayment.c \
 	starkbank/transfer/log.c \
 	starkbank/transfer/rule.c \
 	starkbank/transfer/transfer.c \
+	starkbank/utilitypayment/log.c \
+	starkbank/utilitypayment/utilitypayment.c \
 	starkbank/webhook/webhook.c
 
 # The judgement methods. A symbol declared in the public header that no macro

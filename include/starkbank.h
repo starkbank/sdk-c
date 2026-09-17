@@ -1527,6 +1527,305 @@ STARKBANK_API int STARKBANK_CALL starkbank_brcode_payment_log_page(const starkba
     const starkbank_entity *params, starkbank_list **out, char **out_cursor,
     starkbank_errors **errors);
 
+/* =========================================================================
+ *                              UtilityPayment
+ * =========================================================================
+ *
+ * Pay a utility bill (electricity, water, gas, ...) by its line or bar code.
+ * UtilityPayment has no update verb, so nothing here is patchable.
+ *
+ * Fields (wire keys; * = required on create).
+ *
+ *   description* STRING
+ *   line barCode STRING          scheduled DATE          tags LIST_STRING
+ *   id status type STRING (ro)   amount fee AMOUNT (ro)
+ *   transactionIds LIST_STRING (ro)      created updated DATETIME (ro)
+ *
+ * Query keys: limit, after, before, tags, ids, status.
+ *
+ * line and barCode are the conditionally-required pair - exactly one
+ * identifies the bill being paid, and if both are sent they must agree. As
+ * with BoletoPayment's identical pair, python gives neither a positional
+ * slot, so neither carries REQUIRED; a caller who gets the pairing wrong is
+ * told by the API. scheduled is a plain DATE (check_date only, no
+ * scheduled-invoice-shaped alternate meaning), defaulting to today.
+ */
+#define STARKBANK_UTILITY_PAYMENT_DESCRIPTION     "description"
+#define STARKBANK_UTILITY_PAYMENT_LINE            "line"
+#define STARKBANK_UTILITY_PAYMENT_BAR_CODE        "barCode"
+#define STARKBANK_UTILITY_PAYMENT_SCHEDULED       "scheduled"
+#define STARKBANK_UTILITY_PAYMENT_TAGS            "tags"
+#define STARKBANK_UTILITY_PAYMENT_ID              "id"
+#define STARKBANK_UTILITY_PAYMENT_STATUS          "status"
+#define STARKBANK_UTILITY_PAYMENT_AMOUNT          "amount"
+#define STARKBANK_UTILITY_PAYMENT_FEE             "fee"
+#define STARKBANK_UTILITY_PAYMENT_TYPE            "type"
+#define STARKBANK_UTILITY_PAYMENT_TRANSACTION_IDS "transactionIds"
+#define STARKBANK_UTILITY_PAYMENT_CREATED         "created"
+#define STARKBANK_UTILITY_PAYMENT_UPDATED         "updated"
+
+#define STARKBANK_UTILITY_PAYMENT_STATUS_CREATED    "created"
+#define STARKBANK_UTILITY_PAYMENT_STATUS_PROCESSING "processing"
+#define STARKBANK_UTILITY_PAYMENT_STATUS_CONFIRMED  "confirmed"
+#define STARKBANK_UTILITY_PAYMENT_STATUS_SUCCESS    "success"
+#define STARKBANK_UTILITY_PAYMENT_STATUS_FAILED     "failed"
+#define STARKBANK_UTILITY_PAYMENT_STATUS_CANCELED   "canceled"
+
+STARKBANK_API int STARKBANK_CALL starkbank_utility_payment_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_utility_payment_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_utility_payment_create(const starkbank_client *client,
+    const starkbank_list *payments, starkbank_list **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_utility_payment_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_utility_payment_delete(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+/* Only cancels a payment that has not started processing yet; a payment
+   already processed can still be deleted but is not reversed, as python's
+   docstring says. Yours to free. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_utility_payment_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_utility_payment_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_utility_payment_pdf(const starkbank_client *client,
+    const char *id, unsigned char **out, size_t *out_len, starkbank_errors **errors);
+/* Only valid for a payment with "success", "processing" or "created" status,
+   as python's docstring says. Free with starkbank_free. */
+
+/* ------------------------------------------------------ UtilityPaymentLog */
+/*
+ * Resource "UtilityPaymentLog"; endpoint "utility-payment/log", derived at
+ * run time.
+ * Fields: id STRING (ro), created DATETIME (ro), type STRING (ro),
+ *         errors LIST_STRING (ro), payment RESOURCE("UtilityPayment") (ro).
+ * Query keys: limit, after, before, types, paymentIds.
+ *
+ * There is no utilitypayment.Log pdf: sdk-python does not have one, and
+ * python is normative for the verb surface. The receipt is
+ * starkbank_utility_payment_pdf.
+ */
+#define STARKBANK_UTILITY_PAYMENT_LOG_ID       "id"
+#define STARKBANK_UTILITY_PAYMENT_LOG_CREATED  "created"
+#define STARKBANK_UTILITY_PAYMENT_LOG_TYPE     "type"
+#define STARKBANK_UTILITY_PAYMENT_LOG_ERRORS   "errors"
+#define STARKBANK_UTILITY_PAYMENT_LOG_PAYMENT  "payment"
+
+STARKBANK_API int STARKBANK_CALL starkbank_utility_payment_log_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_utility_payment_log_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_utility_payment_log_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_utility_payment_log_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+/* =========================================================================
+ *                                TaxPayment
+ * =========================================================================
+ *
+ * Pay a tax slip (ISS, DAS, ...) by its line or bar code. TaxPayment has no
+ * update verb, so nothing here is patchable.
+ *
+ * Fields (wire keys; * = required on create).
+ *
+ *   description* STRING
+ *   line barCode STRING          scheduled DATE          tags LIST_STRING
+ *   id type status STRING (ro)   amount fee AMOUNT (ro)
+ *   transactionIds LIST_STRING (ro)      updated created DATETIME (ro)
+ *
+ * Query keys: limit, after, before, tags, ids, status.
+ *
+ * line and barCode are the conditionally-required pair, exactly as on
+ * UtilityPayment: exactly one identifies the slip, and if both are sent they
+ * must agree; neither carries REQUIRED because neither has a positional
+ * slot in sdk-python's __init__. scheduled is a plain DATE (check_date only),
+ * defaulting to today.
+ */
+#define STARKBANK_TAX_PAYMENT_DESCRIPTION     "description"
+#define STARKBANK_TAX_PAYMENT_LINE            "line"
+#define STARKBANK_TAX_PAYMENT_BAR_CODE        "barCode"
+#define STARKBANK_TAX_PAYMENT_SCHEDULED       "scheduled"
+#define STARKBANK_TAX_PAYMENT_TAGS            "tags"
+#define STARKBANK_TAX_PAYMENT_ID              "id"
+#define STARKBANK_TAX_PAYMENT_TYPE            "type"
+#define STARKBANK_TAX_PAYMENT_STATUS          "status"
+#define STARKBANK_TAX_PAYMENT_AMOUNT          "amount"
+#define STARKBANK_TAX_PAYMENT_FEE             "fee"
+#define STARKBANK_TAX_PAYMENT_TRANSACTION_IDS "transactionIds"
+#define STARKBANK_TAX_PAYMENT_UPDATED         "updated"
+#define STARKBANK_TAX_PAYMENT_CREATED         "created"
+
+#define STARKBANK_TAX_PAYMENT_STATUS_CREATED    "created"
+#define STARKBANK_TAX_PAYMENT_STATUS_PROCESSING "processing"
+#define STARKBANK_TAX_PAYMENT_STATUS_CONFIRMED  "confirmed"
+#define STARKBANK_TAX_PAYMENT_STATUS_SUCCESS    "success"
+#define STARKBANK_TAX_PAYMENT_STATUS_FAILED     "failed"
+#define STARKBANK_TAX_PAYMENT_STATUS_CANCELED   "canceled"
+
+STARKBANK_API int STARKBANK_CALL starkbank_tax_payment_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_tax_payment_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_tax_payment_create(const starkbank_client *client,
+    const starkbank_list *payments, starkbank_list **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_tax_payment_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_tax_payment_delete(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+/* Only cancels a payment that has not started processing yet; a payment
+   already processed can still be deleted but is not reversed. Yours to
+   free. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_tax_payment_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_tax_payment_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_tax_payment_pdf(const starkbank_client *client,
+    const char *id, unsigned char **out, size_t *out_len, starkbank_errors **errors);
+/* Only valid for a payment with "success", "processing" or "created" status.
+   Free with starkbank_free. */
+
+/* ------------------------------------------------------------ TaxPaymentLog */
+/*
+ * Resource "TaxPaymentLog"; endpoint "tax-payment/log", derived at run time.
+ * Fields: id STRING (ro), created DATETIME (ro), type STRING (ro),
+ *         errors LIST_STRING (ro), payment RESOURCE("TaxPayment") (ro).
+ * Query keys: limit, after, before, types, paymentIds.
+ *
+ * There is no taxpayment.Log pdf: sdk-python does not have one, and python
+ * is normative for the verb surface. The receipt is starkbank_tax_payment_pdf.
+ */
+#define STARKBANK_TAX_PAYMENT_LOG_ID       "id"
+#define STARKBANK_TAX_PAYMENT_LOG_CREATED  "created"
+#define STARKBANK_TAX_PAYMENT_LOG_TYPE     "type"
+#define STARKBANK_TAX_PAYMENT_LOG_ERRORS   "errors"
+#define STARKBANK_TAX_PAYMENT_LOG_PAYMENT  "payment"
+
+STARKBANK_API int STARKBANK_CALL starkbank_tax_payment_log_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_tax_payment_log_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_tax_payment_log_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_tax_payment_log_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+/* =========================================================================
+ *                               DarfPayment
+ * =========================================================================
+ *
+ * Pay a DARF (Documento de Arrecadacao de Receitas Federais) without a bar
+ * code: every field below is structured, so - unlike UtilityPayment and
+ * TaxPayment - there is no conditionally-required line/barCode pair and
+ * every create field that sdk-python requires carries REQUIRED outright.
+ * DarfPayment has no update verb, so nothing here is patchable, and it has
+ * no "type" attribute: sdk-python's DarfPayment carries none.
+ *
+ * Fields (wire keys; * = required on create).
+ *
+ *   description* revenueCode* taxId* STRING
+ *   competence* DATE           nominalAmount* fineAmount* interestAmount*
+ *   AMOUNT                     due* DATE
+ *   referenceNumber STRING     scheduled DATE          tags LIST_STRING
+ *   id status STRING (ro)      amount fee AMOUNT (ro)
+ *   transactionIds LIST_STRING (ro)      updated created DATETIME (ro)
+ *
+ * Query keys: limit, after, before, tags, ids, status.
+ *
+ * competence, due and scheduled are all plain DATE: sdk-python calls
+ * check_date on each and none carries Invoice.due's scheduled-invoice
+ * alternate meaning.
+ */
+#define STARKBANK_DARF_PAYMENT_DESCRIPTION      "description"
+#define STARKBANK_DARF_PAYMENT_REVENUE_CODE     "revenueCode"
+#define STARKBANK_DARF_PAYMENT_TAX_ID           "taxId"
+#define STARKBANK_DARF_PAYMENT_COMPETENCE       "competence"
+#define STARKBANK_DARF_PAYMENT_NOMINAL_AMOUNT   "nominalAmount"
+#define STARKBANK_DARF_PAYMENT_FINE_AMOUNT      "fineAmount"
+#define STARKBANK_DARF_PAYMENT_INTEREST_AMOUNT  "interestAmount"
+#define STARKBANK_DARF_PAYMENT_DUE              "due"
+#define STARKBANK_DARF_PAYMENT_REFERENCE_NUMBER "referenceNumber"
+#define STARKBANK_DARF_PAYMENT_SCHEDULED        "scheduled"
+#define STARKBANK_DARF_PAYMENT_TAGS             "tags"
+#define STARKBANK_DARF_PAYMENT_ID               "id"
+#define STARKBANK_DARF_PAYMENT_STATUS           "status"
+#define STARKBANK_DARF_PAYMENT_AMOUNT           "amount"
+#define STARKBANK_DARF_PAYMENT_FEE              "fee"
+#define STARKBANK_DARF_PAYMENT_TRANSACTION_IDS  "transactionIds"
+#define STARKBANK_DARF_PAYMENT_UPDATED          "updated"
+#define STARKBANK_DARF_PAYMENT_CREATED          "created"
+
+#define STARKBANK_DARF_PAYMENT_STATUS_CREATED    "created"
+#define STARKBANK_DARF_PAYMENT_STATUS_PROCESSING "processing"
+#define STARKBANK_DARF_PAYMENT_STATUS_CONFIRMED  "confirmed"
+#define STARKBANK_DARF_PAYMENT_STATUS_SUCCESS    "success"
+#define STARKBANK_DARF_PAYMENT_STATUS_FAILED     "failed"
+#define STARKBANK_DARF_PAYMENT_STATUS_CANCELED   "canceled"
+
+STARKBANK_API int STARKBANK_CALL starkbank_darf_payment_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_darf_payment_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_darf_payment_create(const starkbank_client *client,
+    const starkbank_list *payments, starkbank_list **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_darf_payment_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_darf_payment_delete(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+/* Only cancels a payment that has not started processing yet; a payment
+   already processed can still be deleted but is not reversed. Yours to
+   free. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_darf_payment_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_darf_payment_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_darf_payment_pdf(const starkbank_client *client,
+    const char *id, unsigned char **out, size_t *out_len, starkbank_errors **errors);
+/* Only valid for a payment with "success", "processing" or "created" status.
+   Free with starkbank_free. */
+
+/* ----------------------------------------------------------- DarfPaymentLog */
+/*
+ * Resource "DarfPaymentLog"; endpoint "darf-payment/log", derived at run
+ * time.
+ * Fields: id STRING (ro), created DATETIME (ro), type STRING (ro),
+ *         errors LIST_STRING (ro), payment RESOURCE("DarfPayment") (ro).
+ * Query keys: limit, after, before, types, paymentIds.
+ *
+ * There is no darfpayment.Log pdf: sdk-python does not have one, and python
+ * is normative for the verb surface. The receipt is
+ * starkbank_darf_payment_pdf.
+ */
+#define STARKBANK_DARF_PAYMENT_LOG_ID       "id"
+#define STARKBANK_DARF_PAYMENT_LOG_CREATED  "created"
+#define STARKBANK_DARF_PAYMENT_LOG_TYPE     "type"
+#define STARKBANK_DARF_PAYMENT_LOG_ERRORS   "errors"
+#define STARKBANK_DARF_PAYMENT_LOG_PAYMENT  "payment"
+
+STARKBANK_API int STARKBANK_CALL starkbank_darf_payment_log_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_darf_payment_log_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_darf_payment_log_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_darf_payment_log_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
 #ifdef __cplusplus
 }
 #endif

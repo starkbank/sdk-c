@@ -42,13 +42,16 @@ an FFI generator and MSVC can all read it. `make check-header` proves that.
 
 | resource | verbs | notes |
 |---|---|---|
+| DarfPayment | create get delete query page pdf | + `darfpayment.Log` (get query page). Fully structured: no conditionally-required line/barCode pair, and no `type` attribute |
 | Invoice | create get query page update pdf qrcode payment | + `invoice.Log` (get query page pdf), `Invoice.Rule`, `Invoice.Payment`, `Split` |
+| TaxPayment | create get delete query page pdf | + `taxpayment.Log` (get query page). `line`/`barCode` are the conditionally-required pair; `scheduled` is a plain DATE |
 | Transfer | create get delete query page pdf | + `transfer.Log` (get query page), `Transfer.Rule` |
 | Boleto | create get delete query page pdf | + `boleto.Log` (get query page). `pdf` takes an optional `layout` and an optional comma-joined `hiddenFields` string, both sent only when set |
 | BoletoPayment | create get delete query page pdf | + `boletopayment.Log` (get query page) |
 | BrcodePayment | create get query page update pdf | + `brcodepayment.Log` (get query page), `BrcodePayment.Rule`. `update` is status-only, to cancel before payment |
 | Event | get query page update delete parse | `log` is polymorphic: the table comes from `subscription` |
 | Balance | get | no id: the head of the listing endpoint |
+| UtilityPayment | create get delete query page pdf | + `utilitypayment.Log` (get query page). Same conditionally-required `line`/`barCode` pair as TaxPayment; `scheduled` is a plain DATE |
 | Webhook | create get query page delete | `create` is `post_single` and takes one entity, not a list |
 | PaymentPreview | create | `payment` is polymorphic: the table comes from `type`, into `BrcodePreview`, `BoletoPreview`, `TaxPreview` or `UtilityPreview` |
 

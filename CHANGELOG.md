@@ -26,9 +26,17 @@ name-keyed accessors.
   registry, error and facade. The client owns the user and checks
   `starkcore_abi_version()`; query and patch bags are tagged entities, so a
   filter typo is caught locally instead of by the API
+- DarfPayment (+ Log): fully structured, unlike UtilityPayment and TaxPayment
+  - no conditionally-required `line`/`barCode` pair, and no `type`
+  attribute, because sdk-python's DarfPayment carries none
 - First resource slice: Invoice (+ Log, Payment, Rule, Split), Transfer
   (+ Log, Rule), Event (+ Attempt) and Balance, each one field table plus
   `STARKBANK_VERB_*` lines
+- TaxPayment (+ Log): `line` and `barCode` are sdk-python's
+  conditionally-required pair, exactly as on UtilityPayment and on
+  BoletoPayment; `scheduled` is a plain DATE, not DATE_OR_DATETIME
+- UtilityPayment (+ Log): the same conditionally-required `line`/`barCode`
+  pair as TaxPayment; `scheduled` is a plain DATE
 - Webhook and PaymentPreview (+ BrcodePreview, BoletoPreview, TaxPreview,
   UtilityPreview), which close the last two `starkcore_rest_*` shapes the bank
   SDK uses. Every resource here is still a table and nothing else: the two new
