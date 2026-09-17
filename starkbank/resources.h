@@ -34,6 +34,8 @@
     R(transfer)                \
     R(transfer_log)            \
     R(transfer_rule)           \
+    R(utility_payment)         \
+    R(utility_payment_log)     \
     R(utility_preview)         \
     R(webhook)
 

@@ -125,6 +125,8 @@ RESOURCE_SOURCES = \
 	starkbank/transfer/log.c \
 	starkbank/transfer/rule.c \
 	starkbank/transfer/transfer.c \
+	starkbank/utilitypayment/log.c \
+	starkbank/utilitypayment/utilitypayment.c \
 	starkbank/webhook/webhook.c
 
 # The judgement methods. A symbol declared in the public header that no macro
