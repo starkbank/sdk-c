@@ -517,6 +517,160 @@
         }
       ]
     },
+    "deposit.get": {
+      "hydrated": "{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"amount\":1234,\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"fee\":50,\"id\":\"5768139429316608\",\"name\":\"Cosmic Cupcakes\",\"status\":\"created\",\"tags\":[\"reconciliationId\",\"txId\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"],\"type\":\"pix\",\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/deposit/5768139429316608"
+        }
+      ]
+    },
+    "deposit.log.get": {
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"deposit\":{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"amount\":1234,\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"fee\":50,\"id\":\"5768139429316608\",\"name\":\"Cosmic Cupcakes\",\"status\":\"created\",\"tags\":[\"reconciliationId\",\"txId\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"],\"type\":\"pix\",\"updated\":\"2026-09-17T12:00:00+00:00\"},\"errors\":[],\"id\":\"6341320293482499\",\"type\":\"credited\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/deposit/log/6341320293482499"
+        }
+      ]
+    },
+    "deposit.log.page": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"deposit\":{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"amount\":1234,\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"fee\":50,\"id\":\"5768139429316608\",\"name\":\"Cosmic Cupcakes\",\"status\":\"created\",\"tags\":[\"reconciliationId\",\"txId\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"],\"type\":\"pix\",\"updated\":\"2026-09-17T12:00:00+00:00\"},\"errors\":[],\"id\":\"6341320293482499\",\"type\":\"credited\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/deposit/log"
+        }
+      ]
+    },
+    "deposit.log.pdf": {
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/deposit/log/6341320293482499/pdf"
+        }
+      ]
+    },
+    "deposit.log.query": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"deposit\":{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"amount\":1234,\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"fee\":50,\"id\":\"5768139429316608\",\"name\":\"Cosmic Cupcakes\",\"status\":\"created\",\"tags\":[\"reconciliationId\",\"txId\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"],\"type\":\"pix\",\"updated\":\"2026-09-17T12:00:00+00:00\"},\"errors\":[],\"id\":\"6341320293482499\",\"type\":\"credited\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "depositIds=5768139429316608&limit=5&types=credited",
+          "queryRaw": "limit=5&types=credited&depositIds=5768139429316608",
+          "url": "https://sandbox.api.starkbank.com/v2/deposit/log"
+        }
+      ]
+    },
+    "deposit.page": {
+      "hydrated": [
+        "{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"amount\":1234,\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"fee\":50,\"id\":\"5768139429316608\",\"name\":\"Cosmic Cupcakes\",\"status\":\"created\",\"tags\":[\"reconciliationId\",\"txId\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"],\"type\":\"pix\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/deposit"
+        }
+      ]
+    },
+    "deposit.query": {
+      "hydrated": [
+        "{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"amount\":1234,\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"fee\":50,\"id\":\"5768139429316608\",\"name\":\"Cosmic Cupcakes\",\"status\":\"created\",\"tags\":[\"reconciliationId\",\"txId\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"],\"type\":\"pix\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&status=created&tags=reconciliationId%2CtxId",
+          "queryRaw": "limit=5&status=created&tags=reconciliationId%2CtxId",
+          "url": "https://sandbox.api.starkbank.com/v2/deposit"
+        }
+      ]
+    },
+    "deposit.update": {
+      "hydrated": "{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"amount\":1234,\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"fee\":50,\"id\":\"5768139429316608\",\"name\":\"Cosmic Cupcakes\",\"status\":\"created\",\"tags\":[\"reconciliationId\",\"txId\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"],\"type\":\"pix\",\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "{\"amount\":0}",
+          "bodyRaw": "{\"amount\": 0}",
+          "method": "PATCH",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/deposit/5768139429316608"
+        }
+      ]
+    },
+    "dictkey.get": {
+      "hydrated": "{\"accountNumber\":\"ZW5jcnlwdGVkLWFjY291bnQtbnVtYmVy\",\"accountType\":\"checking\",\"bankName\":\"Stark Bank\",\"branchCode\":\"ZW5jcnlwdGVkLWJyYW5jaC1jb2Rl\",\"id\":\"tony@starkbank.com\",\"ispb\":\"20018183\",\"name\":\"Tony Stark\",\"ownerType\":\"naturalPerson\",\"status\":\"registered\",\"taxId\":\"***.345.678-**\",\"type\":\"email\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/dict-key/tony@starkbank.com"
+        }
+      ]
+    },
+    "dictkey.page": {
+      "hydrated": [
+        "{\"accountNumber\":\"ZW5jcnlwdGVkLWFjY291bnQtbnVtYmVy\",\"accountType\":\"checking\",\"bankName\":\"Stark Bank\",\"branchCode\":\"ZW5jcnlwdGVkLWJyYW5jaC1jb2Rl\",\"id\":\"tony@starkbank.com\",\"ispb\":\"20018183\",\"name\":\"Tony Stark\",\"ownerType\":\"naturalPerson\",\"status\":\"registered\",\"taxId\":\"***.345.678-**\",\"type\":\"email\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/dict-key"
+        }
+      ]
+    },
+    "dictkey.query": {
+      "hydrated": [
+        "{\"accountNumber\":\"ZW5jcnlwdGVkLWFjY291bnQtbnVtYmVy\",\"accountType\":\"checking\",\"bankName\":\"Stark Bank\",\"branchCode\":\"ZW5jcnlwdGVkLWJyYW5jaC1jb2Rl\",\"id\":\"tony@starkbank.com\",\"ispb\":\"20018183\",\"name\":\"Tony Stark\",\"ownerType\":\"naturalPerson\",\"status\":\"registered\",\"taxId\":\"***.345.678-**\",\"type\":\"email\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&status=registered&type=email",
+          "queryRaw": "limit=5&type=email&status=registered",
+          "url": "https://sandbox.api.starkbank.com/v2/dict-key"
+        }
+      ]
+    },
     "event.attempt.get": {
       "hydrated": "{\"code\":\"500\",\"created\":\"2026-09-16T12:00:00+00:00\",\"eventId\":\"5764898044149760\",\"id\":\"1616161616161616\",\"message\":\"Internal Server Error\",\"webhookId\":\"6178044066660352\"}",
       "requests": [
@@ -652,6 +806,21 @@
           "query": "",
           "queryRaw": "",
           "url": "https://sandbox.api.starkbank.com/v2/event/5764898044149760"
+        }
+      ]
+    },
+    "institution.query": {
+      "hydrated": [
+        "{\"displayName\":\"Stark Bank\",\"name\":\"Stark Bank S.A.\",\"spiCode\":\"20018183\",\"strCode\":\"123\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&search=stark&spiCodes=20018183",
+          "queryRaw": "search=stark&spiCodes=20018183&limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/institution"
         }
       ]
     },
@@ -986,6 +1155,49 @@
         }
       ]
     },
+    "transaction.get": {
+      "hydrated": "{\"amount\":1234,\"balance\":100000000,\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"funds redistribution\",\"externalId\":\"transaction ABC 2026-09-17\",\"fee\":200,\"id\":\"7656565656565656\",\"receiverId\":\"5656565656565656\",\"senderId\":\"5656565656565655\",\"source\":\"transfer/92873912873\",\"tags\":[\"abc\",\"test\"]}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/transaction/7656565656565656"
+        }
+      ]
+    },
+    "transaction.page": {
+      "hydrated": [
+        "{\"amount\":1234,\"balance\":100000000,\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"funds redistribution\",\"externalId\":\"transaction ABC 2026-09-17\",\"fee\":200,\"id\":\"7656565656565656\",\"receiverId\":\"5656565656565656\",\"senderId\":\"5656565656565655\",\"source\":\"transfer/92873912873\",\"tags\":[\"abc\",\"test\"]}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/transaction"
+        }
+      ]
+    },
+    "transaction.query": {
+      "hydrated": [
+        "{\"amount\":1234,\"balance\":100000000,\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"funds redistribution\",\"externalId\":\"transaction ABC 2026-09-17\",\"fee\":200,\"id\":\"7656565656565656\",\"receiverId\":\"5656565656565656\",\"senderId\":\"5656565656565655\",\"source\":\"transfer/92873912873\",\"tags\":[\"abc\",\"test\"]}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "externalIds=transaction+ABC+2026-09-17&limit=5&tags=abc%2Ctest",
+          "queryRaw": "limit=5&tags=abc%2Ctest&externalIds=transaction+ABC+2026-09-17",
+          "url": "https://sandbox.api.starkbank.com/v2/transaction"
+        }
+      ]
+    },
     "transfer.create": {
       "hydrated": [
         "{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"amount\":1000,\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Payment for service #1234\",\"displayDescription\":\"Sword sharpening\",\"externalId\":\"my-internal-id-123456\",\"fee\":200,\"id\":\"5155165527080960\",\"metadata\":{\"attempt\":2,\"tracker\":\"abc\"},\"name\":\"Daenerys Targaryen Stormborn\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28T17:59:26+00:00\",\"status\":\"processing\",\"tags\":[\"daenerys\",\"invoice/1234\"],\"taxId\":\"594.739.480-42\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
@@ -1289,6 +1501,75 @@
           "query": "limit=5",
           "queryRaw": "limit=5",
           "url": "https://sandbox.api.starkbank.com/v2/webhook"
+        }
+      ]
+    },
+    "workspace.create": {
+      "hydrated": "{\"allowedTaxIds\":[\"012.345.678-90\",\"20.018.183/0001-80\"],\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6284441752174592\",\"name\":\"Stark Bank Workspace\",\"organizationId\":\"5656565656565656\",\"pictureUrl\":\"https://storage.googleapis.com/api-ms-workspace-sbx.appspot.com/pictures/workspace/6284441752174592.png?20230208220551\",\"status\":\"active\",\"username\":\"starkbankworkspace\"}",
+      "requests": [
+        {
+          "body": "{\"allowedTaxIds\":[\"012.345.678-90\",\"20.018.183/0001-80\"],\"name\":\"Stark Bank Workspace\",\"username\":\"starkbankworkspace\"}",
+          "bodyRaw": "{\"allowedTaxIds\": [\"012.345.678-90\", \"20.018.183/0001-80\"], \"name\": \"Stark Bank Workspace\", \"username\": \"starkbankworkspace\"}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/workspace"
+        }
+      ]
+    },
+    "workspace.get": {
+      "hydrated": "{\"allowedTaxIds\":[\"012.345.678-90\",\"20.018.183/0001-80\"],\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6284441752174592\",\"name\":\"Stark Bank Workspace\",\"organizationId\":\"5656565656565656\",\"pictureUrl\":\"https://storage.googleapis.com/api-ms-workspace-sbx.appspot.com/pictures/workspace/6284441752174592.png?20230208220551\",\"status\":\"active\",\"username\":\"starkbankworkspace\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/workspace/6284441752174592"
+        }
+      ]
+    },
+    "workspace.page": {
+      "hydrated": [
+        "{\"allowedTaxIds\":[\"012.345.678-90\",\"20.018.183/0001-80\"],\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6284441752174592\",\"name\":\"Stark Bank Workspace\",\"organizationId\":\"5656565656565656\",\"pictureUrl\":\"https://storage.googleapis.com/api-ms-workspace-sbx.appspot.com/pictures/workspace/6284441752174592.png?20230208220551\",\"status\":\"active\",\"username\":\"starkbankworkspace\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/workspace"
+        }
+      ]
+    },
+    "workspace.query": {
+      "hydrated": [
+        "{\"allowedTaxIds\":[\"012.345.678-90\",\"20.018.183/0001-80\"],\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6284441752174592\",\"name\":\"Stark Bank Workspace\",\"organizationId\":\"5656565656565656\",\"pictureUrl\":\"https://storage.googleapis.com/api-ms-workspace-sbx.appspot.com/pictures/workspace/6284441752174592.png?20230208220551\",\"status\":\"active\",\"username\":\"starkbankworkspace\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&username=starkbankworkspace",
+          "queryRaw": "limit=5&username=starkbankworkspace",
+          "url": "https://sandbox.api.starkbank.com/v2/workspace"
+        }
+      ]
+    },
+    "workspace.update": {
+      "hydrated": "{\"allowedTaxIds\":[\"012.345.678-90\",\"20.018.183/0001-80\"],\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6284441752174592\",\"name\":\"Stark Bank Workspace\",\"organizationId\":\"5656565656565656\",\"pictureUrl\":\"https://storage.googleapis.com/api-ms-workspace-sbx.appspot.com/pictures/workspace/6284441752174592.png?20230208220551\",\"status\":\"active\",\"username\":\"starkbankworkspace\"}",
+      "requests": [
+        {
+          "body": "{\"name\":\"Stark Bank Workspace\",\"picture\":\"data:image/png;base64,iVBORw0KGgogZmFrZQ==\",\"status\":\"active\",\"username\":\"starkbankworkspace\"}",
+          "bodyRaw": "{\"status\": \"active\", \"name\": \"Stark Bank Workspace\", \"username\": \"starkbankworkspace\", \"picture\": \"data:image/png;base64,iVBORw0KGgogZmFrZQ==\"}",
+          "method": "PATCH",
+          "query": "name=Stark+Bank+Workspace&username=starkbankworkspace",
+          "queryRaw": "username=starkbankworkspace&name=Stark+Bank+Workspace",
+          "url": "https://sandbox.api.starkbank.com/v2/workspace/6284441752174592"
         }
       ]
     }
@@ -1707,6 +1988,120 @@
         }
       ]
     },
+    "deposit": {
+      "deposit": {
+        "accountNumber": "876543-2",
+        "accountType": "checking",
+        "amount": 1234,
+        "bankCode": "20018183",
+        "branchCode": "1357-9",
+        "created": "2026-09-16T12:00:00+00:00",
+        "fee": 50,
+        "id": "5768139429316608",
+        "name": "Cosmic Cupcakes",
+        "status": "created",
+        "tags": [
+          "reconciliationId",
+          "txId"
+        ],
+        "taxId": "20.018.183/0001-80",
+        "transactionIds": [
+          "19827356981273"
+        ],
+        "type": "pix",
+        "updated": "2026-09-17T12:00:00+00:00"
+      }
+    },
+    "depositLog": {
+      "log": {
+        "created": "2026-09-16T12:00:00+00:00",
+        "deposit": {
+          "accountNumber": "876543-2",
+          "accountType": "checking",
+          "amount": 1234,
+          "bankCode": "20018183",
+          "branchCode": "1357-9",
+          "created": "2026-09-16T12:00:00+00:00",
+          "fee": 50,
+          "id": "5768139429316608",
+          "name": "Cosmic Cupcakes",
+          "status": "created",
+          "tags": [
+            "reconciliationId",
+            "txId"
+          ],
+          "taxId": "20.018.183/0001-80",
+          "transactionIds": [
+            "19827356981273"
+          ],
+          "type": "pix",
+          "updated": "2026-09-17T12:00:00+00:00"
+        },
+        "errors": [],
+        "id": "6341320293482499",
+        "type": "credited"
+      }
+    },
+    "depositLogs": {
+      "cursor": "",
+      "logs": [
+        {
+          "created": "2026-09-16T12:00:00+00:00",
+          "deposit": {
+            "accountNumber": "876543-2",
+            "accountType": "checking",
+            "amount": 1234,
+            "bankCode": "20018183",
+            "branchCode": "1357-9",
+            "created": "2026-09-16T12:00:00+00:00",
+            "fee": 50,
+            "id": "5768139429316608",
+            "name": "Cosmic Cupcakes",
+            "status": "created",
+            "tags": [
+              "reconciliationId",
+              "txId"
+            ],
+            "taxId": "20.018.183/0001-80",
+            "transactionIds": [
+              "19827356981273"
+            ],
+            "type": "pix",
+            "updated": "2026-09-17T12:00:00+00:00"
+          },
+          "errors": [],
+          "id": "6341320293482499",
+          "type": "credited"
+        }
+      ]
+    },
+    "deposits": {
+      "cursor": "",
+      "deposits": [
+        {
+          "accountNumber": "876543-2",
+          "accountType": "checking",
+          "amount": 1234,
+          "bankCode": "20018183",
+          "branchCode": "1357-9",
+          "created": "2026-09-16T12:00:00+00:00",
+          "fee": 50,
+          "id": "5768139429316608",
+          "name": "Cosmic Cupcakes",
+          "status": "created",
+          "tags": [
+            "reconciliationId",
+            "txId"
+          ],
+          "taxId": "20.018.183/0001-80",
+          "transactionIds": [
+            "19827356981273"
+          ],
+          "type": "pix",
+          "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ]
+    },
     "event": {
       "event": {
         "created": "2026-09-16T12:00:00+00:00",
@@ -1852,6 +2247,17 @@
         "subscription": "pix-request",
         "workspaceId": "4545454545454545"
       }
+    },
+    "institutions": {
+      "cursor": "",
+      "institutions": [
+        {
+          "displayName": "Stark Bank",
+          "name": "Stark Bank S.A.",
+          "spiCode": "20018183",
+          "strCode": "123"
+        }
+      ]
     },
     "invoice": {
       "invoice": {
@@ -2054,6 +2460,39 @@
         }
       ]
     },
+    "key": {
+      "key": {
+        "accountNumber": "ZW5jcnlwdGVkLWFjY291bnQtbnVtYmVy",
+        "accountType": "checking",
+        "bankName": "Stark Bank",
+        "branchCode": "ZW5jcnlwdGVkLWJyYW5jaC1jb2Rl",
+        "id": "tony@starkbank.com",
+        "ispb": "20018183",
+        "name": "Tony Stark",
+        "ownerType": "naturalPerson",
+        "status": "registered",
+        "taxId": "***.345.678-**",
+        "type": "email"
+      }
+    },
+    "keys": {
+      "cursor": "",
+      "keys": [
+        {
+          "accountNumber": "ZW5jcnlwdGVkLWFjY291bnQtbnVtYmVy",
+          "accountType": "checking",
+          "bankName": "Stark Bank",
+          "branchCode": "ZW5jcnlwdGVkLWJyYW5jaC1jb2Rl",
+          "id": "tony@starkbank.com",
+          "ispb": "20018183",
+          "name": "Tony Stark",
+          "ownerType": "naturalPerson",
+          "status": "registered",
+          "taxId": "***.345.678-**",
+          "type": "email"
+        }
+      ]
+    },
     "previewUnknown": {
       "previews": [
         {
@@ -2210,6 +2649,45 @@
           ],
           "type": "iss",
           "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ]
+    },
+    "transaction": {
+      "transaction": {
+        "amount": 1234,
+        "balance": 100000000,
+        "created": "2026-09-16T12:00:00+00:00",
+        "description": "funds redistribution",
+        "externalId": "transaction ABC 2026-09-17",
+        "fee": 200,
+        "id": "7656565656565656",
+        "receiverId": "5656565656565656",
+        "senderId": "5656565656565655",
+        "source": "transfer/92873912873",
+        "tags": [
+          "abc",
+          "test"
+        ]
+      }
+    },
+    "transactions": {
+      "cursor": "",
+      "transactions": [
+        {
+          "amount": 1234,
+          "balance": 100000000,
+          "created": "2026-09-16T12:00:00+00:00",
+          "description": "funds redistribution",
+          "externalId": "transaction ABC 2026-09-17",
+          "fee": 200,
+          "id": "7656565656565656",
+          "receiverId": "5656565656565656",
+          "senderId": "5656565656565655",
+          "source": "transfer/92873912873",
+          "tags": [
+            "abc",
+            "test"
+          ]
         }
       ]
     },
@@ -2427,6 +2905,39 @@
             "invoice"
           ],
           "url": "https://webhook.site/60e9c18e-4b5c-4369-bda1-ab5fcd8e1b29"
+        }
+      ]
+    },
+    "workspace": {
+      "workspace": {
+        "allowedTaxIds": [
+          "012.345.678-90",
+          "20.018.183/0001-80"
+        ],
+        "created": "2026-09-16T12:00:00+00:00",
+        "id": "6284441752174592",
+        "name": "Stark Bank Workspace",
+        "organizationId": "5656565656565656",
+        "pictureUrl": "https://storage.googleapis.com/api-ms-workspace-sbx.appspot.com/pictures/workspace/6284441752174592.png?20230208220551",
+        "status": "active",
+        "username": "starkbankworkspace"
+      }
+    },
+    "workspaces": {
+      "cursor": "",
+      "workspaces": [
+        {
+          "allowedTaxIds": [
+            "012.345.678-90",
+            "20.018.183/0001-80"
+          ],
+          "created": "2026-09-16T12:00:00+00:00",
+          "id": "6284441752174592",
+          "name": "Stark Bank Workspace",
+          "organizationId": "5656565656565656",
+          "pictureUrl": "https://storage.googleapis.com/api-ms-workspace-sbx.appspot.com/pictures/workspace/6284441752174592.png?20230208220551",
+          "status": "active",
+          "username": "starkbankworkspace"
         }
       ]
     }
