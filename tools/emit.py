@@ -650,6 +650,26 @@ def sampleBody(ident, table, verb, shape):
     printf("%%lu bytes\\n", (unsigned long)length);
     starkbank_free(content);
 """ % {"ident": ident, "verb": verb, "call": call, "argument": argument})
+    if shape == "CONTENT_QUERY":
+        return ("""    unsigned char *content = NULL;
+    size_t length = 0;
+    starkbank_errors *errors = NULL;
+    FILE *file;
+    int status;
+
+    status = %(call)s(client, "5656565656565656", "booklet", "customerAddress", &content, &length, &errors);
+    if (status != STARKBANK_OK) {
+        starkbank_client_free(client);
+        return report(status, errors);
+    }
+    file = fopen("%(ident)s-%(verb)s.bin", "wb");
+    if (file != NULL) {
+        fwrite(content, 1, length, file);
+        fclose(file);
+    }
+    printf("%%lu bytes\\n", (unsigned long)length);
+    starkbank_free(content);
+""" % {"ident": ident, "verb": verb, "call": call})
     if shape == "SUB_RESOURCE":
         return ("""    starkbank_entity *%(verb)s = NULL;
     starkbank_errors *errors = NULL;
