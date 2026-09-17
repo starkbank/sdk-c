@@ -122,6 +122,8 @@ RESOURCE_SOURCES = \
 	starkbank/paymentpreview/taxpreview.c \
 	starkbank/paymentpreview/utilitypreview.c \
 	starkbank/split/split.c \
+	starkbank/taxpayment/log.c \
+	starkbank/taxpayment/taxpayment.c \
 	starkbank/transfer/log.c \
 	starkbank/transfer/rule.c \
 	starkbank/transfer/transfer.c \

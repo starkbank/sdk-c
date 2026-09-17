@@ -30,6 +30,8 @@
     R(invoice_rule)            \
     R(payment_preview)         \
     R(split)                   \
+    R(tax_payment)             \
+    R(tax_payment_log)         \
     R(tax_preview)             \
     R(transfer)                \
     R(transfer_log)            \
