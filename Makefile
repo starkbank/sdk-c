@@ -116,6 +116,8 @@ RESOURCE_SOURCES = \
 	starkbank/corporateholder/corporateholder.c \
 	starkbank/corporateholder/log.c \
 	starkbank/corporateholder/permission.c \
+	starkbank/corporatepurchase/corporatepurchase.c \
+	starkbank/corporatepurchase/log.c \
 	starkbank/corporaterule/corporaterule.c \
 	starkbank/darfpayment/darfpayment.c \
 	starkbank/darfpayment/log.c \

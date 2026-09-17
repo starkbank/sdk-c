@@ -197,6 +197,46 @@ const
   STARKBANK_CORPORATE_HOLDER_STATUS_CANCELED = 'canceled';
   STARKBANK_CORPORATE_HOLDER_TAGS = 'tags';
   STARKBANK_CORPORATE_HOLDER_UPDATED = 'updated';
+  STARKBANK_CORPORATE_PURCHASE_AMOUNT = 'amount';
+  STARKBANK_CORPORATE_PURCHASE_CARD_ENDING = 'cardEnding';
+  STARKBANK_CORPORATE_PURCHASE_CARD_ID = 'cardId';
+  STARKBANK_CORPORATE_PURCHASE_CENTER_ID = 'centerId';
+  STARKBANK_CORPORATE_PURCHASE_CORPORATE_TRANSACTION_IDS = 'corporateTransactionIds';
+  STARKBANK_CORPORATE_PURCHASE_CREATED = 'created';
+  STARKBANK_CORPORATE_PURCHASE_DESCRIPTION = 'description';
+  STARKBANK_CORPORATE_PURCHASE_HOLDER_ID = 'holderId';
+  STARKBANK_CORPORATE_PURCHASE_HOLDER_NAME = 'holderName';
+  STARKBANK_CORPORATE_PURCHASE_ID = 'id';
+  STARKBANK_CORPORATE_PURCHASE_ISSUER_AMOUNT = 'issuerAmount';
+  STARKBANK_CORPORATE_PURCHASE_ISSUER_CURRENCY_CODE = 'issuerCurrencyCode';
+  STARKBANK_CORPORATE_PURCHASE_ISSUER_CURRENCY_SYMBOL = 'issuerCurrencySymbol';
+  STARKBANK_CORPORATE_PURCHASE_LOG_CORPORATE_TRANSACTION_ID = 'corporateTransactionId';
+  STARKBANK_CORPORATE_PURCHASE_LOG_CREATED = 'created';
+  STARKBANK_CORPORATE_PURCHASE_LOG_DESCRIPTION = 'description';
+  STARKBANK_CORPORATE_PURCHASE_LOG_ERRORS = 'errors';
+  STARKBANK_CORPORATE_PURCHASE_LOG_ID = 'id';
+  STARKBANK_CORPORATE_PURCHASE_LOG_PURCHASE = 'purchase';
+  STARKBANK_CORPORATE_PURCHASE_LOG_TYPE = 'type';
+  STARKBANK_CORPORATE_PURCHASE_MERCHANT_AMOUNT = 'merchantAmount';
+  STARKBANK_CORPORATE_PURCHASE_MERCHANT_CATEGORY_CODE = 'merchantCategoryCode';
+  STARKBANK_CORPORATE_PURCHASE_MERCHANT_CATEGORY_TYPE = 'merchantCategoryType';
+  STARKBANK_CORPORATE_PURCHASE_MERCHANT_COUNTRY_CODE = 'merchantCountryCode';
+  STARKBANK_CORPORATE_PURCHASE_MERCHANT_CURRENCY_CODE = 'merchantCurrencyCode';
+  STARKBANK_CORPORATE_PURCHASE_MERCHANT_CURRENCY_SYMBOL = 'merchantCurrencySymbol';
+  STARKBANK_CORPORATE_PURCHASE_MERCHANT_DISPLAY_NAME = 'merchantDisplayName';
+  STARKBANK_CORPORATE_PURCHASE_MERCHANT_DISPLAY_URL = 'merchantDisplayUrl';
+  STARKBANK_CORPORATE_PURCHASE_MERCHANT_FEE = 'merchantFee';
+  STARKBANK_CORPORATE_PURCHASE_MERCHANT_NAME = 'merchantName';
+  STARKBANK_CORPORATE_PURCHASE_METHOD_CODE = 'methodCode';
+  STARKBANK_CORPORATE_PURCHASE_STATUS = 'status';
+  STARKBANK_CORPORATE_PURCHASE_STATUS_APPROVED = 'approved';
+  STARKBANK_CORPORATE_PURCHASE_STATUS_CANCELED = 'canceled';
+  STARKBANK_CORPORATE_PURCHASE_STATUS_CONFIRMED = 'confirmed';
+  STARKBANK_CORPORATE_PURCHASE_STATUS_DENIED = 'denied';
+  STARKBANK_CORPORATE_PURCHASE_STATUS_VOIDED = 'voided';
+  STARKBANK_CORPORATE_PURCHASE_TAGS = 'tags';
+  STARKBANK_CORPORATE_PURCHASE_TAX = 'tax';
+  STARKBANK_CORPORATE_PURCHASE_UPDATED = 'updated';
   STARKBANK_CORPORATE_RULE_AMOUNT = 'amount';
   STARKBANK_CORPORATE_RULE_CATEGORIES = 'categories';
   STARKBANK_CORPORATE_RULE_COUNTER_AMOUNT = 'counterAmount';
@@ -732,6 +772,26 @@ function starkbank_corporate_holder_params_new(&out: PPstarkbank_entity): Intege
 function starkbank_corporate_holder_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_holder_query';
 
 function starkbank_corporate_holder_update(client: Pstarkbank_client; id: PAnsiChar; patch: Pstarkbank_entity; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_holder_update';
+
+function starkbank_corporate_purchase_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_purchase_get';
+
+function starkbank_corporate_purchase_log_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_purchase_log_get';
+
+function starkbank_corporate_purchase_log_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_purchase_log_page';
+
+function starkbank_corporate_purchase_log_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_purchase_log_params_new';
+
+function starkbank_corporate_purchase_log_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_purchase_log_query';
+
+function starkbank_corporate_purchase_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_purchase_page';
+
+function starkbank_corporate_purchase_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_purchase_params_new';
+
+function starkbank_corporate_purchase_parse(client: Pstarkbank_client; content: PAnsiChar; content_len: NativeUInt; signature_base64: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_purchase_parse';
+
+function starkbank_corporate_purchase_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_purchase_query';
+
+function starkbank_corporate_purchase_response(status: PAnsiChar; has_amount: Integer; amount: Double; reason: PAnsiChar; tags: PAnsiChar; &out: PPAnsiChar): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_purchase_response';
 
 function starkbank_corporate_rule_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_rule_new';
 

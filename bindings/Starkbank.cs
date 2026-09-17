@@ -192,6 +192,46 @@ namespace StarkBank
         public const string StarkbankCorporateHolderStatusCanceled = "canceled";
         public const string StarkbankCorporateHolderTags = "tags";
         public const string StarkbankCorporateHolderUpdated = "updated";
+        public const string StarkbankCorporatePurchaseAmount = "amount";
+        public const string StarkbankCorporatePurchaseCardEnding = "cardEnding";
+        public const string StarkbankCorporatePurchaseCardId = "cardId";
+        public const string StarkbankCorporatePurchaseCenterId = "centerId";
+        public const string StarkbankCorporatePurchaseCorporateTransactionIds = "corporateTransactionIds";
+        public const string StarkbankCorporatePurchaseCreated = "created";
+        public const string StarkbankCorporatePurchaseDescription = "description";
+        public const string StarkbankCorporatePurchaseHolderId = "holderId";
+        public const string StarkbankCorporatePurchaseHolderName = "holderName";
+        public const string StarkbankCorporatePurchaseId = "id";
+        public const string StarkbankCorporatePurchaseIssuerAmount = "issuerAmount";
+        public const string StarkbankCorporatePurchaseIssuerCurrencyCode = "issuerCurrencyCode";
+        public const string StarkbankCorporatePurchaseIssuerCurrencySymbol = "issuerCurrencySymbol";
+        public const string StarkbankCorporatePurchaseLogCorporateTransactionId = "corporateTransactionId";
+        public const string StarkbankCorporatePurchaseLogCreated = "created";
+        public const string StarkbankCorporatePurchaseLogDescription = "description";
+        public const string StarkbankCorporatePurchaseLogErrors = "errors";
+        public const string StarkbankCorporatePurchaseLogId = "id";
+        public const string StarkbankCorporatePurchaseLogPurchase = "purchase";
+        public const string StarkbankCorporatePurchaseLogType = "type";
+        public const string StarkbankCorporatePurchaseMerchantAmount = "merchantAmount";
+        public const string StarkbankCorporatePurchaseMerchantCategoryCode = "merchantCategoryCode";
+        public const string StarkbankCorporatePurchaseMerchantCategoryType = "merchantCategoryType";
+        public const string StarkbankCorporatePurchaseMerchantCountryCode = "merchantCountryCode";
+        public const string StarkbankCorporatePurchaseMerchantCurrencyCode = "merchantCurrencyCode";
+        public const string StarkbankCorporatePurchaseMerchantCurrencySymbol = "merchantCurrencySymbol";
+        public const string StarkbankCorporatePurchaseMerchantDisplayName = "merchantDisplayName";
+        public const string StarkbankCorporatePurchaseMerchantDisplayUrl = "merchantDisplayUrl";
+        public const string StarkbankCorporatePurchaseMerchantFee = "merchantFee";
+        public const string StarkbankCorporatePurchaseMerchantName = "merchantName";
+        public const string StarkbankCorporatePurchaseMethodCode = "methodCode";
+        public const string StarkbankCorporatePurchaseStatus = "status";
+        public const string StarkbankCorporatePurchaseStatusApproved = "approved";
+        public const string StarkbankCorporatePurchaseStatusCanceled = "canceled";
+        public const string StarkbankCorporatePurchaseStatusConfirmed = "confirmed";
+        public const string StarkbankCorporatePurchaseStatusDenied = "denied";
+        public const string StarkbankCorporatePurchaseStatusVoided = "voided";
+        public const string StarkbankCorporatePurchaseTags = "tags";
+        public const string StarkbankCorporatePurchaseTax = "tax";
+        public const string StarkbankCorporatePurchaseUpdated = "updated";
         public const string StarkbankCorporateRuleAmount = "amount";
         public const string StarkbankCorporateRuleCategories = "categories";
         public const string StarkbankCorporateRuleCounterAmount = "counterAmount";
@@ -780,6 +820,36 @@ namespace StarkBank
 
         [DllImport(Library, EntryPoint = "starkbank_corporate_holder_update", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankCorporateHolderUpdate(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, IntPtr patch, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_corporate_purchase_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankCorporatePurchaseGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_corporate_purchase_log_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankCorporatePurchaseLogGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_corporate_purchase_log_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankCorporatePurchaseLogPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_corporate_purchase_log_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankCorporatePurchaseLogParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_corporate_purchase_log_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankCorporatePurchaseLogQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_corporate_purchase_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankCorporatePurchasePage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_corporate_purchase_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankCorporatePurchaseParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_corporate_purchase_parse", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankCorporatePurchaseParse(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string content, UIntPtr content_len, [MarshalAs(UnmanagedType.LPStr)] string signature_base64, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_corporate_purchase_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankCorporatePurchaseQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_corporate_purchase_response", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankCorporatePurchaseResponse([MarshalAs(UnmanagedType.LPStr)] string status, int has_amount, double amount, [MarshalAs(UnmanagedType.LPStr)] string reason, [MarshalAs(UnmanagedType.LPStr)] string tags, out IntPtr @out);
 
         [DllImport(Library, EntryPoint = "starkbank_corporate_rule_new", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankCorporateRuleNew(out IntPtr @out);

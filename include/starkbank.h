@@ -1951,6 +1951,131 @@ STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_log_page(const stark
 
 
 /* =========================================================================
+ *                            CorporatePurchase
+ * =========================================================================
+ *
+ * Every field RO: sdk-python's module has no create() (a network authorizes
+ * a purchase, nobody posts one) and no update(), even though the docs show a
+ * documented PATCH /v2/corporate-purchase/:id - python is normative for the
+ * verb surface, so this table carries no PATCH_ID verb.
+ *
+ * Fields (wire keys).
+ *
+ *   holderId holderName centerId cardId cardEnding description STRING (ro)
+ *   amount tax issuerAmount merchantAmount merchantFee AMOUNT (ro)
+ *   issuerCurrencyCode issuerCurrencySymbol merchantCurrencyCode
+ *     merchantCurrencySymbol merchantCategoryCode merchantCategoryType
+ *     merchantCountryCode merchantName merchantDisplayName merchantDisplayUrl
+ *     methodCode status STRING (ro)
+ *   tags corporateTransactionIds LIST_STRING (ro)
+ *   id STRING (ro)                                    updated created DATETIME (ro).
+ *
+ * Query keys: ids, limit, after, before, merchantCategoryTypes, holderIds, cardIds, status.
+ */
+
+#define STARKBANK_CORPORATE_PURCHASE_HOLDER_ID                 "holderId"
+#define STARKBANK_CORPORATE_PURCHASE_HOLDER_NAME               "holderName"
+#define STARKBANK_CORPORATE_PURCHASE_CENTER_ID                 "centerId"
+#define STARKBANK_CORPORATE_PURCHASE_CARD_ID                   "cardId"
+#define STARKBANK_CORPORATE_PURCHASE_CARD_ENDING               "cardEnding"
+#define STARKBANK_CORPORATE_PURCHASE_DESCRIPTION               "description"
+#define STARKBANK_CORPORATE_PURCHASE_AMOUNT                    "amount"
+#define STARKBANK_CORPORATE_PURCHASE_TAX                       "tax"
+#define STARKBANK_CORPORATE_PURCHASE_ISSUER_AMOUNT             "issuerAmount"
+#define STARKBANK_CORPORATE_PURCHASE_ISSUER_CURRENCY_CODE      "issuerCurrencyCode"
+#define STARKBANK_CORPORATE_PURCHASE_ISSUER_CURRENCY_SYMBOL    "issuerCurrencySymbol"
+#define STARKBANK_CORPORATE_PURCHASE_MERCHANT_AMOUNT           "merchantAmount"
+#define STARKBANK_CORPORATE_PURCHASE_MERCHANT_CURRENCY_CODE    "merchantCurrencyCode"
+#define STARKBANK_CORPORATE_PURCHASE_MERCHANT_CURRENCY_SYMBOL  "merchantCurrencySymbol"
+#define STARKBANK_CORPORATE_PURCHASE_MERCHANT_CATEGORY_CODE    "merchantCategoryCode"
+#define STARKBANK_CORPORATE_PURCHASE_MERCHANT_CATEGORY_TYPE    "merchantCategoryType"
+#define STARKBANK_CORPORATE_PURCHASE_MERCHANT_COUNTRY_CODE     "merchantCountryCode"
+#define STARKBANK_CORPORATE_PURCHASE_MERCHANT_NAME             "merchantName"
+#define STARKBANK_CORPORATE_PURCHASE_MERCHANT_DISPLAY_NAME     "merchantDisplayName"
+#define STARKBANK_CORPORATE_PURCHASE_MERCHANT_DISPLAY_URL      "merchantDisplayUrl"
+#define STARKBANK_CORPORATE_PURCHASE_MERCHANT_FEE              "merchantFee"
+#define STARKBANK_CORPORATE_PURCHASE_METHOD_CODE               "methodCode"
+#define STARKBANK_CORPORATE_PURCHASE_TAGS                      "tags"
+#define STARKBANK_CORPORATE_PURCHASE_CORPORATE_TRANSACTION_IDS "corporateTransactionIds"
+#define STARKBANK_CORPORATE_PURCHASE_STATUS                    "status"
+#define STARKBANK_CORPORATE_PURCHASE_ID                        "id"
+#define STARKBANK_CORPORATE_PURCHASE_UPDATED                   "updated"
+#define STARKBANK_CORPORATE_PURCHASE_CREATED                   "created"
+
+/* Statuses and method codes, from the docs' enums. */
+#define STARKBANK_CORPORATE_PURCHASE_STATUS_APPROVED  "approved"
+#define STARKBANK_CORPORATE_PURCHASE_STATUS_CANCELED  "canceled"
+#define STARKBANK_CORPORATE_PURCHASE_STATUS_DENIED    "denied"
+#define STARKBANK_CORPORATE_PURCHASE_STATUS_CONFIRMED "confirmed"
+#define STARKBANK_CORPORATE_PURCHASE_STATUS_VOIDED    "voided"
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_purchase_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_purchase_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_purchase_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_purchase_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_purchase_parse(const starkbank_client *client,
+    const char *content, size_t content_len, const char *signature_base64,
+    starkbank_entity **out, starkbank_errors **errors);
+/* Verifies a purchase authorization request against Stark's public key, then
+   hydrates the body directly as a CorporatePurchase - unlike
+   starkbank_parse_and_verify, there is no envelope key to unwrap.
+   STARKCORE_ERROR_SIGNATURE when it does not check out. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_purchase_response(const char *status,
+    int has_amount, double amount, const char *reason, const char *tags, char **out);
+/* Builds the JSON body a caller's own HTTP handler answers a
+   starkbank_corporate_purchase_parse authorization request with; makes no
+   network call. has_amount 0 and reason/tags NULL or "" all mean "omit this
+   key", matching sdk-python's api_json dropping a None value rather than
+   sending it as null - has_amount exists because amount 0 is a legal cents
+   value sdk-python's default None must stay distinguishable from. tags is
+   comma-joined, like STARKBANK_VERB_CONTENT_QUERY's hiddenFields. *out is
+   malloc'd; free with starkbank_free. */
+
+/* ---------------------------------------------------- CorporatePurchaseLog */
+/*
+ * Resource "CorporatePurchaseLog"; endpoint "corporate-purchase/log", derived
+ * at run time.
+ * Fields: id type STRING (ro), errors LIST_OBJECT (ro), description
+ *         corporateTransactionId STRING (ro), purchase RESOURCE("CorporatePurchase") (ro),
+ *         created DATETIME (ro).
+ * Query keys: ids, limit, after, before, types, purchaseIds.
+ *
+ * errors is a list of {code, message} objects here, unlike CorporateCardLog
+ * and CorporateHolderLog, which carry no errors field at all - the backend
+ * sends purchase authorization failures as structured errors and card/holder
+ * lifecycle events as none. There is no corporatepurchase.Log pdf.
+ */
+#define STARKBANK_CORPORATE_PURCHASE_LOG_ID                       "id"
+#define STARKBANK_CORPORATE_PURCHASE_LOG_CREATED                  "created"
+#define STARKBANK_CORPORATE_PURCHASE_LOG_TYPE                     "type"
+#define STARKBANK_CORPORATE_PURCHASE_LOG_ERRORS                   "errors"
+#define STARKBANK_CORPORATE_PURCHASE_LOG_DESCRIPTION              "description"
+#define STARKBANK_CORPORATE_PURCHASE_LOG_CORPORATE_TRANSACTION_ID "corporateTransactionId"
+#define STARKBANK_CORPORATE_PURCHASE_LOG_PURCHASE                 "purchase"
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_purchase_log_params_new(
+    starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_purchase_log_get(
+    const starkbank_client *client, const char *id, starkbank_entity **out,
+    starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_purchase_log_query(
+    const starkbank_client *client, const starkbank_entity *params, int limit,
+    starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_purchase_log_page(
+    const starkbank_client *client, const starkbank_entity *params, starkbank_list **out,
+    char **out_cursor, starkbank_errors **errors);
+
+
+/* =========================================================================
  *                               CorporateRule
  * =========================================================================
  *

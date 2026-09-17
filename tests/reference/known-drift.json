@@ -214,6 +214,26 @@
       "key": "query.gone:CorporateCardLog:ids",
       "owner": "eduardo.santos@starkbank.com",
       "reason": "sdk-python's corporatecard.log.query()/page() accept ids and the docs' GET /v2/corporate-card/log endpoint does not list it, the same shape as query.gone:CorporateHolderLog:ids."
+    },
+    {
+      "key": "query.new:CorporatePurchase:centerIds",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "The docs list centerIds as a GET /v2/corporate-purchase filter; sdk-python's purchase.query()/page() accept no such keyword. python is normative for the verb surface."
+    },
+    {
+      "key": "query.new:CorporatePurchase:expand",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "Unlike CorporateHolder and CorporateCard, sdk-python's corporatepurchase.query()/page() take no expand keyword at all, even though the docs list expand on the GET list endpoint. There is no python behaviour for the table to model, so - unlike CorporateHolder's and CorporateCard's query key lists - this one leaves expand out."
+    },
+    {
+      "key": "query.new:CorporatePurchase:tags",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "The docs list tags as a GET /v2/corporate-purchase filter; sdk-python's purchase.query()/page() accept no such keyword, even though CorporatePurchase.tags is a real return field. python is normative for the verb surface."
+    },
+    {
+      "key": "query.gone:CorporatePurchaseLog:ids",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "sdk-python's corporatepurchase.log.query()/page() accept ids and the docs' GET /v2/corporate-purchase/log endpoint does not list it, the same shape as query.gone:CorporateHolderLog:ids."
     }
   ]
 }
