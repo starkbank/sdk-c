@@ -138,6 +138,35 @@ namespace StarkBank
         public const string StarkbankBrcodePreviewReductionAmount = "reductionAmount";
         public const string StarkbankBrcodePreviewStatus = "status";
         public const string StarkbankBrcodePreviewTaxId = "taxId";
+        public const string StarkbankDarfPaymentAmount = "amount";
+        public const string StarkbankDarfPaymentCompetence = "competence";
+        public const string StarkbankDarfPaymentCreated = "created";
+        public const string StarkbankDarfPaymentDescription = "description";
+        public const string StarkbankDarfPaymentDue = "due";
+        public const string StarkbankDarfPaymentFee = "fee";
+        public const string StarkbankDarfPaymentFineAmount = "fineAmount";
+        public const string StarkbankDarfPaymentId = "id";
+        public const string StarkbankDarfPaymentInterestAmount = "interestAmount";
+        public const string StarkbankDarfPaymentLogCreated = "created";
+        public const string StarkbankDarfPaymentLogErrors = "errors";
+        public const string StarkbankDarfPaymentLogId = "id";
+        public const string StarkbankDarfPaymentLogPayment = "payment";
+        public const string StarkbankDarfPaymentLogType = "type";
+        public const string StarkbankDarfPaymentNominalAmount = "nominalAmount";
+        public const string StarkbankDarfPaymentReferenceNumber = "referenceNumber";
+        public const string StarkbankDarfPaymentRevenueCode = "revenueCode";
+        public const string StarkbankDarfPaymentScheduled = "scheduled";
+        public const string StarkbankDarfPaymentStatus = "status";
+        public const string StarkbankDarfPaymentStatusCanceled = "canceled";
+        public const string StarkbankDarfPaymentStatusConfirmed = "confirmed";
+        public const string StarkbankDarfPaymentStatusCreated = "created";
+        public const string StarkbankDarfPaymentStatusFailed = "failed";
+        public const string StarkbankDarfPaymentStatusProcessing = "processing";
+        public const string StarkbankDarfPaymentStatusSuccess = "success";
+        public const string StarkbankDarfPaymentTags = "tags";
+        public const string StarkbankDarfPaymentTaxId = "taxId";
+        public const string StarkbankDarfPaymentTransactionIds = "transactionIds";
+        public const string StarkbankDarfPaymentUpdated = "updated";
         public const int StarkbankEnvironmentProduction = 0;
         public const int StarkbankEnvironmentSandbox = 1;
         public const int StarkbankErrorAbi = -106;
@@ -259,6 +288,30 @@ namespace StarkBank
         public const string StarkbankSplitStatus = "status";
         public const string StarkbankSplitTags = "tags";
         public const string StarkbankSplitUpdated = "updated";
+        public const string StarkbankTaxPaymentAmount = "amount";
+        public const string StarkbankTaxPaymentBarCode = "barCode";
+        public const string StarkbankTaxPaymentCreated = "created";
+        public const string StarkbankTaxPaymentDescription = "description";
+        public const string StarkbankTaxPaymentFee = "fee";
+        public const string StarkbankTaxPaymentId = "id";
+        public const string StarkbankTaxPaymentLine = "line";
+        public const string StarkbankTaxPaymentLogCreated = "created";
+        public const string StarkbankTaxPaymentLogErrors = "errors";
+        public const string StarkbankTaxPaymentLogId = "id";
+        public const string StarkbankTaxPaymentLogPayment = "payment";
+        public const string StarkbankTaxPaymentLogType = "type";
+        public const string StarkbankTaxPaymentScheduled = "scheduled";
+        public const string StarkbankTaxPaymentStatus = "status";
+        public const string StarkbankTaxPaymentStatusCanceled = "canceled";
+        public const string StarkbankTaxPaymentStatusConfirmed = "confirmed";
+        public const string StarkbankTaxPaymentStatusCreated = "created";
+        public const string StarkbankTaxPaymentStatusFailed = "failed";
+        public const string StarkbankTaxPaymentStatusProcessing = "processing";
+        public const string StarkbankTaxPaymentStatusSuccess = "success";
+        public const string StarkbankTaxPaymentTags = "tags";
+        public const string StarkbankTaxPaymentTransactionIds = "transactionIds";
+        public const string StarkbankTaxPaymentType = "type";
+        public const string StarkbankTaxPaymentUpdated = "updated";
         public const string StarkbankTaxPreviewAmount = "amount";
         public const string StarkbankTaxPreviewBarCode = "barCode";
         public const string StarkbankTaxPreviewDescription = "description";
@@ -300,6 +353,30 @@ namespace StarkBank
         public const string StarkbankTransferTaxId = "taxId";
         public const string StarkbankTransferTransactionIds = "transactionIds";
         public const string StarkbankTransferUpdated = "updated";
+        public const string StarkbankUtilityPaymentAmount = "amount";
+        public const string StarkbankUtilityPaymentBarCode = "barCode";
+        public const string StarkbankUtilityPaymentCreated = "created";
+        public const string StarkbankUtilityPaymentDescription = "description";
+        public const string StarkbankUtilityPaymentFee = "fee";
+        public const string StarkbankUtilityPaymentId = "id";
+        public const string StarkbankUtilityPaymentLine = "line";
+        public const string StarkbankUtilityPaymentLogCreated = "created";
+        public const string StarkbankUtilityPaymentLogErrors = "errors";
+        public const string StarkbankUtilityPaymentLogId = "id";
+        public const string StarkbankUtilityPaymentLogPayment = "payment";
+        public const string StarkbankUtilityPaymentLogType = "type";
+        public const string StarkbankUtilityPaymentScheduled = "scheduled";
+        public const string StarkbankUtilityPaymentStatus = "status";
+        public const string StarkbankUtilityPaymentStatusCanceled = "canceled";
+        public const string StarkbankUtilityPaymentStatusConfirmed = "confirmed";
+        public const string StarkbankUtilityPaymentStatusCreated = "created";
+        public const string StarkbankUtilityPaymentStatusFailed = "failed";
+        public const string StarkbankUtilityPaymentStatusProcessing = "processing";
+        public const string StarkbankUtilityPaymentStatusSuccess = "success";
+        public const string StarkbankUtilityPaymentTags = "tags";
+        public const string StarkbankUtilityPaymentTransactionIds = "transactionIds";
+        public const string StarkbankUtilityPaymentType = "type";
+        public const string StarkbankUtilityPaymentUpdated = "updated";
         public const string StarkbankUtilityPreviewAmount = "amount";
         public const string StarkbankUtilityPreviewBarCode = "barCode";
         public const string StarkbankUtilityPreviewDescription = "description";
@@ -475,6 +552,42 @@ namespace StarkBank
 
         [DllImport(Library, EntryPoint = "starkbank_core_version", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr StarkbankCoreVersion();
+
+        [DllImport(Library, EntryPoint = "starkbank_darf_payment_create", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankDarfPaymentCreate(IntPtr client, IntPtr payments, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_darf_payment_delete", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankDarfPaymentDelete(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_darf_payment_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankDarfPaymentGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_darf_payment_log_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankDarfPaymentLogGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_darf_payment_log_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankDarfPaymentLogPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_darf_payment_log_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankDarfPaymentLogParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_darf_payment_log_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankDarfPaymentLogQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_darf_payment_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankDarfPaymentNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_darf_payment_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankDarfPaymentPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_darf_payment_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankDarfPaymentParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_darf_payment_pdf", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankDarfPaymentPdf(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out UIntPtr out_len, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_darf_payment_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankDarfPaymentQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
 
         [DllImport(Library, EntryPoint = "starkbank_entity_amount", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankEntityAmount(IntPtr entity, [MarshalAs(UnmanagedType.LPStr)] string field, out double @out);
@@ -734,6 +847,42 @@ namespace StarkBank
         [DllImport(Library, EntryPoint = "starkbank_strerror", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr StarkbankStrerror(int code);
 
+        [DllImport(Library, EntryPoint = "starkbank_tax_payment_create", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankTaxPaymentCreate(IntPtr client, IntPtr payments, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_tax_payment_delete", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankTaxPaymentDelete(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_tax_payment_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankTaxPaymentGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_tax_payment_log_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankTaxPaymentLogGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_tax_payment_log_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankTaxPaymentLogPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_tax_payment_log_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankTaxPaymentLogParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_tax_payment_log_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankTaxPaymentLogQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_tax_payment_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankTaxPaymentNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_tax_payment_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankTaxPaymentPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_tax_payment_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankTaxPaymentParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_tax_payment_pdf", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankTaxPaymentPdf(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out UIntPtr out_len, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_tax_payment_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankTaxPaymentQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
         [DllImport(Library, EntryPoint = "starkbank_transfer_create", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankTransferCreate(IntPtr client, IntPtr transfers, out IntPtr @out, out IntPtr errors);
 
@@ -781,6 +930,42 @@ namespace StarkBank
 
         [DllImport(Library, EntryPoint = "starkbank_user_free", CallingConvention = CallingConvention.Cdecl)]
         public static extern void StarkbankUserFree(IntPtr user);
+
+        [DllImport(Library, EntryPoint = "starkbank_utility_payment_create", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankUtilityPaymentCreate(IntPtr client, IntPtr payments, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_utility_payment_delete", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankUtilityPaymentDelete(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_utility_payment_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankUtilityPaymentGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_utility_payment_log_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankUtilityPaymentLogGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_utility_payment_log_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankUtilityPaymentLogPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_utility_payment_log_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankUtilityPaymentLogParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_utility_payment_log_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankUtilityPaymentLogQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_utility_payment_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankUtilityPaymentNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_utility_payment_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankUtilityPaymentPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_utility_payment_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankUtilityPaymentParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_utility_payment_pdf", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankUtilityPaymentPdf(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out UIntPtr out_len, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_utility_payment_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankUtilityPaymentQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
 
         [DllImport(Library, EntryPoint = "starkbank_version", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr StarkbankVersion();
