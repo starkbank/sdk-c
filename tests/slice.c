@@ -480,7 +480,7 @@ static void testCanonical(void)
 static void testRegistry(void)
 {
     static const char *const expected[] = {
-        "Balance", "Boleto", "BoletoLog",
+        "Balance", "Boleto", "BoletoLog", "BoletoPayment", "BoletoPaymentLog",
         "Event", "EventAttempt", "Invoice", "InvoiceLog",
         "Invoice.Payment", "Invoice.Rule", "PaymentPreview",
         "PaymentPreview.BoletoPreview", "PaymentPreview.BrcodePreview",
@@ -1094,6 +1094,140 @@ static void testBoletoLog(void)
     starkbank_boleto_log_page(client, params, &page, NULL, NULL);
     checkRequests("boleto.log.page", &fake);
     starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+/* ========================================================= BoletoPayment */
+
+static void testBoletoPayment(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_list *batch = NULL;
+    starkbank_list *created = NULL;
+    starkbank_list *page = NULL;
+    starkbank_entity *payment = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    unsigned char *blob = NULL;
+    size_t blobLength = 0;
+
+    startGroup("BoletoPayment");
+    client = newClient(&fake);
+    replies(&fake, responseBody("boletoPayments"), NULL);
+
+    starkbank_boleto_payment_new(&payment);
+    starkbank_entity_set_string(payment, STARKBANK_BOLETO_PAYMENT_TAX_ID, "20.018.183/0001-80");
+    starkbank_entity_set_string(payment, STARKBANK_BOLETO_PAYMENT_DESCRIPTION,
+                                "sword sharpening");
+    starkbank_entity_set_string(payment, STARKBANK_BOLETO_PAYMENT_LINE,
+        "34191.09008 63571.277308 71444.640008 5 81960000000062");
+    starkbank_entity_set_date(payment, STARKBANK_BOLETO_PAYMENT_SCHEDULED, 2026, 10, 28);
+    starkbank_entity_append_string(payment, STARKBANK_BOLETO_PAYMENT_TAGS, "war");
+    starkbank_entity_append_string(payment, STARKBANK_BOLETO_PAYMENT_TAGS, "supply");
+
+    starkbank_list_new(&batch);
+    starkbank_list_append(batch, payment);
+    check("create returns the created list",
+          starkbank_boleto_payment_create(client, batch, &created, NULL) == STARKBANK_OK
+          && starkbank_list_count(created) == 1, NULL);
+    checkRequests("boletopayment.create", &fake);
+    checkHydration("boletopayment.create", 0, starkbank_list_at(created, 0));
+    check("a created BoletoPayment carries no unknown key",
+          starkbank_entity_unknown_count(starkbank_list_at(created, 0)) == 0, NULL);
+    starkbank_list_free(batch);
+    starkbank_list_free(created);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("boletoPayment"), NULL);
+    starkbank_boleto_payment_get(client, "5155165527080960", &payment, NULL);
+    checkRequests("boletopayment.get", &fake);
+    checkHydration("boletopayment.get", 0, payment);
+    starkbank_entity_free(payment);
+    payment = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("boletoPayment"), NULL);
+    check("delete cancels an unprocessed payment",
+          starkbank_boleto_payment_delete(client, "5155165527080960", &payment, NULL)
+              == STARKBANK_OK, NULL);
+    checkRequests("boletopayment.delete", &fake);
+    starkbank_entity_free(payment);
+    payment = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"payments\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_boleto_payment_params_new(&params);
+    starkbank_entity_set_string(params, "status", "success");
+    starkbank_entity_append_string(params, "tags", "war");
+    starkbank_entity_append_string(params, "tags", "supply");
+    starkbank_boleto_payment_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("boletopayment.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"payments\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_boleto_payment_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_boleto_payment_page(client, params, &page, NULL, NULL);
+    checkRequests("boletopayment.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "%PDF-1.4 fake", NULL);
+    starkbank_boleto_payment_pdf(client, "5155165527080960", &blob, &blobLength, NULL);
+    checkRequests("boletopayment.pdf", &fake);
+    starkbank_free(blob);
+    starkbank_client_free(client);
+}
+
+static void testBoletoPaymentLog(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *log = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *nested = NULL;
+
+    startGroup("boletopayment.Log");
+    client = newClient(&fake);
+    replies(&fake, responseBody("boletoPaymentLog"), NULL);
+    starkbank_boleto_payment_log_get(client, "6341320293482497", &log, NULL);
+    checkRequests("boletopayment.log.get", &fake);
+    checkHydration("boletopayment.log.get", 0, log);
+    check("the nested payment is a tagged BoletoPayment",
+          starkbank_entity_entity(log, STARKBANK_BOLETO_PAYMENT_LOG_PAYMENT, &nested)
+              == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested), "BoletoPayment"), NULL);
+    starkbank_entity_free(log);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_boleto_payment_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_append_string(params, "types", "success");
+    starkbank_entity_append_string(params, "paymentIds", "5155165527080960");
+    starkbank_boleto_payment_log_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("boletopayment.log.query", &fake);
+    starkbank_iter_free(iter);
     starkbank_entity_free(params);
     starkbank_client_free(client);
 }
@@ -1775,6 +1909,8 @@ int main(void)
     testTransferLog();
     testBoleto();
     testBoletoLog();
+    testBoletoPayment();
+    testBoletoPaymentLog();
     testEvent();
     testEventAttempt();
     testEventParse();

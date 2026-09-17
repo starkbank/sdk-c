@@ -15,6 +15,8 @@
     R(balance)                 \
     R(boleto)                  \
     R(boleto_log)              \
+    R(boleto_payment)          \
+    R(boleto_payment_log)      \
     R(boleto_preview)          \
     R(brcode_preview)          \
     R(event)                   \

@@ -1324,6 +1324,96 @@ STARKBANK_API int STARKBANK_CALL starkbank_boleto_log_page(const starkbank_clien
     const starkbank_entity *params, starkbank_list **out, char **out_cursor,
     starkbank_errors **errors);
 
+/* =========================================================================
+ *                              BoletoPayment
+ * =========================================================================
+ *
+ * Fields (wire keys; * = required on create).
+ *
+ *   taxId* description* STRING     line barCode STRING
+ *   amount AMOUNT                  scheduled DATE       tags LIST_STRING
+ *   id status STRING (ro)          fee AMOUNT (ro)
+ *   transactionIds LIST_STRING (ro)                     created DATETIME (ro)
+ *
+ * Query keys: limit, after, before, tags, ids, status.
+ *
+ * Either line or barCode identifies the boleto being paid; sdk-python calls
+ * both "conditionally required" in prose rather than in its signature, so
+ * neither carries REQUIRED here - a caller who omits both is told by the API.
+ */
+
+#define STARKBANK_BOLETO_PAYMENT_TAX_ID          "taxId"
+#define STARKBANK_BOLETO_PAYMENT_DESCRIPTION     "description"
+#define STARKBANK_BOLETO_PAYMENT_LINE            "line"
+#define STARKBANK_BOLETO_PAYMENT_BAR_CODE        "barCode"
+#define STARKBANK_BOLETO_PAYMENT_AMOUNT          "amount"
+#define STARKBANK_BOLETO_PAYMENT_SCHEDULED       "scheduled"
+#define STARKBANK_BOLETO_PAYMENT_TAGS            "tags"
+#define STARKBANK_BOLETO_PAYMENT_ID              "id"
+#define STARKBANK_BOLETO_PAYMENT_STATUS          "status"
+#define STARKBANK_BOLETO_PAYMENT_FEE             "fee"
+#define STARKBANK_BOLETO_PAYMENT_TRANSACTION_IDS "transactionIds"
+#define STARKBANK_BOLETO_PAYMENT_CREATED         "created"
+
+#define STARKBANK_BOLETO_PAYMENT_STATUS_CREATED     "created"
+#define STARKBANK_BOLETO_PAYMENT_STATUS_PROCESSING  "processing"
+#define STARKBANK_BOLETO_PAYMENT_STATUS_CONFIRMED   "confirmed"
+#define STARKBANK_BOLETO_PAYMENT_STATUS_SUCCESS     "success"
+#define STARKBANK_BOLETO_PAYMENT_STATUS_FAILED      "failed"
+#define STARKBANK_BOLETO_PAYMENT_STATUS_CANCELED    "canceled"
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_payment_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_payment_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_payment_create(const starkbank_client *client,
+    const starkbank_list *payments, starkbank_list **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_payment_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_payment_delete(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+/* Cancels a payment that has not started processing; a payment already
+   processed can still be deleted, but the payment itself is not reversed. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_payment_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_payment_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_payment_pdf(const starkbank_client *client,
+    const char *id, unsigned char **out, size_t *out_len, starkbank_errors **errors);
+/* Valid only once the payment carries status "success", "processing" or
+   "created". Free with starkbank_free. */
+
+/* ------------------------------------------------------------ BoletoPaymentLog */
+/*
+ * Resource "BoletoPaymentLog"; endpoint "boleto-payment/log", derived at run
+ * time.
+ * Fields: id STRING (ro), created DATETIME (ro), type STRING (ro),
+ *         errors LIST_STRING (ro), payment RESOURCE("BoletoPayment") (ro).
+ * Query keys: limit, after, before, types, paymentIds.
+ *
+ * There is no boletopayment.Log pdf: sdk-python does not have one, and python
+ * is normative for the verb surface. The receipt is starkbank_boleto_payment_pdf.
+ */
+#define STARKBANK_BOLETO_PAYMENT_LOG_ID       "id"
+#define STARKBANK_BOLETO_PAYMENT_LOG_CREATED  "created"
+#define STARKBANK_BOLETO_PAYMENT_LOG_TYPE     "type"
+#define STARKBANK_BOLETO_PAYMENT_LOG_ERRORS   "errors"
+#define STARKBANK_BOLETO_PAYMENT_LOG_PAYMENT  "payment"
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_payment_log_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_payment_log_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_payment_log_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_payment_log_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
 #ifdef __cplusplus
 }
 #endif
