@@ -126,6 +126,7 @@ make bundle          one artifact with core-c, ecdsa-c and secp256k1 inside
 make bundle-curl     the same, with core-c's libcurl transport
 make install PREFIX=/usr/local
 make print-ldflags   the static link order, so nobody guesses it
+make dist            the release tarball for this OS and architecture
 ```
 
 `CORE_PREFIX`, `ECDSA_PREFIX` and `SECP256K1_PREFIX` are discovered the way
@@ -142,6 +143,54 @@ Two consumption shapes, because the consumers differ:
 - **Delphi, .NET, single file.** `make bundle`: one library, one `DllImport`
   name, one allocator, exporting only `starkbank_*`. The bindings in
   `bindings/` are shipped and versioned with it.
+
+### Prebuilt libraries
+
+Every version tag publishes a GitHub Release with one tarball per platform,
+built by `.github/workflows/release.yml` from `make dist`: Linux x86_64 (built
+in an Ubuntu 22.04 container, so it needs glibc 2.35 or newer), macOS arm64,
+macOS x86_64 and Windows x86_64 (MinGW-w64 in MSYS2's UCRT64 environment). The
+bundles carry libsecp256k1 v0.7.1 built from source on Linux and Windows and
+Homebrew's on macOS; every job runs the suites before packaging.
+
+```
+starkbank-c-<version>-<os>-<arch>/
+  include/starkbank.h            the ABI
+  lib/libstarkbank.a             this tier only: link core-c, ecdsa-c and libsecp256k1 yourself
+  lib/libstarkbank.dylib|.so.1   the same, shared
+  lib/libstarkbank_full.a        one artifact with core-c, ecdsa-c and libsecp256k1 inside
+  lib/libstarkbank_full.dylib|.so.1
+  lib/libstarkbank_full_curl.*   the bundle with core-c's libcurl transport; links the system libcurl
+  lib/pkgconfig/                  starkbank.pc (plain archive, requires the siblings' .pc files)
+                                  and starkbank_full.pc (the bundle); both relocatable
+  bindings/                       Starkbank.cs and starkbank.pas, emitted from the header
+```
+
+The Windows tarball differs in two ways. The shared libraries are
+`starkbank.dll` and `starkbank_full.dll`, each with a MinGW import library
+(`libstarkbank*.dll.a`) and a `.def` file, from which an MSVC host makes its
+own import library with `lib /def:starkbank_full.def /machine:x64`; the
+static archives are GCC/Clang archives and are not for MSVC. And there is no
+curl bundle: MSYS2's libcurl drags a chain of DLLs, and the Windows hosts this
+ABI exists for bring their own HTTP stack through
+`starkbank_client_set_transport`. The DLLs depend on the Universal C Runtime
+and `bcrypt.dll` only.
+
+Pick the bundle unless you already build the siblings: a C or C++ host links
+`-L<dir>/lib -lstarkbank_full` (or `-lstarkbank_full_curl` to get
+`starkbank_client_set_curl_transport`), a .NET or Delphi host loads
+`libstarkbank_full.dylib` / `libstarkbank_full.so.1` by name and uses the
+shipped bindings. `pkg-config --with-path=<dir>/lib/pkgconfig --cflags --libs
+starkbank_full` gives the bundle's flags. The plain shared library is built
+against the libsecp256k1 of the build machine and is for hosts that have the
+siblings installed; the bundles are the portable ones. Each tarball comes with
+a `.sha256` to verify it against.
+
+Cutting a release: bump `STARKBANK_VERSION` in `include/starkbank.h`, move
+the CHANGELOG's Unreleased entries under the version, merge, then tag
+`v<version>` on `master` and push the tag. The workflow refuses a tag whose
+number differs from the header's, and `workflow_dispatch` rehearses the
+packaging without publishing anything.
 
 ### Test
 
@@ -183,5 +232,16 @@ cannot silence: it needs a recorded resolution naming which input won.
 
 ### Requirements
 
-`starkinfra/core-c`, `starkbank/ecdsa-c`, `libsecp256k1`, a C99 compiler. The
-tools need Python 3 and nothing from PyPI.
+`starkinfra/core-c`, `starkbank/ecdsa-c`, `libsecp256k1` 0.2 or newer, a C99
+compiler. The version floor is real: Ubuntu 22.04's `libsecp256k1-dev` is 0.1,
+whose `SECP256K1_CONTEXT_NONE` context cannot sign, and a build against it
+passes the compiler and fails every request - the release tarballs bundle
+v0.7.1 built from source for that reason. On Windows the compiler means
+MinGW-w64 under MSYS2 (`make` works there unchanged; MSVC is compile-checked
+only), and a static libsecp256k1 needs ecdsa-c built with
+`CFLAGS="-O2 -DSECP256K1_STATIC"`: its header declares the API
+`__declspec(dllimport)` otherwise and the link asks for `__imp_secp256k1_*`.
+core-c older than 0.1.1 needs `CFLAGS="-O2 -DCJSON_HIDE_SYMBOLS"` there too, or
+its vendored cJSON rides along in every DLL's export table.
+The tools need Python 3 and nothing from PyPI; the header gate's cffi step is
+opt-in and skips loudly without it.

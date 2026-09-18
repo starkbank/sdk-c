@@ -11,6 +11,12 @@ exports.map
 *.so
 *.so.*
 *.dylib
+*.dll
+*.dll.a
+*.def
+
+# Built by `make dist`.
+dist/
 
 # Built by the Makefile.
 exports.defined
