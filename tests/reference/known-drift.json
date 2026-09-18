@@ -234,6 +234,27 @@
       "key": "query.gone:CorporatePurchaseLog:ids",
       "owner": "eduardo.santos@starkbank.com",
       "reason": "sdk-python's corporatepurchase.log.query()/page() accept ids and the docs' GET /v2/corporate-purchase/log endpoint does not list it, the same shape as query.gone:CorporateHolderLog:ids."
+    },
+    {
+      "key": "query.gone:CorporateTransaction:ids",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "sdk-python's corporatetransaction.query()/page() accept ids and the docs' GET /v2/corporate-transaction endpoint does not list it, the same shape as query.gone:CorporateHolderLog:ids. python is normative for the verb surface."
+    },
+    {
+      "key": "query.gone:CorporateTransaction:externalIds",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "As query.gone:CorporateTransaction:ids - sdk-python's query()/page() accept external_ids and the docs' GET /v2/corporate-transaction endpoint does not list it."
+    },
+    {
+      "key": "type.conflict:CorporateTransaction:created",
+      "owner": "eduardo.santos@starkbank.com",
+      "resolution": "table",
+      "reason": "sdk-python's CorporateTransaction.__init__ does 'self.created = created' with no check_datetime call, the same omission type.conflict:CorporateBalance:updated already documents. The class docstring's own example is a datetime.datetime and the wire carries the same ISO-8601 timestamp every other DATETIME field uses, so the table follows the wire format and python's missing coercion is the divergence."
+    },
+    {
+      "key": "query.gone:CorporateWithdrawal:externalIds",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "sdk-python's corporatewithdrawal.query()/page() accept external_ids and the docs' GET /v2/corporate-withdrawal endpoint does not list it, the same shape as query.gone:CorporateTransaction:externalIds. python is normative for the verb surface."
     }
   ]
 }

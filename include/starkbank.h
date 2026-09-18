@@ -2151,6 +2151,188 @@ STARKBANK_API int STARKBANK_CALL starkbank_corporate_balance_get(const starkbank
 
 
 /* =========================================================================
+ *                             CorporateInvoice
+ * =========================================================================
+ *
+ * create() posts a single object - sdk-python's rest.post_single, the same
+ * shape as Webhook - so this uses STARKBANK_VERB_POST_SINGLE, not
+ * POST_MULTI. There is no get(): sdk-python's corporateinvoice module
+ * defines only create(), query() and page(), so this table has no GET_ID
+ * verb either.
+ *
+ * taxId, name, brcode, due, link, status, corporateTransactionId, updated
+ * and created are all sdk-python __init__ keywords, but every one of them is
+ * filed under the class docstring's "Attributes (return-only)", not under
+ * "## Parameters" - only amount is required and tags is optional at create -
+ * so they carry RO here and not CREATE, the same table convention
+ * CorporateCard.pin and CorporateWithdrawal's section below already use.
+ *
+ * due is DATE_OR_DATETIME, not DATETIME: sdk-python coerces it with
+ * check_datetime_or_date, the same coercion Invoice.due uses.
+ *
+ * Fields (wire keys; * = required on create).
+ *
+ *   amount* AMOUNT
+ *   tags LIST_STRING
+ *   taxId name brcode link status corporateTransactionId id STRING (ro)
+ *   due DATE_OR_DATETIME (ro)
+ *   updated created DATETIME (ro).
+ *
+ * Query keys: limit, after, before, status, tags.
+ */
+
+#define STARKBANK_CORPORATE_INVOICE_AMOUNT                   "amount"
+#define STARKBANK_CORPORATE_INVOICE_TAGS                     "tags"
+#define STARKBANK_CORPORATE_INVOICE_TAX_ID                   "taxId"
+#define STARKBANK_CORPORATE_INVOICE_NAME                     "name"
+#define STARKBANK_CORPORATE_INVOICE_BRCODE                   "brcode"
+#define STARKBANK_CORPORATE_INVOICE_DUE                      "due"
+#define STARKBANK_CORPORATE_INVOICE_LINK                     "link"
+#define STARKBANK_CORPORATE_INVOICE_STATUS                   "status"
+#define STARKBANK_CORPORATE_INVOICE_CORPORATE_TRANSACTION_ID "corporateTransactionId"
+#define STARKBANK_CORPORATE_INVOICE_ID                       "id"
+#define STARKBANK_CORPORATE_INVOICE_UPDATED                  "updated"
+#define STARKBANK_CORPORATE_INVOICE_CREATED                  "created"
+
+/* Statuses, from the docs' enum. */
+#define STARKBANK_CORPORATE_INVOICE_STATUS_CREATED "created"
+#define STARKBANK_CORPORATE_INVOICE_STATUS_EXPIRED "expired"
+#define STARKBANK_CORPORATE_INVOICE_STATUS_OVERDUE "overdue"
+#define STARKBANK_CORPORATE_INVOICE_STATUS_PAID    "paid"
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_invoice_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_invoice_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_invoice_create(const starkbank_client *client,
+    const starkbank_entity *invoice, starkbank_entity **out, starkbank_errors **errors);
+/* One invoice, posted to corporate-invoice. The entity stays yours - unlike
+   POST_MULTI's list, this does not take ownership. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_invoice_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_invoice_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+
+/* =========================================================================
+ *                            CorporateTransaction
+ * =========================================================================
+ *
+ * A read-only ledger entry. sdk-python's module has no create(), no
+ * update() and no delete() - a caller never posts a transaction, the API
+ * writes one for every balance shift (a purchase, an invoice, a withdrawal)
+ * - so this table has no CREATE bit anywhere and no NEW/POST verb.
+ *
+ * query()'s actual signature takes source, tags, external_ids, after,
+ * before, ids and limit; its docstring also prose-lists a "status" filter
+ * that signature does not accept, and the docs' GET /v2/corporate-transaction
+ * endpoint lists neither ids nor externalIds at all. Code is normative over
+ * docstring prose and over the docs' parameter list here, so "status" stays
+ * out of STARKBANK_CORPORATE_TRANSACTION_QUERY while ids and externalIds
+ * stay in - see known-drift.json's query.gone:CorporateTransaction:ids and
+ * query.gone:CorporateTransaction:externalIds.
+ *
+ * Fields (wire keys), every one read-only: a caller never posts a
+ * transaction.
+ *
+ *   id description source STRING (ro)
+ *   amount balance AMOUNT (ro)
+ *   tags LIST_STRING (ro)
+ *   created DATETIME (ro).
+ *
+ * Query keys: limit, after, before, tags, externalIds, ids, source.
+ */
+
+#define STARKBANK_CORPORATE_TRANSACTION_ID          "id"
+#define STARKBANK_CORPORATE_TRANSACTION_AMOUNT      "amount"
+#define STARKBANK_CORPORATE_TRANSACTION_BALANCE     "balance"
+#define STARKBANK_CORPORATE_TRANSACTION_DESCRIPTION "description"
+#define STARKBANK_CORPORATE_TRANSACTION_SOURCE      "source"
+#define STARKBANK_CORPORATE_TRANSACTION_TAGS        "tags"
+#define STARKBANK_CORPORATE_TRANSACTION_CREATED     "created"
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_transaction_params_new(
+    starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_transaction_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_transaction_query(
+    const starkbank_client *client, const starkbank_entity *params, int limit,
+    starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_transaction_page(
+    const starkbank_client *client, const starkbank_entity *params, starkbank_list **out,
+    char **out_cursor, starkbank_errors **errors);
+
+
+/* =========================================================================
+ *                            CorporateWithdrawal
+ * =========================================================================
+ *
+ * create() posts a single object, the same shape as CorporateInvoice and
+ * Webhook, so this uses STARKBANK_VERB_POST_SINGLE, not POST_MULTI.
+ *
+ * amount and externalId are the only two "## Parameters (required)" entries
+ * in sdk-python's class docstring and the only two constructor keywords with
+ * no default; tags is the lone "## Parameters (optional)" entry.
+ * transactionId, corporateTransactionId, updated and created are
+ * constructor keywords too but are filed under "Attributes (return-only)",
+ * so they carry RO here, not CREATE - the same convention CorporateInvoice's
+ * section above uses.
+ *
+ * The docs' GET /v2/corporate-withdrawal endpoint does not list externalId
+ * as a filter; sdk-python's query()/page() accept external_ids anyway, and
+ * python is normative for the verb surface - see known-drift.json's
+ * query.gone:CorporateWithdrawal:externalIds.
+ *
+ * Fields (wire keys; * = required on create).
+ *
+ *   amount* AMOUNT
+ *   externalId* STRING
+ *   tags LIST_STRING
+ *   transactionId corporateTransactionId id STRING (ro)
+ *   updated created DATETIME (ro).
+ *
+ * Query keys: limit, after, before, tags, externalIds.
+ */
+
+#define STARKBANK_CORPORATE_WITHDRAWAL_AMOUNT                   "amount"
+#define STARKBANK_CORPORATE_WITHDRAWAL_EXTERNAL_ID              "externalId"
+#define STARKBANK_CORPORATE_WITHDRAWAL_TAGS                     "tags"
+#define STARKBANK_CORPORATE_WITHDRAWAL_TRANSACTION_ID           "transactionId"
+#define STARKBANK_CORPORATE_WITHDRAWAL_CORPORATE_TRANSACTION_ID "corporateTransactionId"
+#define STARKBANK_CORPORATE_WITHDRAWAL_ID                       "id"
+#define STARKBANK_CORPORATE_WITHDRAWAL_UPDATED                  "updated"
+#define STARKBANK_CORPORATE_WITHDRAWAL_CREATED                  "created"
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_withdrawal_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_withdrawal_params_new(
+    starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_withdrawal_create(
+    const starkbank_client *client, const starkbank_entity *withdrawal, starkbank_entity **out,
+    starkbank_errors **errors);
+/* One withdrawal, posted to corporate-withdrawal. The entity stays yours -
+   unlike POST_MULTI's list, this does not take ownership. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_withdrawal_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_withdrawal_query(
+    const starkbank_client *client, const starkbank_entity *params, int limit,
+    starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_withdrawal_page(
+    const starkbank_client *client, const starkbank_entity *params, starkbank_list **out,
+    char **out_cursor, starkbank_errors **errors);
+
+
+/* =========================================================================
  *                               DarfPayment
  * =========================================================================
  *

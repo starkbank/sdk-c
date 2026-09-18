@@ -197,6 +197,22 @@ const
   STARKBANK_CORPORATE_HOLDER_STATUS_CANCELED = 'canceled';
   STARKBANK_CORPORATE_HOLDER_TAGS = 'tags';
   STARKBANK_CORPORATE_HOLDER_UPDATED = 'updated';
+  STARKBANK_CORPORATE_INVOICE_AMOUNT = 'amount';
+  STARKBANK_CORPORATE_INVOICE_BRCODE = 'brcode';
+  STARKBANK_CORPORATE_INVOICE_CORPORATE_TRANSACTION_ID = 'corporateTransactionId';
+  STARKBANK_CORPORATE_INVOICE_CREATED = 'created';
+  STARKBANK_CORPORATE_INVOICE_DUE = 'due';
+  STARKBANK_CORPORATE_INVOICE_ID = 'id';
+  STARKBANK_CORPORATE_INVOICE_LINK = 'link';
+  STARKBANK_CORPORATE_INVOICE_NAME = 'name';
+  STARKBANK_CORPORATE_INVOICE_STATUS = 'status';
+  STARKBANK_CORPORATE_INVOICE_STATUS_CREATED = 'created';
+  STARKBANK_CORPORATE_INVOICE_STATUS_EXPIRED = 'expired';
+  STARKBANK_CORPORATE_INVOICE_STATUS_OVERDUE = 'overdue';
+  STARKBANK_CORPORATE_INVOICE_STATUS_PAID = 'paid';
+  STARKBANK_CORPORATE_INVOICE_TAGS = 'tags';
+  STARKBANK_CORPORATE_INVOICE_TAX_ID = 'taxId';
+  STARKBANK_CORPORATE_INVOICE_UPDATED = 'updated';
   STARKBANK_CORPORATE_PURCHASE_AMOUNT = 'amount';
   STARKBANK_CORPORATE_PURCHASE_CARD_ENDING = 'cardEnding';
   STARKBANK_CORPORATE_PURCHASE_CARD_ID = 'cardId';
@@ -259,6 +275,21 @@ const
   STARKBANK_CORPORATE_RULE_PURPOSE_VERIFICATION = 'verification';
   STARKBANK_CORPORATE_RULE_PURPOSE_WITHDRAWAL = 'withdrawal';
   STARKBANK_CORPORATE_RULE_SCHEDULE = 'schedule';
+  STARKBANK_CORPORATE_TRANSACTION_AMOUNT = 'amount';
+  STARKBANK_CORPORATE_TRANSACTION_BALANCE = 'balance';
+  STARKBANK_CORPORATE_TRANSACTION_CREATED = 'created';
+  STARKBANK_CORPORATE_TRANSACTION_DESCRIPTION = 'description';
+  STARKBANK_CORPORATE_TRANSACTION_ID = 'id';
+  STARKBANK_CORPORATE_TRANSACTION_SOURCE = 'source';
+  STARKBANK_CORPORATE_TRANSACTION_TAGS = 'tags';
+  STARKBANK_CORPORATE_WITHDRAWAL_AMOUNT = 'amount';
+  STARKBANK_CORPORATE_WITHDRAWAL_CORPORATE_TRANSACTION_ID = 'corporateTransactionId';
+  STARKBANK_CORPORATE_WITHDRAWAL_CREATED = 'created';
+  STARKBANK_CORPORATE_WITHDRAWAL_EXTERNAL_ID = 'externalId';
+  STARKBANK_CORPORATE_WITHDRAWAL_ID = 'id';
+  STARKBANK_CORPORATE_WITHDRAWAL_TAGS = 'tags';
+  STARKBANK_CORPORATE_WITHDRAWAL_TRANSACTION_ID = 'transactionId';
+  STARKBANK_CORPORATE_WITHDRAWAL_UPDATED = 'updated';
   STARKBANK_DARF_PAYMENT_AMOUNT = 'amount';
   STARKBANK_DARF_PAYMENT_COMPETENCE = 'competence';
   STARKBANK_DARF_PAYMENT_CREATED = 'created';
@@ -773,6 +804,16 @@ function starkbank_corporate_holder_query(client: Pstarkbank_client; params: Pst
 
 function starkbank_corporate_holder_update(client: Pstarkbank_client; id: PAnsiChar; patch: Pstarkbank_entity; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_holder_update';
 
+function starkbank_corporate_invoice_create(client: Pstarkbank_client; invoice: Pstarkbank_entity; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_invoice_create';
+
+function starkbank_corporate_invoice_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_invoice_new';
+
+function starkbank_corporate_invoice_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_invoice_page';
+
+function starkbank_corporate_invoice_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_invoice_params_new';
+
+function starkbank_corporate_invoice_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_invoice_query';
+
 function starkbank_corporate_purchase_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_purchase_get';
 
 function starkbank_corporate_purchase_log_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_purchase_log_get';
@@ -794,6 +835,26 @@ function starkbank_corporate_purchase_query(client: Pstarkbank_client; params: P
 function starkbank_corporate_purchase_response(status: PAnsiChar; has_amount: Integer; amount: Double; reason: PAnsiChar; tags: PAnsiChar; &out: PPAnsiChar): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_purchase_response';
 
 function starkbank_corporate_rule_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_rule_new';
+
+function starkbank_corporate_transaction_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_transaction_get';
+
+function starkbank_corporate_transaction_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_transaction_page';
+
+function starkbank_corporate_transaction_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_transaction_params_new';
+
+function starkbank_corporate_transaction_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_transaction_query';
+
+function starkbank_corporate_withdrawal_create(client: Pstarkbank_client; withdrawal: Pstarkbank_entity; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_withdrawal_create';
+
+function starkbank_corporate_withdrawal_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_withdrawal_get';
+
+function starkbank_corporate_withdrawal_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_withdrawal_new';
+
+function starkbank_corporate_withdrawal_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_withdrawal_page';
+
+function starkbank_corporate_withdrawal_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_withdrawal_params_new';
+
+function starkbank_corporate_withdrawal_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_corporate_withdrawal_query';
 
 function starkbank_darf_payment_create(client: Pstarkbank_client; payments: Pstarkbank_list; &out: PPstarkbank_list; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_darf_payment_create';
 
