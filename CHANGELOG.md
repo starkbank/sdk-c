@@ -17,6 +17,8 @@ never bumps it: fields are not part of the ABI, which is the point of the
 name-keyed accessors.
 
 ## [Unreleased]
+
+## [0.1.0] - 2026-09-18
 ### Added
 - Public header `include/starkbank.h`: the whole ABI in one C89-clean file -
   opaque handles, 28 generic accessors, the list and iterator API, the
