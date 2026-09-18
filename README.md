@@ -77,7 +77,8 @@ an FFI generator and MSVC can all read it. `make check-header` proves that.
 
 Those six between them use every `starkcore_rest_*` shape the bank SDK needs:
 `post_multi`, `post_single`, `get_id`, `get_page`, the stream, `patch_id`,
-`delete_id`, `get_content` and `get_sub_resource`. The remaining bank
+`delete_id`, `get_content` and `get_sub_resource` - joined later by
+`post_sub_resource` for `MerchantSession.purchase`. The remaining bank
 resources are tables on top of exactly this engine.
 
 Two fields in the surface are polymorphic, and neither costs a line of C. A
