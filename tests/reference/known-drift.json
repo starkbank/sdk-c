@@ -14,19 +14,61 @@
   ],
   "accepted": [
     {
-      "key": "verb.new:Split:get",
+      "key": "verb.new:VerifiedAccount:cancel",
       "owner": "eduardo.santos@starkbank.com",
-      "reason": "Split is in this build only because an Invoice hydrates one out of its splits list. Its own verbs arrive with the rest of the bank surface; the table is complete so the nested hydration matches python byte for byte."
+      "reason": "sdk-python spells the DELETE /v2/verified-account/:id call cancel(); sdk-c keeps every resource's DELETE_ID verb named starkbank_<resource>_delete for one consistent spelling across the whole SDK rather than a per-resource alias, the same choice already made for CorporateHolder.cancel()/CorporateCard.cancel(). The HTTP call is identical; only the C symbol's name differs from python's function name."
     },
     {
-      "key": "verb.new:Split:query",
+      "key": "verb.gone:VerifiedAccount:delete",
       "owner": "eduardo.santos@starkbank.com",
-      "reason": "As verb.new:Split:get - Split's verbs are deferred, not missed."
+      "reason": "The other half of verb.new:VerifiedAccount:cancel - sdk-c's starkbank_verified_account_delete is the same DELETE_ID call sdk-python names cancel(), not a verb sdk-python lacks."
     },
     {
-      "key": "verb.new:Split:page",
+      "key": "query.new:VerifiedAccount:taxId",
       "owner": "eduardo.santos@starkbank.com",
-      "reason": "As verb.new:Split:get - Split's verbs are deferred, not missed."
+      "reason": "The docs list taxId as a GET /v2/verified-account filter; sdk-python's verifiedaccount.query()/page() accept no such keyword. python is normative for the verb surface, so the table does not add a filter no SDK call actually sends."
+    },
+    {
+      "key": "query.new:SplitReceiver:receiverIds",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "The docs list receiverIds as a GET /v2/split-receiver filter; no SplitReceiver field or sdk-python query()/page() keyword is named anything like it - a SplitReceiver does not itself reference another receiver. Almost certainly carried over from split.json's own (real) receiverIds filter rather than a genuine SplitReceiver one. python is normative for the verb surface, so the table does not add a filter no SDK call sends."
+    },
+    {
+      "key": "query.new:SplitReceiver:taxIds",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "The docs list taxIds (plural); sdk-python's query()/page() take a singular tax_id keyword, which core-c's casing rule turns into taxId, not taxIds - a naming mismatch between the docs and python, not a missing filter. See query.gone:SplitReceiver:taxId for the other half."
+    },
+    {
+      "key": "query.gone:SplitReceiver:taxId",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "The other half of query.new:SplitReceiver:taxIds - the table carries taxId (from sdk-python's tax_id) and the docs list the differently-spelled taxIds instead."
+    },
+    {
+      "key": "query.gone:SplitReceiver:sort",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "sdk-python's splitreceiver.query()/page() accept sort and forward it to rest.get_stream/get_page, and the docs' GET /v2/split-receiver endpoint does not list it, the same shape as query.gone:MerchantSession:holderId. python is normative for the verb surface."
+    },
+    {
+      "key": "query.gone:SplitReceiver:transactionIds",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "sdk-python's splitreceiver.query() accepts transaction_ids and forwards it, and the docs' GET /v2/split-receiver endpoint does not list it, the same shape as query.gone:SplitReceiver:sort."
+    },
+    {
+      "key": "flag.conflict:SplitProfile:delay",
+      "owner": "eduardo.santos@starkbank.com",
+      "resolution": "table",
+      "reason": "sdk-python's SplitProfile.__init__(self, delay, interval, tags=None, ...) takes delay and interval positionally with no default, so building one without both raises TypeError - functionally required - but the class docstring files both under '## Parameters (optional)', stale wording rather than a required/optional design decision, the same shape flag.conflict:Split:externalId/tags/scheduled already established for this codebase (the table follows the code, not the docstring's prose)."
+    },
+    {
+      "key": "flag.conflict:SplitProfile:interval",
+      "owner": "eduardo.santos@starkbank.com",
+      "resolution": "table",
+      "reason": "The other half of flag.conflict:SplitProfile:delay - same __init__ signature, same stale docstring wording."
+    },
+    {
+      "key": "query.gone:SplitProfile:receiverIds",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "sdk-python's page() forwards receiver_ids; the docs' GET /v2/split-profile parameter list omits it."
     },
     {
       "key": "query.new:Invoice:transactionIds",

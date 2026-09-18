@@ -2412,6 +2412,294 @@
         }
       ]
     },
+    "split.get": {
+      "hydrated": "{\"amount\":141,\"created\":\"2026-09-16T12:00:00+00:00\",\"externalId\":\"invoice/1234/receiver/5678\",\"id\":\"6155165527080964\",\"receiverId\":\"5706627130851328\",\"scheduled\":\"2026-09-16T15:17:03+00:00\",\"source\":\"5155165527080960\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/split/6155165527080964"
+        }
+      ]
+    },
+    "split.log.get": {
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482505\",\"split\":{\"amount\":141,\"created\":\"2026-09-16T12:00:00+00:00\",\"externalId\":\"invoice/1234/receiver/5678\",\"id\":\"6155165527080964\",\"receiverId\":\"5706627130851328\",\"scheduled\":\"2026-09-16T15:17:03+00:00\",\"source\":\"5155165527080960\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"success\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/split/log/6341320293482505"
+        }
+      ]
+    },
+    "split.log.page": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482505\",\"split\":{\"amount\":141,\"created\":\"2026-09-16T12:00:00+00:00\",\"externalId\":\"invoice/1234/receiver/5678\",\"id\":\"6155165527080964\",\"receiverId\":\"5706627130851328\",\"scheduled\":\"2026-09-16T15:17:03+00:00\",\"source\":\"5155165527080960\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"success\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/split/log"
+        }
+      ]
+    },
+    "split.log.query": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482505\",\"split\":{\"amount\":141,\"created\":\"2026-09-16T12:00:00+00:00\",\"externalId\":\"invoice/1234/receiver/5678\",\"id\":\"6155165527080964\",\"receiverId\":\"5706627130851328\",\"scheduled\":\"2026-09-16T15:17:03+00:00\",\"source\":\"5155165527080960\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"success\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&splitIds=6155165527080964&types=success",
+          "queryRaw": "limit=5&types=success&splitIds=6155165527080964",
+          "url": "https://sandbox.api.starkbank.com/v2/split/log"
+        }
+      ]
+    },
+    "split.page": {
+      "hydrated": [
+        "{\"amount\":141,\"created\":\"2026-09-16T12:00:00+00:00\",\"externalId\":\"invoice/1234/receiver/5678\",\"id\":\"6155165527080964\",\"receiverId\":\"5706627130851328\",\"scheduled\":\"2026-09-16T15:17:03+00:00\",\"source\":\"5155165527080960\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/split"
+        }
+      ]
+    },
+    "split.query": {
+      "hydrated": [
+        "{\"amount\":141,\"created\":\"2026-09-16T12:00:00+00:00\",\"externalId\":\"invoice/1234/receiver/5678\",\"id\":\"6155165527080964\",\"receiverId\":\"5706627130851328\",\"scheduled\":\"2026-09-16T15:17:03+00:00\",\"source\":\"5155165527080960\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&receiverIds=5706627130851328&status=success",
+          "queryRaw": "limit=5&receiverIds=5706627130851328&status=success",
+          "url": "https://sandbox.api.starkbank.com/v2/split"
+        }
+      ]
+    },
+    "splitprofile.get": {
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"delay\":604800,\"id\":\"6155165527080963\",\"interval\":\"week\",\"status\":\"created\",\"tags\":[\"default\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/split-profile/6155165527080963"
+        }
+      ]
+    },
+    "splitprofile.log.get": {
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482504\",\"profile\":{\"created\":\"2026-09-16T12:00:00+00:00\",\"delay\":604800,\"id\":\"6155165527080963\",\"interval\":\"week\",\"status\":\"created\",\"tags\":[\"default\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"created\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/split-profile/log/6341320293482504"
+        }
+      ]
+    },
+    "splitprofile.log.page": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482504\",\"profile\":{\"created\":\"2026-09-16T12:00:00+00:00\",\"delay\":604800,\"id\":\"6155165527080963\",\"interval\":\"week\",\"status\":\"created\",\"tags\":[\"default\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"created\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/split-profile/log"
+        }
+      ]
+    },
+    "splitprofile.log.query": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482504\",\"profile\":{\"created\":\"2026-09-16T12:00:00+00:00\",\"delay\":604800,\"id\":\"6155165527080963\",\"interval\":\"week\",\"status\":\"created\",\"tags\":[\"default\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"created\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&profileIds=6155165527080963&types=created",
+          "queryRaw": "limit=5&types=created&profileIds=6155165527080963",
+          "url": "https://sandbox.api.starkbank.com/v2/split-profile/log"
+        }
+      ]
+    },
+    "splitprofile.page": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"delay\":604800,\"id\":\"6155165527080963\",\"interval\":\"week\",\"status\":\"created\",\"tags\":[\"default\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&receiverIds=6155165527080962",
+          "queryRaw": "limit=5&receiverIds=6155165527080962",
+          "url": "https://sandbox.api.starkbank.com/v2/split-profile"
+        }
+      ]
+    },
+    "splitprofile.put": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"delay\":604800,\"id\":\"6155165527080963\",\"interval\":\"week\",\"status\":\"created\",\"tags\":[\"default\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "{\"profiles\":[{\"delay\":604800,\"interval\":\"week\",\"tags\":[\"default\"]}]}",
+          "bodyRaw": "{\"profiles\": [{\"delay\": 604800, \"interval\": \"week\", \"tags\": [\"default\"]}]}",
+          "method": "PUT",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/split-profile"
+        }
+      ]
+    },
+    "splitprofile.query": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"delay\":604800,\"id\":\"6155165527080963\",\"interval\":\"week\",\"status\":\"created\",\"tags\":[\"default\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/split-profile"
+        }
+      ]
+    },
+    "splitreceiver.create": {
+      "hydrated": [
+        "{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6155165527080962\",\"name\":\"Anthony Edward Stark\",\"status\":\"success\",\"tags\":[\"seller/123456\"],\"taxId\":\"20.018.183/0001-80\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "{\"receivers\":[{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"name\":\"Anthony Edward Stark\",\"tags\":[\"seller/123456\"],\"taxId\":\"20.018.183/0001-80\"}]}",
+          "bodyRaw": "{\"receivers\": [{\"accountNumber\": \"876543-2\", \"accountType\": \"checking\", \"bankCode\": \"20018183\", \"branchCode\": \"1357-9\", \"name\": \"Anthony Edward Stark\", \"tags\": [\"seller/123456\"], \"taxId\": \"20.018.183/0001-80\"}]}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/split-receiver"
+        }
+      ]
+    },
+    "splitreceiver.get": {
+      "hydrated": "{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6155165527080962\",\"name\":\"Anthony Edward Stark\",\"status\":\"success\",\"tags\":[\"seller/123456\"],\"taxId\":\"20.018.183/0001-80\",\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/split-receiver/6155165527080962"
+        }
+      ]
+    },
+    "splitreceiver.log.get": {
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482503\",\"receiver\":{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6155165527080962\",\"name\":\"Anthony Edward Stark\",\"status\":\"success\",\"tags\":[\"seller/123456\"],\"taxId\":\"20.018.183/0001-80\",\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"success\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/split-receiver/log/6341320293482503"
+        }
+      ]
+    },
+    "splitreceiver.log.page": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482503\",\"receiver\":{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6155165527080962\",\"name\":\"Anthony Edward Stark\",\"status\":\"success\",\"tags\":[\"seller/123456\"],\"taxId\":\"20.018.183/0001-80\",\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"success\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/split-receiver/log"
+        }
+      ]
+    },
+    "splitreceiver.log.query": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6341320293482503\",\"receiver\":{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6155165527080962\",\"name\":\"Anthony Edward Stark\",\"status\":\"success\",\"tags\":[\"seller/123456\"],\"taxId\":\"20.018.183/0001-80\",\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"success\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&receiverIds=6155165527080962&types=success",
+          "queryRaw": "limit=5&types=success&receiverIds=6155165527080962",
+          "url": "https://sandbox.api.starkbank.com/v2/split-receiver/log"
+        }
+      ]
+    },
+    "splitreceiver.page": {
+      "hydrated": [
+        "{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6155165527080962\",\"name\":\"Anthony Edward Stark\",\"status\":\"success\",\"tags\":[\"seller/123456\"],\"taxId\":\"20.018.183/0001-80\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/split-receiver"
+        }
+      ]
+    },
+    "splitreceiver.query": {
+      "hydrated": [
+        "{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6155165527080962\",\"name\":\"Anthony Edward Stark\",\"status\":\"success\",\"tags\":[\"seller/123456\"],\"taxId\":\"20.018.183/0001-80\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&status=success&taxId=20.018.183%2F0001-80",
+          "queryRaw": "limit=5&status=success&taxId=20.018.183%2F0001-80",
+          "url": "https://sandbox.api.starkbank.com/v2/split-receiver"
+        }
+      ]
+    },
     "taxpayment.create": {
       "hydrated": [
         "{\"amount\":23456,\"barCode\":\"85660000006679400640074119002551100010601813\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"ISS Payment - Iron Throne\",\"fee\":150,\"id\":\"5155165527080961\",\"line\":\"85660000006 6 67940064007 5 41190025511 7 00010601813 8\",\"scheduled\":\"2026-09-21\",\"status\":\"success\",\"tags\":[\"iss\",\"throne\"],\"transactionIds\":[\"19827356981274\"],\"type\":\"iss\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
@@ -2815,6 +3103,135 @@
           "query": "limit=5&status=success&tags=electricity",
           "queryRaw": "limit=5&tags=electricity&status=success",
           "url": "https://sandbox.api.starkbank.com/v2/utility-payment"
+        }
+      ]
+    },
+    "verifiedaccount.create": {
+      "hydrated": [
+        "{\"bankCode\":\"20018183\",\"bankName\":\"Stark Bank\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6155165527080960\",\"keyId\":\"tony@starkbank.com\",\"name\":\"Anthony Edward Stark\",\"number\":\"876543-2\",\"status\":\"active\",\"tags\":[\"employees\",\"monthly\"],\"taxId\":\"20.018.183/0001-80\",\"type\":\"checking\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "{\"accounts\":[{\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"keyId\":\"tony@starkbank.com\",\"name\":\"Anthony Edward Stark\",\"number\":\"876543-2\",\"tags\":[\"employees\",\"monthly\"],\"taxId\":\"20.018.183/0001-80\",\"type\":\"checking\"}]}",
+          "bodyRaw": "{\"accounts\": [{\"bankCode\": \"20018183\", \"branchCode\": \"1357-9\", \"keyId\": \"tony@starkbank.com\", \"name\": \"Anthony Edward Stark\", \"number\": \"876543-2\", \"tags\": [\"employees\", \"monthly\"], \"taxId\": \"20.018.183/0001-80\", \"type\": \"checking\"}]}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/verified-account"
+        }
+      ]
+    },
+    "verifiedaccount.delete": {
+      "hydrated": "{\"bankCode\":\"20018183\",\"bankName\":\"Stark Bank\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6155165527080960\",\"keyId\":\"tony@starkbank.com\",\"name\":\"Anthony Edward Stark\",\"number\":\"876543-2\",\"status\":\"active\",\"tags\":[\"employees\",\"monthly\"],\"taxId\":\"20.018.183/0001-80\",\"type\":\"checking\",\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "DELETE",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/verified-account/6155165527080960"
+        }
+      ]
+    },
+    "verifiedaccount.get": {
+      "hydrated": "{\"bankCode\":\"20018183\",\"bankName\":\"Stark Bank\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6155165527080960\",\"keyId\":\"tony@starkbank.com\",\"name\":\"Anthony Edward Stark\",\"number\":\"876543-2\",\"status\":\"active\",\"tags\":[\"employees\",\"monthly\"],\"taxId\":\"20.018.183/0001-80\",\"type\":\"checking\",\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/verified-account/6155165527080960"
+        }
+      ]
+    },
+    "verifiedaccount.log.get": {
+      "hydrated": "{\"account\":{\"bankCode\":\"20018183\",\"bankName\":\"Stark Bank\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6155165527080960\",\"keyId\":\"tony@starkbank.com\",\"name\":\"Anthony Edward Stark\",\"number\":\"876543-2\",\"status\":\"active\",\"tags\":[\"employees\",\"monthly\"],\"taxId\":\"20.018.183/0001-80\",\"type\":\"checking\",\"updated\":\"2026-09-17T12:00:00+00:00\"},\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[{\"code\":\"invalidKey\",\"message\":\"Pix key is invalid\"}],\"id\":\"6341320293482502\",\"type\":\"active\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/verified-account/log/6341320293482502"
+        }
+      ]
+    },
+    "verifiedaccount.log.page": {
+      "hydrated": [
+        "{\"account\":{\"bankCode\":\"20018183\",\"bankName\":\"Stark Bank\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6155165527080960\",\"keyId\":\"tony@starkbank.com\",\"name\":\"Anthony Edward Stark\",\"number\":\"876543-2\",\"status\":\"active\",\"tags\":[\"employees\",\"monthly\"],\"taxId\":\"20.018.183/0001-80\",\"type\":\"checking\",\"updated\":\"2026-09-17T12:00:00+00:00\"},\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[{\"code\":\"invalidKey\",\"message\":\"Pix key is invalid\"}],\"id\":\"6341320293482502\",\"type\":\"active\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/verified-account/log"
+        }
+      ]
+    },
+    "verifiedaccount.log.query": {
+      "hydrated": [
+        "{\"account\":{\"bankCode\":\"20018183\",\"bankName\":\"Stark Bank\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6155165527080960\",\"keyId\":\"tony@starkbank.com\",\"name\":\"Anthony Edward Stark\",\"number\":\"876543-2\",\"status\":\"active\",\"tags\":[\"employees\",\"monthly\"],\"taxId\":\"20.018.183/0001-80\",\"type\":\"checking\",\"updated\":\"2026-09-17T12:00:00+00:00\"},\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[{\"code\":\"invalidKey\",\"message\":\"Pix key is invalid\"}],\"id\":\"6341320293482502\",\"type\":\"active\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "accountIds=6155165527080960&limit=5&types=active",
+          "queryRaw": "limit=5&types=active&accountIds=6155165527080960",
+          "url": "https://sandbox.api.starkbank.com/v2/verified-account/log"
+        }
+      ]
+    },
+    "verifiedaccount.page": {
+      "hydrated": [
+        "{\"bankCode\":\"20018183\",\"bankName\":\"Stark Bank\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6155165527080960\",\"keyId\":\"tony@starkbank.com\",\"name\":\"Anthony Edward Stark\",\"number\":\"876543-2\",\"status\":\"active\",\"tags\":[\"employees\",\"monthly\"],\"taxId\":\"20.018.183/0001-80\",\"type\":\"checking\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/verified-account"
+        }
+      ]
+    },
+    "verifiedaccount.query": {
+      "hydrated": [
+        "{\"bankCode\":\"20018183\",\"bankName\":\"Stark Bank\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6155165527080960\",\"keyId\":\"tony@starkbank.com\",\"name\":\"Anthony Edward Stark\",\"number\":\"876543-2\",\"status\":\"active\",\"tags\":[\"employees\",\"monthly\"],\"taxId\":\"20.018.183/0001-80\",\"type\":\"checking\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&status=active&tags=employees",
+          "queryRaw": "limit=5&status=active&tags=employees",
+          "url": "https://sandbox.api.starkbank.com/v2/verified-account"
+        }
+      ]
+    },
+    "verifiedtransfer.create": {
+      "hydrated": [
+        "{\"accountId\":\"6155165527080960\",\"amount\":1234,\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Payment for service #1234\",\"displayDescription\":\"Sword sharpening\",\"externalId\":\"my-internal-id-654321\",\"fee\":200,\"id\":\"6155165527080961\",\"metadata\":{\"attempt\":1,\"tracker\":\"xyz\"},\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28T17:59:26+00:00\",\"status\":\"processing\",\"tags\":[\"arya\",\"stark\"],\"transactionIds\":[\"19827356981274\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "{\"transfers\":[{\"accountId\":\"6155165527080960\",\"amount\":1234,\"description\":\"Payment for service #1234\",\"displayDescription\":\"Sword sharpening\",\"externalId\":\"my-internal-id-654321\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"tags\":[\"arya\",\"stark\"]}]}",
+          "bodyRaw": "{\"transfers\": [{\"accountId\": \"6155165527080960\", \"amount\": 1234, \"description\": \"Payment for service #1234\", \"displayDescription\": \"Sword sharpening\", \"externalId\": \"my-internal-id-654321\", \"rules\": [{\"key\": \"resendingLimit\", \"value\": 5}], \"tags\": [\"arya\", \"stark\"]}]}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/verified-transfer"
         }
       ]
     },
@@ -5438,6 +5855,174 @@
         "updated": "2026-09-16T12:00:00+00:00"
       }
     },
+    "split": {
+      "split": {
+        "amount": 141,
+        "created": "2026-09-16T12:00:00+00:00",
+        "externalId": "invoice/1234/receiver/5678",
+        "id": "6155165527080964",
+        "receiverId": "5706627130851328",
+        "scheduled": "2026-09-16T15:17:03+00:00",
+        "source": "5155165527080960",
+        "status": "success",
+        "tags": [
+          "war",
+          "supply"
+        ],
+        "updated": "2026-09-17T12:00:00+00:00"
+      }
+    },
+    "splitLog": {
+      "log": {
+        "created": "2026-09-16T12:00:00+00:00",
+        "errors": [],
+        "id": "6341320293482505",
+        "split": {
+          "amount": 141,
+          "created": "2026-09-16T12:00:00+00:00",
+          "externalId": "invoice/1234/receiver/5678",
+          "id": "6155165527080964",
+          "receiverId": "5706627130851328",
+          "scheduled": "2026-09-16T15:17:03+00:00",
+          "source": "5155165527080960",
+          "status": "success",
+          "tags": [
+            "war",
+            "supply"
+          ],
+          "updated": "2026-09-17T12:00:00+00:00"
+        },
+        "type": "success"
+      }
+    },
+    "splitProfile": {
+      "profile": {
+        "created": "2026-09-16T12:00:00+00:00",
+        "delay": 604800,
+        "id": "6155165527080963",
+        "interval": "week",
+        "status": "created",
+        "tags": [
+          "default"
+        ],
+        "updated": "2026-09-17T12:00:00+00:00"
+      }
+    },
+    "splitProfileLog": {
+      "log": {
+        "created": "2026-09-16T12:00:00+00:00",
+        "errors": [],
+        "id": "6341320293482504",
+        "profile": {
+          "created": "2026-09-16T12:00:00+00:00",
+          "delay": 604800,
+          "id": "6155165527080963",
+          "interval": "week",
+          "status": "created",
+          "tags": [
+            "default"
+          ],
+          "updated": "2026-09-17T12:00:00+00:00"
+        },
+        "type": "created"
+      }
+    },
+    "splitProfiles": {
+      "cursor": "",
+      "profiles": [
+        {
+          "created": "2026-09-16T12:00:00+00:00",
+          "delay": 604800,
+          "id": "6155165527080963",
+          "interval": "week",
+          "status": "created",
+          "tags": [
+            "default"
+          ],
+          "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ]
+    },
+    "splitReceiver": {
+      "receiver": {
+        "accountNumber": "876543-2",
+        "accountType": "checking",
+        "bankCode": "20018183",
+        "branchCode": "1357-9",
+        "created": "2026-09-16T12:00:00+00:00",
+        "id": "6155165527080962",
+        "name": "Anthony Edward Stark",
+        "status": "success",
+        "tags": [
+          "seller/123456"
+        ],
+        "taxId": "20.018.183/0001-80",
+        "updated": "2026-09-17T12:00:00+00:00"
+      }
+    },
+    "splitReceiverLog": {
+      "log": {
+        "created": "2026-09-16T12:00:00+00:00",
+        "errors": [],
+        "id": "6341320293482503",
+        "receiver": {
+          "accountNumber": "876543-2",
+          "accountType": "checking",
+          "bankCode": "20018183",
+          "branchCode": "1357-9",
+          "created": "2026-09-16T12:00:00+00:00",
+          "id": "6155165527080962",
+          "name": "Anthony Edward Stark",
+          "status": "success",
+          "tags": [
+            "seller/123456"
+          ],
+          "taxId": "20.018.183/0001-80",
+          "updated": "2026-09-17T12:00:00+00:00"
+        },
+        "type": "success"
+      }
+    },
+    "splitReceivers": {
+      "cursor": "",
+      "receivers": [
+        {
+          "accountNumber": "876543-2",
+          "accountType": "checking",
+          "bankCode": "20018183",
+          "branchCode": "1357-9",
+          "created": "2026-09-16T12:00:00+00:00",
+          "id": "6155165527080962",
+          "name": "Anthony Edward Stark",
+          "status": "success",
+          "tags": [
+            "seller/123456"
+          ],
+          "taxId": "20.018.183/0001-80",
+          "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ]
+    },
+    "splits": {
+      "cursor": "",
+      "splits": [
+        {
+          "amount": 141,
+          "created": "2026-09-16T12:00:00+00:00",
+          "externalId": "invoice/1234/receiver/5678",
+          "id": "6155165527080964",
+          "receiverId": "5706627130851328",
+          "scheduled": "2026-09-16T15:17:03+00:00",
+          "source": "5155165527080960",
+          "status": "success",
+          "tags": [
+            "war",
+            "supply"
+          ],
+          "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ]
+    },
     "taxPayment": {
       "payment": {
         "amount": 23456,
@@ -5742,6 +6327,114 @@
             "19827356981273"
           ],
           "type": "utility",
+          "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ]
+    },
+    "verifiedAccount": {
+      "account": {
+        "bankCode": "20018183",
+        "bankName": "Stark Bank",
+        "branchCode": "1357-9",
+        "created": "2026-09-16T12:00:00+00:00",
+        "id": "6155165527080960",
+        "keyId": "tony@starkbank.com",
+        "name": "Anthony Edward Stark",
+        "number": "876543-2",
+        "status": "active",
+        "tags": [
+          "employees",
+          "monthly"
+        ],
+        "taxId": "20.018.183/0001-80",
+        "type": "checking",
+        "updated": "2026-09-17T12:00:00+00:00"
+      }
+    },
+    "verifiedAccountLog": {
+      "log": {
+        "account": {
+          "bankCode": "20018183",
+          "bankName": "Stark Bank",
+          "branchCode": "1357-9",
+          "created": "2026-09-16T12:00:00+00:00",
+          "id": "6155165527080960",
+          "keyId": "tony@starkbank.com",
+          "name": "Anthony Edward Stark",
+          "number": "876543-2",
+          "status": "active",
+          "tags": [
+            "employees",
+            "monthly"
+          ],
+          "taxId": "20.018.183/0001-80",
+          "type": "checking",
+          "updated": "2026-09-17T12:00:00+00:00"
+        },
+        "created": "2026-09-16T12:00:00+00:00",
+        "errors": [
+          {
+            "code": "invalidKey",
+            "message": "Pix key is invalid"
+          }
+        ],
+        "id": "6341320293482502",
+        "type": "active"
+      }
+    },
+    "verifiedAccounts": {
+      "accounts": [
+        {
+          "bankCode": "20018183",
+          "bankName": "Stark Bank",
+          "branchCode": "1357-9",
+          "created": "2026-09-16T12:00:00+00:00",
+          "id": "6155165527080960",
+          "keyId": "tony@starkbank.com",
+          "name": "Anthony Edward Stark",
+          "number": "876543-2",
+          "status": "active",
+          "tags": [
+            "employees",
+            "monthly"
+          ],
+          "taxId": "20.018.183/0001-80",
+          "type": "checking",
+          "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ],
+      "cursor": ""
+    },
+    "verifiedTransfers": {
+      "transfers": [
+        {
+          "accountId": "6155165527080960",
+          "amount": 1234,
+          "created": "2026-09-16T12:00:00+00:00",
+          "description": "Payment for service #1234",
+          "displayDescription": "Sword sharpening",
+          "externalId": "my-internal-id-654321",
+          "fee": 200,
+          "id": "6155165527080961",
+          "metadata": {
+            "attempt": 1,
+            "tracker": "xyz"
+          },
+          "rules": [
+            {
+              "key": "resendingLimit",
+              "value": 5
+            }
+          ],
+          "scheduled": "2026-10-28T17:59:26+00:00",
+          "status": "processing",
+          "tags": [
+            "arya",
+            "stark"
+          ],
+          "transactionIds": [
+            "19827356981274"
+          ],
           "updated": "2026-09-17T12:00:00+00:00"
         }
       ]
