@@ -136,6 +136,8 @@ RESOURCE_SOURCES = \
 	starkbank/invoice/rule.c \
 	starkbank/merchantcard/log.c \
 	starkbank/merchantcard/merchantcard.c \
+	starkbank/merchantinstallment/log.c \
+	starkbank/merchantinstallment/merchantinstallment.c \
 	starkbank/merchantsession/allowedinstallment.c \
 	starkbank/merchantsession/log.c \
 	starkbank/merchantsession/merchantsession.c \

@@ -260,6 +260,11 @@
       "key": "query.gone:MerchantSession:holderId",
       "owner": "eduardo.santos@starkbank.com",
       "reason": "sdk-python's merchantsession.query()/page() accept holder_id and the docs' GET /v2/merchant-session endpoint does not list it, the same shape as query.gone:CorporateHolderLog:ids. python is normative for the verb surface."
+    },
+    {
+      "key": "query.gone:MerchantInstallment:purchaseIds",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "sdk-python's merchantinstallment.query()/page() accept purchase_ids and the docs' GET /v2/merchant-installment endpoint does not list it, the same shape as query.gone:MerchantSession:holderId. python is normative for the verb surface."
     }
   ]
 }

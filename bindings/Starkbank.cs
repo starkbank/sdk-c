@@ -479,6 +479,27 @@ namespace StarkBank
         public const string StarkbankMerchantCardStatusExpired = "expired";
         public const string StarkbankMerchantCardTags = "tags";
         public const string StarkbankMerchantCardUpdated = "updated";
+        public const string StarkbankMerchantInstallmentAmount = "amount";
+        public const string StarkbankMerchantInstallmentCreated = "created";
+        public const string StarkbankMerchantInstallmentDue = "due";
+        public const string StarkbankMerchantInstallmentFee = "fee";
+        public const string StarkbankMerchantInstallmentFundingType = "fundingType";
+        public const string StarkbankMerchantInstallmentId = "id";
+        public const string StarkbankMerchantInstallmentLogCreated = "created";
+        public const string StarkbankMerchantInstallmentLogErrors = "errors";
+        public const string StarkbankMerchantInstallmentLogId = "id";
+        public const string StarkbankMerchantInstallmentLogInstallment = "installment";
+        public const string StarkbankMerchantInstallmentLogType = "type";
+        public const string StarkbankMerchantInstallmentLogUpdated = "updated";
+        public const string StarkbankMerchantInstallmentNetwork = "network";
+        public const string StarkbankMerchantInstallmentPurchaseId = "purchaseId";
+        public const string StarkbankMerchantInstallmentStatus = "status";
+        public const string StarkbankMerchantInstallmentStatusCreated = "created";
+        public const string StarkbankMerchantInstallmentStatusFailed = "failed";
+        public const string StarkbankMerchantInstallmentStatusSuccess = "success";
+        public const string StarkbankMerchantInstallmentTags = "tags";
+        public const string StarkbankMerchantInstallmentTransactionIds = "transactionIds";
+        public const string StarkbankMerchantInstallmentUpdated = "updated";
         public const string StarkbankMerchantSessionAllowedFundingTypes = "allowedFundingTypes";
         public const string StarkbankMerchantSessionAllowedInstallments = "allowedInstallments";
         public const string StarkbankMerchantSessionAllowedIps = "allowedIps";
@@ -1330,6 +1351,30 @@ namespace StarkBank
 
         [DllImport(Library, EntryPoint = "starkbank_merchant_card_query", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankMerchantCardQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_merchant_installment_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankMerchantInstallmentGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_merchant_installment_log_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankMerchantInstallmentLogGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_merchant_installment_log_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankMerchantInstallmentLogPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_merchant_installment_log_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankMerchantInstallmentLogParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_merchant_installment_log_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankMerchantInstallmentLogQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_merchant_installment_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankMerchantInstallmentPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_merchant_installment_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankMerchantInstallmentParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_merchant_installment_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankMerchantInstallmentQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
 
         [DllImport(Library, EntryPoint = "starkbank_merchant_session_create", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankMerchantSessionCreate(IntPtr client, IntPtr session, out IntPtr @out, out IntPtr errors);

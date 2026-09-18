@@ -48,6 +48,8 @@
     R(invoice_rule)            \
     R(merchant_card)           \
     R(merchant_card_log)       \
+    R(merchant_installment)    \
+    R(merchant_installment_log) \
     R(merchant_session)        \
     R(merchant_session_log)    \
     R(payment_preview)         \
