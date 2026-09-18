@@ -194,8 +194,9 @@ name-keyed accessors.
   for that request, so the claim is recorded rather than asserted.
 - `starkinfra/core-c` and `starkbank/ecdsa-c` are required and are not
   vendored. Every CI job is red until both are reachable from this repository.
-- Windows is compile-only in CI and has no runner that links: core-c has no
-  Windows build yet. The DLL path is the least-tested surface here.
+- Windows links and runs the suites in CI through MinGW-w64 (the
+  `windows-mingw` job), and every release job runs them before packaging. MSVC
+  stays compile-only: core-c has no MSVC build to link.
 
 ### Fixed
 - The curl bundles carried no curl transport. `starkbank_client_set_curl_transport`

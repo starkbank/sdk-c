@@ -247,10 +247,11 @@ jobs:
           make -C starkbank/ecdsa-c SECP256K1_PREFIX="$PWD/secp256k1-prefix" CFLAGS="-O2 -DSECP256K1_STATIC"
           make -C starkinfra/core-c SECP256K1_PREFIX="$PWD/secp256k1-prefix"
 
-      - name: Library, DLLs and the release tarball
+      - name: Library, suites, DLLs and the release tarball
         run: |
           prefix="$PWD/secp256k1-prefix"
           make -C starkbank/sdk-c SECP256K1_PREFIX="$prefix" CFLAGS="-O2 -Werror"
+          make -C starkbank/sdk-c SECP256K1_PREFIX="$prefix" test
           make -C starkbank/sdk-c SECP256K1_PREFIX="$prefix" dist
           make -C starkbank/sdk-c SECP256K1_PREFIX="$prefix" check-exports
 
