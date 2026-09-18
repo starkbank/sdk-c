@@ -2994,6 +2994,83 @@ STARKBANK_API int STARKBANK_CALL starkbank_merchant_card_log_page(const starkban
     const starkbank_entity *params, starkbank_list **out, char **out_cursor,
     starkbank_errors **errors);
 
+/* =========================================================================
+ *                             MerchantInstallment
+ * =========================================================================
+ *
+ * Every field is RO: generated automatically when a MerchantPurchase is
+ * split, never posted. get/query/page are the whole verb surface.
+ *
+ * Fields (wire keys; every field is return-only).
+ *
+ *   id fundingType network purchaseId status STRING (ro)
+ *   amount fee AMOUNT (ro)
+ *   due DATE_OR_DATETIME (ro)
+ *   tags transactionIds LIST_STRING (ro)
+ *   created updated DATETIME (ro)
+ *
+ * Query keys: limit, after, before, status, tags, ids, purchaseIds.
+ *
+ * purchaseIds is real and documented on query()/page() but the docs' GET
+ * /v2/merchant-installment parameter list omits it - see
+ * tests/reference/known-drift.json's
+ * query.gone:MerchantInstallment:purchaseIds.
+ */
+#define STARKBANK_MERCHANT_INSTALLMENT_ID              "id"
+#define STARKBANK_MERCHANT_INSTALLMENT_AMOUNT          "amount"
+#define STARKBANK_MERCHANT_INSTALLMENT_DUE             "due"
+#define STARKBANK_MERCHANT_INSTALLMENT_FEE             "fee"
+#define STARKBANK_MERCHANT_INSTALLMENT_FUNDING_TYPE    "fundingType"
+#define STARKBANK_MERCHANT_INSTALLMENT_NETWORK         "network"
+#define STARKBANK_MERCHANT_INSTALLMENT_PURCHASE_ID     "purchaseId"
+#define STARKBANK_MERCHANT_INSTALLMENT_STATUS          "status"
+#define STARKBANK_MERCHANT_INSTALLMENT_TAGS            "tags"
+#define STARKBANK_MERCHANT_INSTALLMENT_TRANSACTION_IDS "transactionIds"
+#define STARKBANK_MERCHANT_INSTALLMENT_CREATED         "created"
+#define STARKBANK_MERCHANT_INSTALLMENT_UPDATED         "updated"
+
+/* Statuses, from sdk-python's docstring examples. */
+#define STARKBANK_MERCHANT_INSTALLMENT_STATUS_CREATED  "created"
+#define STARKBANK_MERCHANT_INSTALLMENT_STATUS_SUCCESS  "success"
+#define STARKBANK_MERCHANT_INSTALLMENT_STATUS_FAILED   "failed"
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_installment_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_installment_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_installment_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_installment_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+/* ------------------------------------------------------ MerchantInstallmentLog */
+/*
+ * Resource "MerchantInstallmentLog"; endpoint "merchant-installment/log",
+ * derived at run time.
+ * Fields: id type STRING (ro), errors LIST_OBJECT (ro),
+ *         installment RESOURCE("MerchantInstallment") (ro),
+ *         created updated DATETIME (ro).
+ * Query keys: limit, after, before, types, installmentIds.
+ */
+#define STARKBANK_MERCHANT_INSTALLMENT_LOG_ID          "id"
+#define STARKBANK_MERCHANT_INSTALLMENT_LOG_CREATED     "created"
+#define STARKBANK_MERCHANT_INSTALLMENT_LOG_UPDATED     "updated"
+#define STARKBANK_MERCHANT_INSTALLMENT_LOG_TYPE        "type"
+#define STARKBANK_MERCHANT_INSTALLMENT_LOG_ERRORS      "errors"
+#define STARKBANK_MERCHANT_INSTALLMENT_LOG_INSTALLMENT "installment"
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_installment_log_params_new(
+    starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_installment_log_get(
+    const starkbank_client *client, const char *id, starkbank_entity **out,
+    starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_installment_log_query(
+    const starkbank_client *client, const starkbank_entity *params, int limit,
+    starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_installment_log_page(
+    const starkbank_client *client, const starkbank_entity *params, starkbank_list **out,
+    char **out_cursor, starkbank_errors **errors);
+
 
 #ifdef __cplusplus
 }
