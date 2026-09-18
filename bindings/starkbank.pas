@@ -38,6 +38,22 @@ const
   STARKBANK_BOLETO_DUE = 'due';
   STARKBANK_BOLETO_FEE = 'fee';
   STARKBANK_BOLETO_FINE = 'fine';
+  STARKBANK_BOLETO_HOLMES_BOLETO_ID = 'boletoId';
+  STARKBANK_BOLETO_HOLMES_CREATED = 'created';
+  STARKBANK_BOLETO_HOLMES_ID = 'id';
+  STARKBANK_BOLETO_HOLMES_LOG_CREATED = 'created';
+  STARKBANK_BOLETO_HOLMES_LOG_HOLMES = 'holmes';
+  STARKBANK_BOLETO_HOLMES_LOG_ID = 'id';
+  STARKBANK_BOLETO_HOLMES_LOG_TYPE = 'type';
+  STARKBANK_BOLETO_HOLMES_LOG_UPDATED = 'updated';
+  STARKBANK_BOLETO_HOLMES_RESULT = 'result';
+  STARKBANK_BOLETO_HOLMES_RESULT_CANCELLED = 'cancelled';
+  STARKBANK_BOLETO_HOLMES_RESULT_PAID = 'paid';
+  STARKBANK_BOLETO_HOLMES_STATUS = 'status';
+  STARKBANK_BOLETO_HOLMES_STATUS_SOLVED = 'solved';
+  STARKBANK_BOLETO_HOLMES_STATUS_SOLVING = 'solving';
+  STARKBANK_BOLETO_HOLMES_TAGS = 'tags';
+  STARKBANK_BOLETO_HOLMES_UPDATED = 'updated';
   STARKBANK_BOLETO_ID = 'id';
   STARKBANK_BOLETO_INTEREST = 'interest';
   STARKBANK_BOLETO_LINE = 'line';
@@ -889,6 +905,26 @@ function starkbank_boleto_create(client: Pstarkbank_client; boletos: Pstarkbank_
 function starkbank_boleto_delete(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_boleto_delete';
 
 function starkbank_boleto_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_boleto_get';
+
+function starkbank_boleto_holmes_create(client: Pstarkbank_client; holmes: Pstarkbank_list; &out: PPstarkbank_list; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_boleto_holmes_create';
+
+function starkbank_boleto_holmes_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_boleto_holmes_get';
+
+function starkbank_boleto_holmes_log_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_boleto_holmes_log_get';
+
+function starkbank_boleto_holmes_log_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_boleto_holmes_log_page';
+
+function starkbank_boleto_holmes_log_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_boleto_holmes_log_params_new';
+
+function starkbank_boleto_holmes_log_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_boleto_holmes_log_query';
+
+function starkbank_boleto_holmes_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_boleto_holmes_new';
+
+function starkbank_boleto_holmes_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_boleto_holmes_page';
+
+function starkbank_boleto_holmes_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_boleto_holmes_params_new';
+
+function starkbank_boleto_holmes_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_boleto_holmes_query';
 
 function starkbank_boleto_log_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_boleto_log_get';
 

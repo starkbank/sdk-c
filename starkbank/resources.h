@@ -15,6 +15,8 @@
     R(allowed_installment)     \
     R(balance)                 \
     R(boleto)                  \
+    R(boleto_holmes)           \
+    R(boleto_holmes_log)       \
     R(boleto_log)              \
     R(boleto_payment)          \
     R(boleto_payment_log)      \

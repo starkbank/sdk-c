@@ -3503,6 +3503,77 @@ STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_request_log_page(
     const starkbank_client *client, const starkbank_entity *params, starkbank_list **out,
     char **out_cursor, starkbank_errors **errors);
 
+/* =========================================================================
+ *                               BoletoHolmes
+ * =========================================================================
+ *
+ * Fields (wire keys; * = required on create). No update verb.
+ *
+ *   boletoId* STRING
+ *   tags LIST_STRING
+ *   status result id STRING (ro)               created updated DATETIME (ro)
+ *
+ * Query keys: limit, after, before, tags, ids, status, boletoId.
+ *
+ * sdk-python's page() takes only cursor and limit; see boletoholmes.h for why
+ * the table still carries the full filter set the docs and query() agree on.
+ */
+#define STARKBANK_BOLETO_HOLMES_BOLETO_ID  "boletoId"
+#define STARKBANK_BOLETO_HOLMES_TAGS       "tags"
+#define STARKBANK_BOLETO_HOLMES_STATUS     "status"
+#define STARKBANK_BOLETO_HOLMES_RESULT     "result"
+#define STARKBANK_BOLETO_HOLMES_ID         "id"
+#define STARKBANK_BOLETO_HOLMES_CREATED    "created"
+#define STARKBANK_BOLETO_HOLMES_UPDATED    "updated"
+
+#define STARKBANK_BOLETO_HOLMES_STATUS_SOLVING  "solving"
+#define STARKBANK_BOLETO_HOLMES_STATUS_SOLVED   "solved"
+
+#define STARKBANK_BOLETO_HOLMES_RESULT_PAID       "paid"
+#define STARKBANK_BOLETO_HOLMES_RESULT_CANCELLED  "cancelled"
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_holmes_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_holmes_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_holmes_create(const starkbank_client *client,
+    const starkbank_list *holmes, starkbank_list **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_holmes_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_holmes_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_holmes_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+/* -------------------------------------------------------- BoletoHolmesLog */
+/*
+ * Resource "BoletoHolmesLog"; endpoint "boleto-holmes/log", derived at run
+ * time.
+ * Fields: id type STRING (ro), holmes RESOURCE("BoletoHolmes") (ro),
+ *         created updated DATETIME (ro).
+ * Query keys: limit, after, before, types, holmesIds.
+ *
+ * No errors field and no pdf verb: sdk-python's boletoholmes.Log has
+ * neither - see boletoholmes.h.
+ */
+#define STARKBANK_BOLETO_HOLMES_LOG_ID       "id"
+#define STARKBANK_BOLETO_HOLMES_LOG_CREATED  "created"
+#define STARKBANK_BOLETO_HOLMES_LOG_UPDATED  "updated"
+#define STARKBANK_BOLETO_HOLMES_LOG_TYPE     "type"
+#define STARKBANK_BOLETO_HOLMES_LOG_HOLMES   "holmes"
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_holmes_log_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_holmes_log_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_holmes_log_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_holmes_log_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
 #ifdef __cplusplus
 }
 #endif

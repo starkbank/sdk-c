@@ -106,6 +106,8 @@ RESOURCE_SOURCES = \
 	starkbank/balance/balance.c \
 	starkbank/boleto/boleto.c \
 	starkbank/boleto/log.c \
+	starkbank/boletoholmes/boletoholmes.c \
+	starkbank/boletoholmes/log.c \
 	starkbank/boletopayment/boletopayment.c \
 	starkbank/boletopayment/log.c \
 	starkbank/brcodepayment/brcodepayment.c \

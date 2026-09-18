@@ -33,6 +33,22 @@ namespace StarkBank
         public const string StarkbankBoletoDue = "due";
         public const string StarkbankBoletoFee = "fee";
         public const string StarkbankBoletoFine = "fine";
+        public const string StarkbankBoletoHolmesBoletoId = "boletoId";
+        public const string StarkbankBoletoHolmesCreated = "created";
+        public const string StarkbankBoletoHolmesId = "id";
+        public const string StarkbankBoletoHolmesLogCreated = "created";
+        public const string StarkbankBoletoHolmesLogHolmes = "holmes";
+        public const string StarkbankBoletoHolmesLogId = "id";
+        public const string StarkbankBoletoHolmesLogType = "type";
+        public const string StarkbankBoletoHolmesLogUpdated = "updated";
+        public const string StarkbankBoletoHolmesResult = "result";
+        public const string StarkbankBoletoHolmesResultCancelled = "cancelled";
+        public const string StarkbankBoletoHolmesResultPaid = "paid";
+        public const string StarkbankBoletoHolmesStatus = "status";
+        public const string StarkbankBoletoHolmesStatusSolved = "solved";
+        public const string StarkbankBoletoHolmesStatusSolving = "solving";
+        public const string StarkbankBoletoHolmesTags = "tags";
+        public const string StarkbankBoletoHolmesUpdated = "updated";
         public const string StarkbankBoletoId = "id";
         public const string StarkbankBoletoInterest = "interest";
         public const string StarkbankBoletoLine = "line";
@@ -868,6 +884,36 @@ namespace StarkBank
 
         [DllImport(Library, EntryPoint = "starkbank_boleto_get", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankBoletoGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_holmes_create", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoHolmesCreate(IntPtr client, IntPtr holmes, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_holmes_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoHolmesGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_holmes_log_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoHolmesLogGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_holmes_log_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoHolmesLogPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_holmes_log_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoHolmesLogParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_holmes_log_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoHolmesLogQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_holmes_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoHolmesNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_holmes_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoHolmesPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_holmes_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoHolmesParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_boleto_holmes_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankBoletoHolmesQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
 
         [DllImport(Library, EntryPoint = "starkbank_boleto_log_get", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankBoletoLogGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
