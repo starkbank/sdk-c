@@ -17,6 +17,30 @@ never bumps it: fields are not part of the ABI, which is the point of the
 name-keyed accessors.
 
 ## [Unreleased]
+### Added
+- InvoicePullSubscription (+ Log): `cancel` keeps sdk-c's uniform `*_delete`
+  spelling. `due`/`end` are STRING, not DATE_OR_DATETIME: sdk-python's own
+  conditional-expression coercion is invisible to `tools/drift.py`'s ast
+  reader. `Log.errors` is LIST_OBJECT, not the docstring's "list of strings":
+  the api-v2-ms-invoice-pull service answers with `{code, message}` objects,
+  the same shape CorporatePurchase.Log already carries
+- InvoicePullRequest (+ Log): same `cancel`-as-`delete` spelling and the same
+  LIST_OBJECT `Log.errors`; `due` is DATE_OR_DATETIME here, a direct
+  `check_datetime_or_date` call with no exemption needed
+- BoletoHolmes (+ Log): no errors field and no pdf verb, either - sdk-python's
+  Log has neither
+- DynamicBrcode (+ Rule): `get` reaches `GET /v2/dynamic-brcode/:uuid`, not
+  `:id`, the same `:uuid`/`:id` placeholder gap `MerchantSession.purchase`'s
+  endpoint already documents
+- PaymentRequest: the first CREATE-writable polymorphic RESOURCE field in
+  this SDK. `payment` hydrates as whichever of `Transfer`, `Transaction`,
+  `BoletoPayment`, `BrcodePayment`, `UtilityPayment`, `DarfPayment` or
+  `TaxPayment` its sibling `type` names - the same `STARKBANK_POLYMORPH`
+  mechanism `Event.log` and `PaymentPreview.payment` already use - and is
+  written with the existing `starkbank_entity_set_json_raw` escape hatch
+  rather than a new setter, the same choice `MerchantSession`'s
+  `Purchase.metadata` already made for a single CREATE-writable object field.
+  `due` is STRING for the same reason as InvoicePullSubscription's `due`/`end`
 
 ## [0.1.0] - 2026-09-18
 ### Added

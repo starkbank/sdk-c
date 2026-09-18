@@ -74,6 +74,11 @@ an FFI generator and MSVC can all read it. `make check-header` proves that.
 | Webhook | create get query page delete | `create` is `post_single` and takes one entity, not a list |
 | Workspace | create get query page update | `create` is `post_single`, like Webhook. `picture` is one wire string: the caller base64-encodes the bytes into the same `data:<mime>;base64,<...>` string sdk-python builds |
 | PaymentPreview | create | `payment` is polymorphic: the table comes from `type`, into `BrcodePreview`, `BoletoPreview`, `TaxPreview` or `UtilityPreview` |
+| BoletoHolmes | create get query page | + `boletoholmes.Log` (get query page). No errors field and no pdf: sdk-python's Log has neither |
+| DynamicBrcode | create get query page | `get` reaches `GET /v2/dynamic-brcode/:uuid`, not `:id` - an accepted `endpoint.changed` entry. + `DynamicBrcode.Rule` |
+| InvoicePullRequest | create get query page delete | sdk-python spells `delete` `cancel()`. + `invoicepullrequest.Log` (get query page), whose `errors` is a real LIST_OBJECT despite the docstring saying "list of strings" |
+| InvoicePullSubscription | create get query page delete | as InvoicePullRequest. + `invoicepullsubscription.Log` (get query page), same LIST_OBJECT `errors` |
+| PaymentRequest | create query page | no `get`: sdk-python has none. `payment` is polymorphic on `type`, into `Transfer`, `Transaction`, `BoletoPayment`, `BrcodePayment`, `UtilityPayment`, `DarfPayment` or `TaxPayment` - the same plain top-level tags those families already register. `payment` is written with `starkbank_entity_set_json_raw`, the same escape hatch `MerchantSession`'s `Purchase.metadata` uses, rather than a dedicated setter |
 
 Those six between them use every `starkcore_rest_*` shape the bank SDK needs:
 `post_multi`, `post_single`, `get_id`, `get_page`, the stream, `patch_id`,
