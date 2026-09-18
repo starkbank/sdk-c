@@ -560,6 +560,8 @@ def verbEndpoint(shape, endpoint, verbName):
         return ("DELETE", base + "/:id")
     if shape in ("CONTENT", "CONTENT_INT", "CONTENT_QUERY", "SUB_RESOURCE"):
         return ("GET", base + "/:id/" + verbName)
+    if shape == "POST_SUB_RESOURCE":
+        return ("POST", base + "/:id/" + verbName)
     return None
 
 
