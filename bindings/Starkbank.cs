@@ -755,7 +755,49 @@ namespace StarkBank
         public const string StarkbankSplitCreated = "created";
         public const string StarkbankSplitExternalId = "externalId";
         public const string StarkbankSplitId = "id";
+        public const string StarkbankSplitLogCreated = "created";
+        public const string StarkbankSplitLogErrors = "errors";
+        public const string StarkbankSplitLogId = "id";
+        public const string StarkbankSplitLogSplit = "split";
+        public const string StarkbankSplitLogType = "type";
+        public const string StarkbankSplitProfileCreated = "created";
+        public const string StarkbankSplitProfileDelay = "delay";
+        public const string StarkbankSplitProfileId = "id";
+        public const string StarkbankSplitProfileInterval = "interval";
+        public const string StarkbankSplitProfileIntervalDay = "day";
+        public const string StarkbankSplitProfileIntervalMonth = "month";
+        public const string StarkbankSplitProfileIntervalWeek = "week";
+        public const string StarkbankSplitProfileLogCreated = "created";
+        public const string StarkbankSplitProfileLogErrors = "errors";
+        public const string StarkbankSplitProfileLogId = "id";
+        public const string StarkbankSplitProfileLogProfile = "profile";
+        public const string StarkbankSplitProfileLogType = "type";
+        public const string StarkbankSplitProfileStatus = "status";
+        public const string StarkbankSplitProfileStatusCreated = "created";
+        public const string StarkbankSplitProfileTags = "tags";
+        public const string StarkbankSplitProfileUpdated = "updated";
+        public const string StarkbankSplitReceiverAccountNumber = "accountNumber";
+        public const string StarkbankSplitReceiverAccountType = "accountType";
+        public const string StarkbankSplitReceiverAccountTypeChecking = "checking";
+        public const string StarkbankSplitReceiverAccountTypePayment = "payment";
+        public const string StarkbankSplitReceiverAccountTypeSalary = "salary";
+        public const string StarkbankSplitReceiverAccountTypeSavings = "savings";
+        public const string StarkbankSplitReceiverBankCode = "bankCode";
+        public const string StarkbankSplitReceiverBranchCode = "branchCode";
+        public const string StarkbankSplitReceiverCreated = "created";
         public const string StarkbankSplitReceiverId = "receiverId";
+        public const string StarkbankSplitReceiverLogCreated = "created";
+        public const string StarkbankSplitReceiverLogErrors = "errors";
+        public const string StarkbankSplitReceiverLogId = "id";
+        public const string StarkbankSplitReceiverLogReceiver = "receiver";
+        public const string StarkbankSplitReceiverLogType = "type";
+        public const string StarkbankSplitReceiverName = "name";
+        public const string StarkbankSplitReceiverStatus = "status";
+        public const string StarkbankSplitReceiverStatusFailed = "failed";
+        public const string StarkbankSplitReceiverStatusSuccess = "success";
+        public const string StarkbankSplitReceiverTags = "tags";
+        public const string StarkbankSplitReceiverTaxId = "taxId";
+        public const string StarkbankSplitReceiverUpdated = "updated";
         public const string StarkbankSplitScheduled = "scheduled";
         public const string StarkbankSplitSource = "source";
         public const string StarkbankSplitStatus = "status";
@@ -866,6 +908,49 @@ namespace StarkBank
         public const string StarkbankUtilityPreviewDescription = "description";
         public const string StarkbankUtilityPreviewLine = "line";
         public const string StarkbankUtilityPreviewName = "name";
+        public const string StarkbankVerifiedAccountBankCode = "bankCode";
+        public const string StarkbankVerifiedAccountBankName = "bankName";
+        public const string StarkbankVerifiedAccountBranchCode = "branchCode";
+        public const string StarkbankVerifiedAccountCreated = "created";
+        public const string StarkbankVerifiedAccountId = "id";
+        public const string StarkbankVerifiedAccountKeyId = "keyId";
+        public const string StarkbankVerifiedAccountLogAccount = "account";
+        public const string StarkbankVerifiedAccountLogCreated = "created";
+        public const string StarkbankVerifiedAccountLogErrors = "errors";
+        public const string StarkbankVerifiedAccountLogId = "id";
+        public const string StarkbankVerifiedAccountLogType = "type";
+        public const string StarkbankVerifiedAccountName = "name";
+        public const string StarkbankVerifiedAccountNumber = "number";
+        public const string StarkbankVerifiedAccountStatus = "status";
+        public const string StarkbankVerifiedAccountStatusActive = "active";
+        public const string StarkbankVerifiedAccountStatusCanceled = "canceled";
+        public const string StarkbankVerifiedAccountStatusCreated = "created";
+        public const string StarkbankVerifiedAccountStatusCreating = "creating";
+        public const string StarkbankVerifiedAccountStatusFailed = "failed";
+        public const string StarkbankVerifiedAccountStatusProcessing = "processing";
+        public const string StarkbankVerifiedAccountTags = "tags";
+        public const string StarkbankVerifiedAccountTaxId = "taxId";
+        public const string StarkbankVerifiedAccountType = "type";
+        public const string StarkbankVerifiedAccountUpdated = "updated";
+        public const string StarkbankVerifiedTransferAccountId = "accountId";
+        public const string StarkbankVerifiedTransferAmount = "amount";
+        public const string StarkbankVerifiedTransferCreated = "created";
+        public const string StarkbankVerifiedTransferDescription = "description";
+        public const string StarkbankVerifiedTransferDisplayDescription = "displayDescription";
+        public const string StarkbankVerifiedTransferExternalId = "externalId";
+        public const string StarkbankVerifiedTransferFee = "fee";
+        public const string StarkbankVerifiedTransferId = "id";
+        public const string StarkbankVerifiedTransferMetadata = "metadata";
+        public const string StarkbankVerifiedTransferRules = "rules";
+        public const string StarkbankVerifiedTransferScheduled = "scheduled";
+        public const string StarkbankVerifiedTransferStatus = "status";
+        public const string StarkbankVerifiedTransferStatusCreated = "created";
+        public const string StarkbankVerifiedTransferStatusFailed = "failed";
+        public const string StarkbankVerifiedTransferStatusProcessing = "processing";
+        public const string StarkbankVerifiedTransferStatusSuccess = "success";
+        public const string StarkbankVerifiedTransferTags = "tags";
+        public const string StarkbankVerifiedTransferTransactionIds = "transactionIds";
+        public const string StarkbankVerifiedTransferUpdated = "updated";
         public const string StarkbankVersion = "0.1.0";
         public const string StarkbankWebhookId = "id";
         public const string StarkbankWebhookSubscriptions = "subscriptions";
@@ -1812,8 +1897,92 @@ namespace StarkBank
         [DllImport(Library, EntryPoint = "starkbank_response_new", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankResponseNew(int status, IntPtr content, UIntPtr content_len, IntPtr headers, out IntPtr @out);
 
+        [DllImport(Library, EntryPoint = "starkbank_split_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_log_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitLogGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_log_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitLogPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_log_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitLogParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_log_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitLogQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
         [DllImport(Library, EntryPoint = "starkbank_split_new", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankSplitNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_profile_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitProfileGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_profile_log_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitProfileLogGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_profile_log_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitProfileLogPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_profile_log_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitProfileLogParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_profile_log_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitProfileLogQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_profile_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitProfileNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_profile_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitProfilePage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_profile_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitProfileParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_profile_put", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitProfilePut(IntPtr client, IntPtr profiles, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_profile_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitProfileQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_receiver_create", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitReceiverCreate(IntPtr client, IntPtr receivers, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_receiver_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitReceiverGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_receiver_log_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitReceiverLogGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_receiver_log_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitReceiverLogPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_receiver_log_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitReceiverLogParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_receiver_log_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitReceiverLogQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_receiver_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitReceiverNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_receiver_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitReceiverPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_receiver_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitReceiverParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_split_receiver_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankSplitReceiverQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
 
         [DllImport(Library, EntryPoint = "starkbank_strerror", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr StarkbankStrerror(int code);
@@ -1949,6 +2118,45 @@ namespace StarkBank
 
         [DllImport(Library, EntryPoint = "starkbank_utility_payment_query", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankUtilityPaymentQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_verified_account_create", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankVerifiedAccountCreate(IntPtr client, IntPtr accounts, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_verified_account_delete", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankVerifiedAccountDelete(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_verified_account_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankVerifiedAccountGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_verified_account_log_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankVerifiedAccountLogGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_verified_account_log_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankVerifiedAccountLogPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_verified_account_log_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankVerifiedAccountLogParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_verified_account_log_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankVerifiedAccountLogQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_verified_account_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankVerifiedAccountNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_verified_account_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankVerifiedAccountPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_verified_account_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankVerifiedAccountParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_verified_account_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankVerifiedAccountQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_verified_transfer_create", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankVerifiedTransferCreate(IntPtr client, IntPtr transfers, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_verified_transfer_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankVerifiedTransferNew(out IntPtr @out);
 
         [DllImport(Library, EntryPoint = "starkbank_version", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr StarkbankVersion();

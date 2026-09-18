@@ -162,7 +162,12 @@ RESOURCE_SOURCES = \
 	starkbank/paymentpreview/taxpreview.c \
 	starkbank/paymentpreview/utilitypreview.c \
 	starkbank/paymentrequest/paymentrequest.c \
+	starkbank/split/log.c \
 	starkbank/split/split.c \
+	starkbank/splitprofile/log.c \
+	starkbank/splitprofile/splitprofile.c \
+	starkbank/splitreceiver/log.c \
+	starkbank/splitreceiver/splitreceiver.c \
 	starkbank/taxpayment/log.c \
 	starkbank/taxpayment/taxpayment.c \
 	starkbank/transaction/transaction.c \
@@ -171,6 +176,9 @@ RESOURCE_SOURCES = \
 	starkbank/transfer/transfer.c \
 	starkbank/utilitypayment/log.c \
 	starkbank/utilitypayment/utilitypayment.c \
+	starkbank/verifiedaccount/log.c \
+	starkbank/verifiedaccount/verifiedaccount.c \
+	starkbank/verifiedtransfer/verifiedtransfer.c \
 	starkbank/webhook/webhook.c \
 	starkbank/workspace/workspace.c
 
