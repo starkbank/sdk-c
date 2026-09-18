@@ -734,10 +734,14 @@ STARKBANK_API int STARKBANK_CALL starkbank_invoice_rule_new(starkbank_entity **o
 /* Free it, or append it to an Invoice's "rules", which takes ownership. */
 
 /* ---------------------------------------------------------------- Split */
-/* Passed in an Invoice's "splits" list to name the payment's receivers.
+/* Passed in an Invoice's "splits" list to name the payment's receivers, and
+ * also a resource in its own right with its own get/query/page.
  * Fields: amount* AMOUNT, receiverId* STRING, externalId STRING,
  * tags LIST_STRING, scheduled DATETIME; id source status STRING (ro),
- * created updated DATETIME (ro). */
+ * created updated DATETIME (ro).
+ * Query keys: limit, after, before, ids, receiverIds, status, tags.
+ * Byte for byte sdk-python's query()/page() forwarded set and the docs' GET
+ * /v2/split parameter list alike, so no known-drift entry is needed. */
 #define STARKBANK_SPLIT_AMOUNT       "amount"
 #define STARKBANK_SPLIT_RECEIVER_ID  "receiverId"
 #define STARKBANK_SPLIT_EXTERNAL_ID  "externalId"
@@ -750,6 +754,43 @@ STARKBANK_API int STARKBANK_CALL starkbank_invoice_rule_new(starkbank_entity **o
 #define STARKBANK_SPLIT_UPDATED      "updated"
 
 STARKBANK_API int STARKBANK_CALL starkbank_split_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_split_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_split_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_split_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_split_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+/* ------------------------------------------------------------- SplitLog */
+/*
+ * Resource "SplitLog"; endpoint "split/log", derived at run time.
+ * Fields: id type STRING (ro), errors LIST_STRING (ro),
+ *         split RESOURCE("Split") (ro), created DATETIME (ro).
+ * Query keys: limit, after, before, types, splitIds.
+ *
+ * errors is LIST_STRING, not LIST_OBJECT: the api-v2-ms-split service backing
+ * Split/SplitReceiver/SplitProfile never emits the key at all, unlike
+ * VerifiedAccount's api-v2-ms-transfer - see split.h.
+ */
+#define STARKBANK_SPLIT_LOG_ID       "id"
+#define STARKBANK_SPLIT_LOG_CREATED  "created"
+#define STARKBANK_SPLIT_LOG_TYPE     "type"
+#define STARKBANK_SPLIT_LOG_ERRORS   "errors"
+#define STARKBANK_SPLIT_LOG_SPLIT    "split"
+
+STARKBANK_API int STARKBANK_CALL starkbank_split_log_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_split_log_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_split_log_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_split_log_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
 
 /* ------------------------------------------------------------- invoice.Log */
 /*
@@ -3692,6 +3733,318 @@ STARKBANK_API int STARKBANK_CALL starkbank_payment_request_query(const starkbank
 STARKBANK_API int STARKBANK_CALL starkbank_payment_request_page(const starkbank_client *client,
     const starkbank_entity *params, starkbank_list **out, char **out_cursor,
     starkbank_errors **errors);
+
+/* =========================================================================
+ *                              VerifiedAccount
+ * =========================================================================
+ *
+ * Fields (wire keys; * = required on create).
+ *
+ *   taxId* STRING
+ *   bankCode branchCode keyId name number type STRING
+ *   tags LIST_STRING
+ *   id bankName status STRING (ro)
+ *   created updated DATETIME (ro)
+ *
+ * Query keys: limit, after, before, status, ids, tags.
+ *
+ * sdk-python spells the delete verb cancel(); sdk-c keeps the engine's
+ * DELETE_ID naming (starkbank_verified_account_delete) for one consistent
+ * spelling across the whole SDK, the same choice already made for
+ * CorporateHolder - see known-drift.json's verb.new/verb.gone:VerifiedAccount
+ * pair. taxId is a real GET /v2/verified-account filter in the docs but not
+ * in this query key list: sdk-python's query()/page() forward no such
+ * keyword, and python is normative for the verb surface - see
+ * known-drift.json's query.new:VerifiedAccount:taxId.
+ */
+#define STARKBANK_VERIFIED_ACCOUNT_TAX_ID      "taxId"
+#define STARKBANK_VERIFIED_ACCOUNT_BANK_CODE   "bankCode"
+#define STARKBANK_VERIFIED_ACCOUNT_BRANCH_CODE "branchCode"
+#define STARKBANK_VERIFIED_ACCOUNT_KEY_ID      "keyId"
+#define STARKBANK_VERIFIED_ACCOUNT_NAME        "name"
+#define STARKBANK_VERIFIED_ACCOUNT_NUMBER      "number"
+#define STARKBANK_VERIFIED_ACCOUNT_TYPE        "type"
+#define STARKBANK_VERIFIED_ACCOUNT_TAGS        "tags"
+#define STARKBANK_VERIFIED_ACCOUNT_ID          "id"
+#define STARKBANK_VERIFIED_ACCOUNT_BANK_NAME   "bankName"
+#define STARKBANK_VERIFIED_ACCOUNT_STATUS      "status"
+#define STARKBANK_VERIFIED_ACCOUNT_CREATED     "created"
+#define STARKBANK_VERIFIED_ACCOUNT_UPDATED     "updated"
+
+/* Statuses, from sdk-python's docstring examples; the docs carry none. */
+#define STARKBANK_VERIFIED_ACCOUNT_STATUS_CREATING   "creating"
+#define STARKBANK_VERIFIED_ACCOUNT_STATUS_CREATED    "created"
+#define STARKBANK_VERIFIED_ACCOUNT_STATUS_PROCESSING "processing"
+#define STARKBANK_VERIFIED_ACCOUNT_STATUS_ACTIVE     "active"
+#define STARKBANK_VERIFIED_ACCOUNT_STATUS_FAILED     "failed"
+#define STARKBANK_VERIFIED_ACCOUNT_STATUS_CANCELED   "canceled"
+
+STARKBANK_API int STARKBANK_CALL starkbank_verified_account_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_verified_account_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_verified_account_create(const starkbank_client *client,
+    const starkbank_list *accounts, starkbank_list **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_verified_account_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_verified_account_delete(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+/* sdk-python names this cancel(); see the section header. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_verified_account_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_verified_account_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+/* --------------------------------------------------------- VerifiedAccountLog */
+/*
+ * Resource "VerifiedAccountLog"; endpoint "verified-account/log", derived at
+ * run time.
+ * Fields: id type STRING (ro), errors LIST_OBJECT (ro),
+ *         account RESOURCE("VerifiedAccount") (ro), created DATETIME (ro).
+ * Query keys: limit, after, before, types, accountIds.
+ *
+ * errors is a list of {code, message} objects: the api-v2-ms-transfer service
+ * that backs VerifiedAccount emits structured errors here, despite
+ * sdk-python's own docstring calling the field "list of strings" - see
+ * verifiedaccount.h.
+ */
+#define STARKBANK_VERIFIED_ACCOUNT_LOG_ID       "id"
+#define STARKBANK_VERIFIED_ACCOUNT_LOG_CREATED  "created"
+#define STARKBANK_VERIFIED_ACCOUNT_LOG_TYPE     "type"
+#define STARKBANK_VERIFIED_ACCOUNT_LOG_ERRORS   "errors"
+#define STARKBANK_VERIFIED_ACCOUNT_LOG_ACCOUNT  "account"
+
+STARKBANK_API int STARKBANK_CALL starkbank_verified_account_log_params_new(
+    starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_verified_account_log_get(
+    const starkbank_client *client, const char *id, starkbank_entity **out,
+    starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_verified_account_log_query(
+    const starkbank_client *client, const starkbank_entity *params, int limit,
+    starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_verified_account_log_page(
+    const starkbank_client *client, const starkbank_entity *params, starkbank_list **out,
+    char **out_cursor, starkbank_errors **errors);
+
+/* =========================================================================
+ *                              VerifiedTransfer
+ * =========================================================================
+ *
+ * create only: sdk-python's verifiedtransfer module exports no get, query or
+ * page at all, so this table carries no query key list.
+ *
+ * rules reuses Transfer.Rule rather than a VerifiedTransfer-local table:
+ * sdk-python's own module imports transfer.rule.Rule directly and hydrates
+ * through its _sub_resource - see verifiedtransfer.h.
+ *
+ * Fields (wire keys; * = required on create).
+ *
+ *   amount* AMOUNT             accountId* STRING
+ *   externalId STRING          scheduled DATE_OR_DATETIME
+ *   description displayDescription STRING
+ *   tags LIST_STRING           rules LIST_RESOURCE("Transfer.Rule")
+ *   id status STRING (ro)      fee AMOUNT (ro)
+ *   transactionIds LIST_STRING (ro)     metadata OBJECT (ro)
+ *   created updated DATETIME (ro).
+ */
+#define STARKBANK_VERIFIED_TRANSFER_AMOUNT               "amount"
+#define STARKBANK_VERIFIED_TRANSFER_ACCOUNT_ID           "accountId"
+#define STARKBANK_VERIFIED_TRANSFER_EXTERNAL_ID          "externalId"
+#define STARKBANK_VERIFIED_TRANSFER_SCHEDULED            "scheduled"
+#define STARKBANK_VERIFIED_TRANSFER_DESCRIPTION          "description"
+#define STARKBANK_VERIFIED_TRANSFER_DISPLAY_DESCRIPTION  "displayDescription"
+#define STARKBANK_VERIFIED_TRANSFER_TAGS                 "tags"
+#define STARKBANK_VERIFIED_TRANSFER_RULES                "rules"
+#define STARKBANK_VERIFIED_TRANSFER_ID                   "id"
+#define STARKBANK_VERIFIED_TRANSFER_FEE                  "fee"
+#define STARKBANK_VERIFIED_TRANSFER_STATUS               "status"
+#define STARKBANK_VERIFIED_TRANSFER_TRANSACTION_IDS      "transactionIds"
+#define STARKBANK_VERIFIED_TRANSFER_METADATA             "metadata"
+#define STARKBANK_VERIFIED_TRANSFER_CREATED              "created"
+#define STARKBANK_VERIFIED_TRANSFER_UPDATED              "updated"
+
+#define STARKBANK_VERIFIED_TRANSFER_STATUS_CREATED    "created"
+#define STARKBANK_VERIFIED_TRANSFER_STATUS_PROCESSING "processing"
+#define STARKBANK_VERIFIED_TRANSFER_STATUS_SUCCESS    "success"
+#define STARKBANK_VERIFIED_TRANSFER_STATUS_FAILED     "failed"
+
+STARKBANK_API int STARKBANK_CALL starkbank_verified_transfer_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_verified_transfer_create(
+    const starkbank_client *client, const starkbank_list *transfers, starkbank_list **out,
+    starkbank_errors **errors);
+
+/* =========================================================================
+ *                              SplitReceiver
+ * =========================================================================
+ *
+ * The bank account a Split's "receiverId" names. See splitreceiver.h for why
+ * the query key list disagrees with the docs' GET /v2/split-receiver
+ * parameter list in five places, each recorded in known-drift.json.
+ *
+ * Fields (wire keys; * = required on create).
+ *
+ *   name* taxId* bankCode* branchCode* accountNumber* accountType* STRING
+ *   tags LIST_STRING
+ *   id status STRING (ro)      created updated DATETIME (ro)
+ *
+ * Query keys: limit, after, before, transactionIds, status, taxId, sort, tags, ids.
+ */
+#define STARKBANK_SPLIT_RECEIVER_NAME            "name"
+#define STARKBANK_SPLIT_RECEIVER_TAX_ID          "taxId"
+#define STARKBANK_SPLIT_RECEIVER_BANK_CODE       "bankCode"
+#define STARKBANK_SPLIT_RECEIVER_BRANCH_CODE     "branchCode"
+#define STARKBANK_SPLIT_RECEIVER_ACCOUNT_NUMBER  "accountNumber"
+#define STARKBANK_SPLIT_RECEIVER_ACCOUNT_TYPE    "accountType"
+#define STARKBANK_SPLIT_RECEIVER_TAGS            "tags"
+/* No STARKBANK_SPLIT_RECEIVER_ID: the mechanical name is already taken by
+   Split's own "receiverId" field two sections up (STARKBANK_SPLIT_RECEIVER_ID
+   == "receiverId"), a coincidence of word boundaries neither table can avoid
+   by construction. SplitReceiver's own return-only id reads through the
+   generic starkbank_entity_id(), the same accessor every resource's id is
+   reachable through regardless of whether it also has a dedicated #define. */
+#define STARKBANK_SPLIT_RECEIVER_STATUS          "status"
+#define STARKBANK_SPLIT_RECEIVER_CREATED         "created"
+#define STARKBANK_SPLIT_RECEIVER_UPDATED         "updated"
+
+#define STARKBANK_SPLIT_RECEIVER_ACCOUNT_TYPE_CHECKING "checking"
+#define STARKBANK_SPLIT_RECEIVER_ACCOUNT_TYPE_SAVINGS  "savings"
+#define STARKBANK_SPLIT_RECEIVER_ACCOUNT_TYPE_SALARY   "salary"
+#define STARKBANK_SPLIT_RECEIVER_ACCOUNT_TYPE_PAYMENT  "payment"
+
+#define STARKBANK_SPLIT_RECEIVER_STATUS_SUCCESS "success"
+#define STARKBANK_SPLIT_RECEIVER_STATUS_FAILED  "failed"
+
+STARKBANK_API int STARKBANK_CALL starkbank_split_receiver_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_split_receiver_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_split_receiver_create(const starkbank_client *client,
+    const starkbank_list *receivers, starkbank_list **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_split_receiver_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_split_receiver_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_split_receiver_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+/* ------------------------------------------------------- SplitReceiverLog */
+/*
+ * Resource "SplitReceiverLog"; endpoint "split-receiver/log", derived at run
+ * time.
+ * Fields: id type STRING (ro), errors LIST_STRING (ro),
+ *         receiver RESOURCE("SplitReceiver") (ro), created DATETIME (ro).
+ * Query keys: limit, after, before, types, receiverIds.
+ */
+#define STARKBANK_SPLIT_RECEIVER_LOG_ID        "id"
+#define STARKBANK_SPLIT_RECEIVER_LOG_CREATED   "created"
+#define STARKBANK_SPLIT_RECEIVER_LOG_TYPE      "type"
+#define STARKBANK_SPLIT_RECEIVER_LOG_ERRORS    "errors"
+#define STARKBANK_SPLIT_RECEIVER_LOG_RECEIVER  "receiver"
+
+STARKBANK_API int STARKBANK_CALL starkbank_split_receiver_log_params_new(
+    starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_split_receiver_log_get(
+    const starkbank_client *client, const char *id, starkbank_entity **out,
+    starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_split_receiver_log_query(
+    const starkbank_client *client, const starkbank_entity *params, int limit,
+    starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_split_receiver_log_page(
+    const starkbank_client *client, const starkbank_entity *params, starkbank_list **out,
+    char **out_cursor, starkbank_errors **errors);
+
+/* =========================================================================
+ *                              SplitProfile
+ * =========================================================================
+ *
+ * put, not create: sdk-python's only write verb is put(splitProfile) over
+ * rest.put_multi, the shape STARKBANK_VERB_PUT_MULTI exists for. There is no
+ * delete either.
+ *
+ * Fields (wire keys; * = required on create).
+ *
+ *   delay* NUMBER              interval* STRING
+ *   tags LIST_STRING
+ *   id status STRING (ro)      created updated DATETIME (ro)
+ *
+ * Query keys: limit, after, before, ids, receiverIds, status, tags.
+ * receiverIds is not in the docs' GET /v2/split-profile parameter list, but
+ * sdk-python's page() forwards it as a real keyword - see
+ * known-drift.json's query.gone:SplitProfile:receiverIds.
+ *
+ * delay and interval are REQUIRED despite sdk-python's docstring filing them
+ * under "## Parameters (optional)": SplitProfile.__init__ takes both
+ * positionally with no default, so the docstring's wording is the bug, not
+ * the required/optional design - see splitprofile.h and
+ * known-drift.json's flag.conflict:SplitProfile:delay/interval pair. delay is
+ * NUMBER, not SECONDS: __init__ does "self.delay = delay" with no
+ * check_timedelta call, the same shape as MerchantSession.expiration.
+ */
+#define STARKBANK_SPLIT_PROFILE_DELAY     "delay"
+#define STARKBANK_SPLIT_PROFILE_INTERVAL  "interval"
+#define STARKBANK_SPLIT_PROFILE_TAGS      "tags"
+#define STARKBANK_SPLIT_PROFILE_ID        "id"
+#define STARKBANK_SPLIT_PROFILE_STATUS    "status"
+#define STARKBANK_SPLIT_PROFILE_CREATED   "created"
+#define STARKBANK_SPLIT_PROFILE_UPDATED   "updated"
+
+#define STARKBANK_SPLIT_PROFILE_INTERVAL_DAY   "day"
+#define STARKBANK_SPLIT_PROFILE_INTERVAL_WEEK  "week"
+#define STARKBANK_SPLIT_PROFILE_INTERVAL_MONTH "month"
+
+#define STARKBANK_SPLIT_PROFILE_STATUS_CREATED "created"
+
+STARKBANK_API int STARKBANK_CALL starkbank_split_profile_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_split_profile_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_split_profile_put(const starkbank_client *client,
+    const starkbank_list *profiles, starkbank_list **out, starkbank_errors **errors);
+/* rest.put_multi: creates the workspace's SplitProfile if it does not exist
+   yet, updates it otherwise - see starkc/verb.c's starkbankVerbPutMulti. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_split_profile_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_split_profile_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_split_profile_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+/* --------------------------------------------------------- SplitProfileLog */
+/*
+ * Resource "SplitProfileLog"; endpoint "split-profile/log", derived at run
+ * time.
+ * Fields: id type STRING (ro), errors LIST_STRING (ro),
+ *         profile RESOURCE("SplitProfile") (ro), created DATETIME (ro).
+ * Query keys: limit, after, before, types, profileIds.
+ */
+#define STARKBANK_SPLIT_PROFILE_LOG_ID       "id"
+#define STARKBANK_SPLIT_PROFILE_LOG_CREATED  "created"
+#define STARKBANK_SPLIT_PROFILE_LOG_TYPE     "type"
+#define STARKBANK_SPLIT_PROFILE_LOG_ERRORS   "errors"
+#define STARKBANK_SPLIT_PROFILE_LOG_PROFILE  "profile"
+
+STARKBANK_API int STARKBANK_CALL starkbank_split_profile_log_params_new(
+    starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_split_profile_log_get(
+    const starkbank_client *client, const char *id, starkbank_entity **out,
+    starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_split_profile_log_query(
+    const starkbank_client *client, const starkbank_entity *params, int limit,
+    starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_split_profile_log_page(
+    const starkbank_client *client, const starkbank_entity *params, starkbank_list **out,
+    char **out_cursor, starkbank_errors **errors);
 
 #ifdef __cplusplus
 }

@@ -74,12 +74,82 @@ int starkbankVerbCreate(const starkbank_client *client, const starkbankResource 
         }
         status = starkcore_json_append(payload, item);
         if (status != STARKCORE_OK) {
+            /* payload never took ownership on a failed append, so item is
+               still ours to free - the same leak PutMulti was copied with. */
+            starkcore_json_free(item);
             starkcore_json_free(payload);
             return status;
         }
     }
     status = starkcore_rest_post_multi(starkbankClientCore(client), resource->name,
                                        payload, NULL, &reply, errors);
+    starkcore_json_free(payload);
+    if (status != STARKCORE_OK) {
+        return status;
+    }
+    return starkbankListFromJson(resource, reply, out);
+}
+
+/*
+ * rest.put_multi: SplitProfile.put's shape, and structurally identical to
+ * rest.post_multi above - same envelope ({plural: [...]}), same REQUIRED
+ * pre-flight, same list-in-list-out contract - except the HTTP verb is PUT,
+ * which is the one thing starkcore_rest_put_multi does differently from
+ * starkcore_rest_post_multi. core-c already exposed it and nothing in sdk-c
+ * used it before SplitProfile, so this is one thin wrapper, not new core-c
+ * work, the same shape STARKBANK_VERB_POST_SUB_RESOURCE's addition took for
+ * MerchantSession.purchase.
+ */
+int starkbankVerbPutMulti(const starkbank_client *client, const starkbankResource *resource,
+                          const starkbank_list *entities, starkbank_list **out,
+                          starkbank_errors **errors)
+{
+    const starkbank_entity *entity;
+    starkcore_json *payload = NULL;
+    starkcore_json *item = NULL;
+    starkcore_json *reply = NULL;
+    int status;
+    int index;
+    int count;
+
+    if (out == NULL) {
+        return STARKCORE_ERROR_ARGUMENT;
+    }
+    *out = NULL;
+    status = checkVerb(client, errors);
+    if (status != STARKCORE_OK) {
+        return status;
+    }
+    count = starkbank_list_count(entities);
+    if (count < 0) {
+        return STARKCORE_ERROR_ARGUMENT;
+    }
+    status = starkcore_json_new_array(&payload);
+    if (status != STARKCORE_OK) {
+        return status;
+    }
+    for (index = 0; index < count; index++) {
+        entity = starkbank_list_at(entities, index);
+        if (entity == NULL || entity->resource != resource) {
+            starkcore_json_free(payload);
+            return STARKBANK_ERROR_RESOURCE;
+        }
+        status = starkbankEntityDehydrate(entity, STARKBANK_FLAG_CREATE, &item);
+        if (status != STARKCORE_OK) {
+            starkcore_json_free(payload);
+            return status;
+        }
+        status = starkcore_json_append(payload, item);
+        if (status != STARKCORE_OK) {
+            /* payload never took ownership on a failed append, so item is
+               still ours to free - the same leak PutMulti was copied with. */
+            starkcore_json_free(item);
+            starkcore_json_free(payload);
+            return status;
+        }
+    }
+    status = starkcore_rest_put_multi(starkbankClientCore(client), resource->name,
+                                      payload, NULL, &reply, errors);
     starkcore_json_free(payload);
     if (status != STARKCORE_OK) {
         return status;

@@ -760,7 +760,49 @@ const
   STARKBANK_SPLIT_CREATED = 'created';
   STARKBANK_SPLIT_EXTERNAL_ID = 'externalId';
   STARKBANK_SPLIT_ID = 'id';
+  STARKBANK_SPLIT_LOG_CREATED = 'created';
+  STARKBANK_SPLIT_LOG_ERRORS = 'errors';
+  STARKBANK_SPLIT_LOG_ID = 'id';
+  STARKBANK_SPLIT_LOG_SPLIT = 'split';
+  STARKBANK_SPLIT_LOG_TYPE = 'type';
+  STARKBANK_SPLIT_PROFILE_CREATED = 'created';
+  STARKBANK_SPLIT_PROFILE_DELAY = 'delay';
+  STARKBANK_SPLIT_PROFILE_ID = 'id';
+  STARKBANK_SPLIT_PROFILE_INTERVAL = 'interval';
+  STARKBANK_SPLIT_PROFILE_INTERVAL_DAY = 'day';
+  STARKBANK_SPLIT_PROFILE_INTERVAL_MONTH = 'month';
+  STARKBANK_SPLIT_PROFILE_INTERVAL_WEEK = 'week';
+  STARKBANK_SPLIT_PROFILE_LOG_CREATED = 'created';
+  STARKBANK_SPLIT_PROFILE_LOG_ERRORS = 'errors';
+  STARKBANK_SPLIT_PROFILE_LOG_ID = 'id';
+  STARKBANK_SPLIT_PROFILE_LOG_PROFILE = 'profile';
+  STARKBANK_SPLIT_PROFILE_LOG_TYPE = 'type';
+  STARKBANK_SPLIT_PROFILE_STATUS = 'status';
+  STARKBANK_SPLIT_PROFILE_STATUS_CREATED = 'created';
+  STARKBANK_SPLIT_PROFILE_TAGS = 'tags';
+  STARKBANK_SPLIT_PROFILE_UPDATED = 'updated';
+  STARKBANK_SPLIT_RECEIVER_ACCOUNT_NUMBER = 'accountNumber';
+  STARKBANK_SPLIT_RECEIVER_ACCOUNT_TYPE = 'accountType';
+  STARKBANK_SPLIT_RECEIVER_ACCOUNT_TYPE_CHECKING = 'checking';
+  STARKBANK_SPLIT_RECEIVER_ACCOUNT_TYPE_PAYMENT = 'payment';
+  STARKBANK_SPLIT_RECEIVER_ACCOUNT_TYPE_SALARY = 'salary';
+  STARKBANK_SPLIT_RECEIVER_ACCOUNT_TYPE_SAVINGS = 'savings';
+  STARKBANK_SPLIT_RECEIVER_BANK_CODE = 'bankCode';
+  STARKBANK_SPLIT_RECEIVER_BRANCH_CODE = 'branchCode';
+  STARKBANK_SPLIT_RECEIVER_CREATED = 'created';
   STARKBANK_SPLIT_RECEIVER_ID = 'receiverId';
+  STARKBANK_SPLIT_RECEIVER_LOG_CREATED = 'created';
+  STARKBANK_SPLIT_RECEIVER_LOG_ERRORS = 'errors';
+  STARKBANK_SPLIT_RECEIVER_LOG_ID = 'id';
+  STARKBANK_SPLIT_RECEIVER_LOG_RECEIVER = 'receiver';
+  STARKBANK_SPLIT_RECEIVER_LOG_TYPE = 'type';
+  STARKBANK_SPLIT_RECEIVER_NAME = 'name';
+  STARKBANK_SPLIT_RECEIVER_STATUS = 'status';
+  STARKBANK_SPLIT_RECEIVER_STATUS_FAILED = 'failed';
+  STARKBANK_SPLIT_RECEIVER_STATUS_SUCCESS = 'success';
+  STARKBANK_SPLIT_RECEIVER_TAGS = 'tags';
+  STARKBANK_SPLIT_RECEIVER_TAX_ID = 'taxId';
+  STARKBANK_SPLIT_RECEIVER_UPDATED = 'updated';
   STARKBANK_SPLIT_SCHEDULED = 'scheduled';
   STARKBANK_SPLIT_SOURCE = 'source';
   STARKBANK_SPLIT_STATUS = 'status';
@@ -871,6 +913,49 @@ const
   STARKBANK_UTILITY_PREVIEW_DESCRIPTION = 'description';
   STARKBANK_UTILITY_PREVIEW_LINE = 'line';
   STARKBANK_UTILITY_PREVIEW_NAME = 'name';
+  STARKBANK_VERIFIED_ACCOUNT_BANK_CODE = 'bankCode';
+  STARKBANK_VERIFIED_ACCOUNT_BANK_NAME = 'bankName';
+  STARKBANK_VERIFIED_ACCOUNT_BRANCH_CODE = 'branchCode';
+  STARKBANK_VERIFIED_ACCOUNT_CREATED = 'created';
+  STARKBANK_VERIFIED_ACCOUNT_ID = 'id';
+  STARKBANK_VERIFIED_ACCOUNT_KEY_ID = 'keyId';
+  STARKBANK_VERIFIED_ACCOUNT_LOG_ACCOUNT = 'account';
+  STARKBANK_VERIFIED_ACCOUNT_LOG_CREATED = 'created';
+  STARKBANK_VERIFIED_ACCOUNT_LOG_ERRORS = 'errors';
+  STARKBANK_VERIFIED_ACCOUNT_LOG_ID = 'id';
+  STARKBANK_VERIFIED_ACCOUNT_LOG_TYPE = 'type';
+  STARKBANK_VERIFIED_ACCOUNT_NAME = 'name';
+  STARKBANK_VERIFIED_ACCOUNT_NUMBER = 'number';
+  STARKBANK_VERIFIED_ACCOUNT_STATUS = 'status';
+  STARKBANK_VERIFIED_ACCOUNT_STATUS_ACTIVE = 'active';
+  STARKBANK_VERIFIED_ACCOUNT_STATUS_CANCELED = 'canceled';
+  STARKBANK_VERIFIED_ACCOUNT_STATUS_CREATED = 'created';
+  STARKBANK_VERIFIED_ACCOUNT_STATUS_CREATING = 'creating';
+  STARKBANK_VERIFIED_ACCOUNT_STATUS_FAILED = 'failed';
+  STARKBANK_VERIFIED_ACCOUNT_STATUS_PROCESSING = 'processing';
+  STARKBANK_VERIFIED_ACCOUNT_TAGS = 'tags';
+  STARKBANK_VERIFIED_ACCOUNT_TAX_ID = 'taxId';
+  STARKBANK_VERIFIED_ACCOUNT_TYPE = 'type';
+  STARKBANK_VERIFIED_ACCOUNT_UPDATED = 'updated';
+  STARKBANK_VERIFIED_TRANSFER_ACCOUNT_ID = 'accountId';
+  STARKBANK_VERIFIED_TRANSFER_AMOUNT = 'amount';
+  STARKBANK_VERIFIED_TRANSFER_CREATED = 'created';
+  STARKBANK_VERIFIED_TRANSFER_DESCRIPTION = 'description';
+  STARKBANK_VERIFIED_TRANSFER_DISPLAY_DESCRIPTION = 'displayDescription';
+  STARKBANK_VERIFIED_TRANSFER_EXTERNAL_ID = 'externalId';
+  STARKBANK_VERIFIED_TRANSFER_FEE = 'fee';
+  STARKBANK_VERIFIED_TRANSFER_ID = 'id';
+  STARKBANK_VERIFIED_TRANSFER_METADATA = 'metadata';
+  STARKBANK_VERIFIED_TRANSFER_RULES = 'rules';
+  STARKBANK_VERIFIED_TRANSFER_SCHEDULED = 'scheduled';
+  STARKBANK_VERIFIED_TRANSFER_STATUS = 'status';
+  STARKBANK_VERIFIED_TRANSFER_STATUS_CREATED = 'created';
+  STARKBANK_VERIFIED_TRANSFER_STATUS_FAILED = 'failed';
+  STARKBANK_VERIFIED_TRANSFER_STATUS_PROCESSING = 'processing';
+  STARKBANK_VERIFIED_TRANSFER_STATUS_SUCCESS = 'success';
+  STARKBANK_VERIFIED_TRANSFER_TAGS = 'tags';
+  STARKBANK_VERIFIED_TRANSFER_TRANSACTION_IDS = 'transactionIds';
+  STARKBANK_VERIFIED_TRANSFER_UPDATED = 'updated';
   STARKBANK_VERSION = '0.1.0';
   STARKBANK_WEBHOOK_ID = 'id';
   STARKBANK_WEBHOOK_SUBSCRIPTIONS = 'subscriptions';
@@ -1535,7 +1620,63 @@ function starkbank_resource_name_at(index: Integer): PAnsiChar; cdecl; external 
 
 function starkbank_response_new(status: Integer; content: PByte; content_len: NativeUInt; headers: Pstarkbank_headers; &out: PPstarkbank_response): Integer; cdecl; external StarkbankLib name 'starkbank_response_new';
 
+function starkbank_split_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_split_get';
+
+function starkbank_split_log_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_split_log_get';
+
+function starkbank_split_log_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_split_log_page';
+
+function starkbank_split_log_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_split_log_params_new';
+
+function starkbank_split_log_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_split_log_query';
+
 function starkbank_split_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_split_new';
+
+function starkbank_split_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_split_page';
+
+function starkbank_split_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_split_params_new';
+
+function starkbank_split_profile_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_split_profile_get';
+
+function starkbank_split_profile_log_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_split_profile_log_get';
+
+function starkbank_split_profile_log_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_split_profile_log_page';
+
+function starkbank_split_profile_log_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_split_profile_log_params_new';
+
+function starkbank_split_profile_log_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_split_profile_log_query';
+
+function starkbank_split_profile_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_split_profile_new';
+
+function starkbank_split_profile_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_split_profile_page';
+
+function starkbank_split_profile_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_split_profile_params_new';
+
+function starkbank_split_profile_put(client: Pstarkbank_client; profiles: Pstarkbank_list; &out: PPstarkbank_list; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_split_profile_put';
+
+function starkbank_split_profile_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_split_profile_query';
+
+function starkbank_split_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_split_query';
+
+function starkbank_split_receiver_create(client: Pstarkbank_client; receivers: Pstarkbank_list; &out: PPstarkbank_list; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_split_receiver_create';
+
+function starkbank_split_receiver_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_split_receiver_get';
+
+function starkbank_split_receiver_log_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_split_receiver_log_get';
+
+function starkbank_split_receiver_log_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_split_receiver_log_page';
+
+function starkbank_split_receiver_log_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_split_receiver_log_params_new';
+
+function starkbank_split_receiver_log_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_split_receiver_log_query';
+
+function starkbank_split_receiver_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_split_receiver_new';
+
+function starkbank_split_receiver_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_split_receiver_page';
+
+function starkbank_split_receiver_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_split_receiver_params_new';
+
+function starkbank_split_receiver_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_split_receiver_query';
 
 function starkbank_strerror(code: Integer): PAnsiChar; cdecl; external StarkbankLib name 'starkbank_strerror';
 
@@ -1626,6 +1767,32 @@ function starkbank_utility_payment_params_new(&out: PPstarkbank_entity): Integer
 function starkbank_utility_payment_pdf(client: Pstarkbank_client; id: PAnsiChar; &out: PPByte; out_len: PNativeUInt; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_utility_payment_pdf';
 
 function starkbank_utility_payment_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_utility_payment_query';
+
+function starkbank_verified_account_create(client: Pstarkbank_client; accounts: Pstarkbank_list; &out: PPstarkbank_list; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_verified_account_create';
+
+function starkbank_verified_account_delete(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_verified_account_delete';
+
+function starkbank_verified_account_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_verified_account_get';
+
+function starkbank_verified_account_log_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_verified_account_log_get';
+
+function starkbank_verified_account_log_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_verified_account_log_page';
+
+function starkbank_verified_account_log_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_verified_account_log_params_new';
+
+function starkbank_verified_account_log_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_verified_account_log_query';
+
+function starkbank_verified_account_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_verified_account_new';
+
+function starkbank_verified_account_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_verified_account_page';
+
+function starkbank_verified_account_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_verified_account_params_new';
+
+function starkbank_verified_account_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_verified_account_query';
+
+function starkbank_verified_transfer_create(client: Pstarkbank_client; transfers: Pstarkbank_list; &out: PPstarkbank_list; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_verified_transfer_create';
+
+function starkbank_verified_transfer_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_verified_transfer_new';
 
 function starkbank_version: PAnsiChar; cdecl; external StarkbankLib name 'starkbank_version';
 

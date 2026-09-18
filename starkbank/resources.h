@@ -70,6 +70,11 @@
     R(permission)              \
     R(purchase)                \
     R(split)                   \
+    R(split_log)               \
+    R(split_profile)           \
+    R(split_profile_log)       \
+    R(split_receiver)          \
+    R(split_receiver_log)      \
     R(tax_payment)             \
     R(tax_payment_log)         \
     R(tax_preview)             \
@@ -80,6 +85,9 @@
     R(utility_payment)         \
     R(utility_payment_log)     \
     R(utility_preview)         \
+    R(verified_account)        \
+    R(verified_account_log)    \
+    R(verified_transfer)       \
     R(webhook)                 \
     R(workspace)
 

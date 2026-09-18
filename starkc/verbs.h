@@ -41,6 +41,21 @@
     }
 
 /*
+ * rest.put_multi: SplitProfile.put's shape - {plural: [...]} over PUT rather
+ * than POST, built on core-c's starkcore_rest_put_multi (already exposed,
+ * unused anywhere in this SDK until now). See starkbankVerbPutMulti's comment
+ * in starkc/verb.c for why it is a thin wrapper and not new core-c work, the
+ * same precedent STARKBANK_VERB_POST_SUB_RESOURCE set for MerchantSession.
+ */
+#define STARKBANK_VERB_PUT_MULTI(ident)                                                  \
+    STARKBANK_API int STARKBANK_CALL starkbank_##ident##_put(                            \
+        const starkbank_client *client, const starkbank_list *entities,                  \
+        starkbank_list **out, starkbank_errors **errors)                                 \
+    {                                                                                    \
+        return starkbankVerbPutMulti(client, &starkbankTable_##ident, entities, out, errors); \
+    }
+
+/*
  * rest.post_single: one entity, sent as the body itself. Webhook is the only
  * bank resource with this shape, and the create signature differs from
  * POST_MULTI's by taking an entity rather than a list - which is the whole

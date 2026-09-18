@@ -74,6 +74,7 @@ FLAG_PATCH = 4
 # the API - so they have no python counterpart and are not compared.
 VERB_PYTHON_NAME = {
     "POST_MULTI": "create",
+    "PUT_MULTI": "put",
     "POST_SINGLE": "create",
     "POST_SINGLE_SUB": "create",
     "GET_ID": "get",
@@ -550,6 +551,8 @@ def verbEndpoint(shape, endpoint, verbName):
         # implies; it does not prove the sub-path itself is documented, and
         # nothing here can without teaching the regex a second argument shape.
         return ("POST", base)
+    if shape == "PUT_MULTI":
+        return ("PUT", base)
     if shape in ("GET_FIRST", "QUERY", "PAGE"):
         return ("GET", base)
     if shape == "GET_ID":

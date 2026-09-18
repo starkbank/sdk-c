@@ -502,9 +502,14 @@ static void testRegistry(void)
         "PaymentPreview.BoletoPreview", "PaymentPreview.BrcodePreview",
         "PaymentPreview.TaxPreview", "PaymentPreview.UtilityPreview",
         "PaymentRequest",
-        "Permission", "Purchase", "Split", "TaxPayment", "TaxPaymentLog",
+        "Permission", "Purchase", "Split", "SplitLog",
+        "SplitProfile", "SplitProfileLog",
+        "SplitReceiver", "SplitReceiverLog",
+        "TaxPayment", "TaxPaymentLog",
         "Transaction", "Transfer", "TransferLog", "Transfer.Rule",
-        "UtilityPayment", "UtilityPaymentLog", "Webhook", "Workspace"
+        "UtilityPayment", "UtilityPaymentLog",
+        "VerifiedAccount", "VerifiedAccountLog", "VerifiedTransfer",
+        "Webhook", "Workspace"
     };
     char label[160];
     size_t index;
@@ -4806,6 +4811,546 @@ static void testPaymentRequest(void)
     starkbank_client_free(client);
 }
 
+/* ============================================================ VerifiedAccount */
+
+static void testVerifiedAccount(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_list *batch = NULL;
+    starkbank_list *created = NULL;
+    starkbank_list *page = NULL;
+    starkbank_entity *account = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+
+    startGroup("VerifiedAccount");
+    client = newClient(&fake);
+    replies(&fake, responseBody("verifiedAccounts"), NULL);
+    starkbank_verified_account_new(&account);
+    starkbank_entity_set_string(account, STARKBANK_VERIFIED_ACCOUNT_TAX_ID,
+                                "20.018.183/0001-80");
+    starkbank_entity_set_string(account, STARKBANK_VERIFIED_ACCOUNT_BANK_CODE, "20018183");
+    starkbank_entity_set_string(account, STARKBANK_VERIFIED_ACCOUNT_BRANCH_CODE, "1357-9");
+    starkbank_entity_set_string(account, STARKBANK_VERIFIED_ACCOUNT_KEY_ID,
+                                "tony@starkbank.com");
+    starkbank_entity_set_string(account, STARKBANK_VERIFIED_ACCOUNT_NAME,
+                                "Anthony Edward Stark");
+    starkbank_entity_set_string(account, STARKBANK_VERIFIED_ACCOUNT_NUMBER, "876543-2");
+    starkbank_entity_set_string(account, STARKBANK_VERIFIED_ACCOUNT_TYPE, "checking");
+    starkbank_entity_append_string(account, STARKBANK_VERIFIED_ACCOUNT_TAGS, "employees");
+    starkbank_entity_append_string(account, STARKBANK_VERIFIED_ACCOUNT_TAGS, "monthly");
+    starkbank_list_new(&batch);
+    starkbank_list_append(batch, account);
+    check("create returns the created list",
+          starkbank_verified_account_create(client, batch, &created, NULL) == STARKBANK_OK
+          && starkbank_list_count(created) == 1, NULL);
+    checkRequests("verifiedaccount.create", &fake);
+    checkHydration("verifiedaccount.create", 0, starkbank_list_at(created, 0));
+    check("no unknown key: the table matches python field for field",
+          starkbank_entity_unknown_count(starkbank_list_at(created, 0)) == 0, NULL);
+    starkbank_list_free(batch);
+    starkbank_list_free(created);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("verifiedAccount"), NULL);
+    starkbank_verified_account_get(client, "6155165527080960", &account, NULL);
+    checkRequests("verifiedaccount.get", &fake);
+    checkHydration("verifiedaccount.get", 0, account);
+    starkbank_entity_free(account);
+    account = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"accounts\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_verified_account_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_set_string(params, "status", "active");
+    starkbank_entity_append_string(params, "tags", "employees");
+    starkbank_verified_account_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("verifiedaccount.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"accounts\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_verified_account_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_verified_account_page(client, params, &page, NULL, NULL);
+    checkRequests("verifiedaccount.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("verifiedAccount"), NULL);
+    check("delete keeps sdk-c's uniform *_delete spelling for python's cancel()",
+          starkbank_verified_account_delete(client, "6155165527080960", &account, NULL)
+              == STARKBANK_OK, NULL);
+    checkRequests("verifiedaccount.delete", &fake);
+    starkbank_entity_free(account);
+    starkbank_client_free(client);
+}
+
+static void testVerifiedAccountLog(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *log = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *nested = NULL;
+    const starkbank_entity *error = NULL;
+    const char *code = NULL;
+    starkbank_list *page = NULL;
+    int size = 0;
+
+    startGroup("verifiedaccount.Log");
+    client = newClient(&fake);
+    replies(&fake, responseBody("verifiedAccountLog"), NULL);
+    starkbank_verified_account_log_get(client, "6341320293482502", &log, NULL);
+    checkRequests("verifiedaccount.log.get", &fake);
+    checkHydration("verifiedaccount.log.get", 0, log);
+    check("the nested account is tagged",
+          starkbank_entity_entity(log, STARKBANK_VERIFIED_ACCOUNT_LOG_ACCOUNT, &nested)
+              == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested), "VerifiedAccount"), NULL);
+    check("errors is a real LIST_OBJECT here, not the LIST_STRING sdk-python's own "
+          "docstring calls it - the api-v2-ms-transfer service emits {code,message} pairs",
+          starkbank_entity_list_size(log, STARKBANK_VERIFIED_ACCOUNT_LOG_ERRORS, &size)
+              == STARKBANK_OK && size == 1
+          && starkbank_entity_list_entity_at(log, STARKBANK_VERIFIED_ACCOUNT_LOG_ERRORS, 0,
+                 &error) == STARKBANK_OK
+          && starkbank_entity_string(error, "code", &code) == STARKBANK_OK
+          && code != NULL, NULL);
+    starkbank_entity_free(log);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_verified_account_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_append_string(params, "types", "active");
+    starkbank_entity_append_string(params, "accountIds", "6155165527080960");
+    starkbank_verified_account_log_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("verifiedaccount.log.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_verified_account_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_verified_account_log_page(client, params, &page, NULL, NULL);
+    checkRequests("verifiedaccount.log.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+/* ============================================================ VerifiedTransfer */
+
+static void testVerifiedTransfer(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_list *batch = NULL;
+    starkbank_list *created = NULL;
+    starkbank_entity *transfer = NULL;
+    starkbank_entity *rule = NULL;
+    const starkbank_entity *nested = NULL;
+
+    startGroup("VerifiedTransfer - create only, no get/query/page in sdk-python");
+    client = newClient(&fake);
+    replies(&fake, responseBody("verifiedTransfers"), NULL);
+    starkbank_verified_transfer_new(&transfer);
+    starkbank_entity_set_amount(transfer, STARKBANK_VERIFIED_TRANSFER_AMOUNT, 1234);
+    starkbank_entity_set_string(transfer, STARKBANK_VERIFIED_TRANSFER_ACCOUNT_ID,
+                                "6155165527080960");
+    starkbank_entity_set_string(transfer, STARKBANK_VERIFIED_TRANSFER_EXTERNAL_ID,
+                                "my-internal-id-654321");
+    starkbank_entity_set_string(transfer, STARKBANK_VERIFIED_TRANSFER_DESCRIPTION,
+                                "Payment for service #1234");
+    starkbank_entity_set_string(transfer, STARKBANK_VERIFIED_TRANSFER_DISPLAY_DESCRIPTION,
+                                "Sword sharpening");
+    starkbank_entity_append_string(transfer, STARKBANK_VERIFIED_TRANSFER_TAGS, "arya");
+    starkbank_entity_append_string(transfer, STARKBANK_VERIFIED_TRANSFER_TAGS, "stark");
+    /* rules reuses Transfer.Rule, not a VerifiedTransfer-local table - see
+       verifiedtransfer.h. */
+    starkbank_transfer_rule_new(&rule);
+    starkbank_entity_set_string(rule, STARKBANK_TRANSFER_RULE_KEY, "resendingLimit");
+    starkbank_entity_set_number(rule, STARKBANK_TRANSFER_RULE_VALUE, 5);
+    starkbank_entity_append_entity(transfer, STARKBANK_VERIFIED_TRANSFER_RULES, rule);
+
+    starkbank_list_new(&batch);
+    starkbank_list_append(batch, transfer);
+    check("create returns the created list",
+          starkbank_verified_transfer_create(client, batch, &created, NULL) == STARKBANK_OK
+          && starkbank_list_count(created) == 1, NULL);
+    checkRequests("verifiedtransfer.create", &fake);
+    checkHydration("verifiedtransfer.create", 0, starkbank_list_at(created, 0));
+    check("no unknown key: the table matches python field for field",
+          starkbank_entity_unknown_count(starkbank_list_at(created, 0)) == 0, NULL);
+    check("rules is a LIST_RESOURCE tagged Transfer.Rule, the same table Transfer.rules uses",
+          starkbank_entity_list_entity_at(starkbank_list_at(created, 0),
+              STARKBANK_VERIFIED_TRANSFER_RULES, 0, &nested) == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested), "Transfer.Rule"), NULL);
+    starkbank_list_free(batch);
+    starkbank_list_free(created);
+    starkbank_client_free(client);
+}
+
+/* ============================================================== SplitReceiver */
+
+static void testSplitReceiver(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_list *batch = NULL;
+    starkbank_list *created = NULL;
+    starkbank_list *page = NULL;
+    starkbank_entity *receiver = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+
+    startGroup("SplitReceiver");
+    client = newClient(&fake);
+    replies(&fake, responseBody("splitReceivers"), NULL);
+    starkbank_split_receiver_new(&receiver);
+    starkbank_entity_set_string(receiver, STARKBANK_SPLIT_RECEIVER_NAME,
+                                "Anthony Edward Stark");
+    starkbank_entity_set_string(receiver, STARKBANK_SPLIT_RECEIVER_TAX_ID,
+                                "20.018.183/0001-80");
+    starkbank_entity_set_string(receiver, STARKBANK_SPLIT_RECEIVER_BANK_CODE, "20018183");
+    starkbank_entity_set_string(receiver, STARKBANK_SPLIT_RECEIVER_BRANCH_CODE, "1357-9");
+    starkbank_entity_set_string(receiver, STARKBANK_SPLIT_RECEIVER_ACCOUNT_NUMBER, "876543-2");
+    starkbank_entity_set_string(receiver, STARKBANK_SPLIT_RECEIVER_ACCOUNT_TYPE, "checking");
+    starkbank_entity_append_string(receiver, STARKBANK_SPLIT_RECEIVER_TAGS, "seller/123456");
+    starkbank_list_new(&batch);
+    starkbank_list_append(batch, receiver);
+    check("create returns the created list",
+          starkbank_split_receiver_create(client, batch, &created, NULL) == STARKBANK_OK
+          && starkbank_list_count(created) == 1, NULL);
+    checkRequests("splitreceiver.create", &fake);
+    checkHydration("splitreceiver.create", 0, starkbank_list_at(created, 0));
+    check("no unknown key: the table matches python field for field",
+          starkbank_entity_unknown_count(starkbank_list_at(created, 0)) == 0, NULL);
+    starkbank_list_free(batch);
+    starkbank_list_free(created);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("splitReceiver"), NULL);
+    starkbank_split_receiver_get(client, "6155165527080962", &receiver, NULL);
+    checkRequests("splitreceiver.get", &fake);
+    checkHydration("splitreceiver.get", 0, receiver);
+    starkbank_entity_free(receiver);
+    receiver = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"receivers\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_split_receiver_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_set_string(params, "status", "success");
+    starkbank_entity_set_string(params, "taxId", "20.018.183/0001-80");
+    starkbank_split_receiver_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("splitreceiver.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"receivers\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_split_receiver_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_split_receiver_page(client, params, &page, NULL, NULL);
+    checkRequests("splitreceiver.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+static void testSplitReceiverLog(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *log = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *nested = NULL;
+    starkbank_list *page = NULL;
+
+    startGroup("splitreceiver.Log");
+    client = newClient(&fake);
+    replies(&fake, responseBody("splitReceiverLog"), NULL);
+    starkbank_split_receiver_log_get(client, "6341320293482503", &log, NULL);
+    checkRequests("splitreceiver.log.get", &fake);
+    checkHydration("splitreceiver.log.get", 0, log);
+    check("the nested receiver is tagged",
+          starkbank_entity_entity(log, STARKBANK_SPLIT_RECEIVER_LOG_RECEIVER, &nested)
+              == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested), "SplitReceiver"), NULL);
+    starkbank_entity_free(log);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_split_receiver_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_append_string(params, "types", "success");
+    starkbank_entity_append_string(params, "receiverIds", "6155165527080962");
+    starkbank_split_receiver_log_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("splitreceiver.log.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_split_receiver_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_split_receiver_log_page(client, params, &page, NULL, NULL);
+    checkRequests("splitreceiver.log.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+/* =============================================================== SplitProfile */
+
+static void testSplitProfile(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_list *batch = NULL;
+    starkbank_list *put = NULL;
+    starkbank_list *page = NULL;
+    starkbank_entity *profile = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+
+    startGroup("SplitProfile - put is the new PUT_MULTI verb");
+    client = newClient(&fake);
+    replies(&fake, responseBody("splitProfiles"), NULL);
+    starkbank_split_profile_new(&profile);
+    starkbank_entity_set_number(profile, STARKBANK_SPLIT_PROFILE_DELAY, 604800);
+    starkbank_entity_set_string(profile, STARKBANK_SPLIT_PROFILE_INTERVAL, "week");
+    starkbank_entity_append_string(profile, STARKBANK_SPLIT_PROFILE_TAGS, "default");
+    starkbank_list_new(&batch);
+    starkbank_list_append(batch, profile);
+    check("put sends PUT {profiles: [...]} and returns the list",
+          starkbank_split_profile_put(client, batch, &put, NULL) == STARKBANK_OK
+          && starkbank_list_count(put) == 1, NULL);
+    checkRequests("splitprofile.put", &fake);
+    checkHydration("splitprofile.put", 0, starkbank_list_at(put, 0));
+    check("no unknown key: the table matches python field for field",
+          starkbank_entity_unknown_count(starkbank_list_at(put, 0)) == 0, NULL);
+    starkbank_list_free(batch);
+    starkbank_list_free(put);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("splitProfile"), NULL);
+    starkbank_split_profile_get(client, "6155165527080963", &profile, NULL);
+    checkRequests("splitprofile.get", &fake);
+    checkHydration("splitprofile.get", 0, profile);
+    starkbank_entity_free(profile);
+    profile = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"profiles\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_split_profile_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_split_profile_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("splitprofile.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"profiles\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_split_profile_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_append_string(params, "receiverIds", "6155165527080962");
+    starkbank_split_profile_page(client, params, &page, NULL, NULL);
+    checkRequests("splitprofile.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+static void testSplitProfileLog(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *log = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *nested = NULL;
+    starkbank_list *page = NULL;
+
+    startGroup("splitprofile.Log");
+    client = newClient(&fake);
+    replies(&fake, responseBody("splitProfileLog"), NULL);
+    starkbank_split_profile_log_get(client, "6341320293482504", &log, NULL);
+    checkRequests("splitprofile.log.get", &fake);
+    checkHydration("splitprofile.log.get", 0, log);
+    check("the nested profile is tagged",
+          starkbank_entity_entity(log, STARKBANK_SPLIT_PROFILE_LOG_PROFILE, &nested)
+              == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested), "SplitProfile"), NULL);
+    starkbank_entity_free(log);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_split_profile_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_append_string(params, "types", "created");
+    starkbank_entity_append_string(params, "profileIds", "6155165527080963");
+    starkbank_split_profile_log_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("splitprofile.log.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_split_profile_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_split_profile_log_page(client, params, &page, NULL, NULL);
+    checkRequests("splitprofile.log.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+/* ==================================================================== SplitLog */
+
+static void testSplit(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_list *page = NULL;
+    starkbank_entity *split = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+
+    startGroup("Split - get/query/page, ahead of split.Log's own");
+    client = newClient(&fake);
+    replies(&fake, responseBody("split"), NULL);
+    starkbank_split_get(client, "6155165527080964", &split, NULL);
+    checkRequests("split.get", &fake);
+    checkHydration("split.get", 0, split);
+    starkbank_entity_free(split);
+    split = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"splits\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_split_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_set_string(params, "status", "success");
+    starkbank_entity_append_string(params, "receiverIds", "5706627130851328");
+    starkbank_split_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("split.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"splits\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_split_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_split_page(client, params, &page, NULL, NULL);
+    checkRequests("split.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+static void testSplitLog(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *log = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *nested = NULL;
+    starkbank_list *page = NULL;
+
+    startGroup("split.Log");
+    client = newClient(&fake);
+    replies(&fake, responseBody("splitLog"), NULL);
+    starkbank_split_log_get(client, "6341320293482505", &log, NULL);
+    checkRequests("split.log.get", &fake);
+    checkHydration("split.log.get", 0, log);
+    check("the nested split is tagged",
+          starkbank_entity_entity(log, STARKBANK_SPLIT_LOG_SPLIT, &nested) == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested), "Split"), NULL);
+    starkbank_entity_free(log);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_split_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_append_string(params, "types", "success");
+    starkbank_entity_append_string(params, "splitIds", "6155165527080964");
+    starkbank_split_log_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("split.log.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_split_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_split_log_page(client, params, &page, NULL, NULL);
+    checkRequests("split.log.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
 /* ============================================================== driver */
 
 int main(void)
@@ -4888,6 +5433,15 @@ int main(void)
     testInvoicePullRequest();
     testInvoicePullRequestLog();
     testPaymentRequest();
+    testVerifiedAccount();
+    testVerifiedAccountLog();
+    testVerifiedTransfer();
+    testSplitReceiver();
+    testSplitReceiverLog();
+    testSplitProfile();
+    testSplitProfileLog();
+    testSplit();
+    testSplitLog();
     testNegatives();
     testErrorsAndAbi();
 

@@ -1139,6 +1139,109 @@ PAYMENT_REQUEST_BOLETO_PAYMENT = dict(
     amount=100000,
 )
 
+VERIFIED_ACCOUNT = {
+    "id": "6155165527080960",
+    "taxId": "20.018.183/0001-80",
+    "bankCode": "20018183",
+    "branchCode": "1357-9",
+    "keyId": "tony@starkbank.com",
+    "name": "Anthony Edward Stark",
+    "number": "876543-2",
+    "type": "checking",
+    "tags": ["employees", "monthly"],
+    "bankName": "Stark Bank",
+    "status": "active",
+    "created": "2026-09-16T12:00:00+00:00",
+    "updated": "2026-09-17T12:00:00+00:00",
+}
+
+VERIFIED_ACCOUNT_LOG = {
+    "id": "6341320293482502",
+    "created": "2026-09-16T12:00:00+00:00",
+    "type": "active",
+    "errors": [{"code": "invalidKey", "message": "Pix key is invalid"}],
+    "account": VERIFIED_ACCOUNT,
+}
+
+VERIFIED_TRANSFER = {
+    "id": "6155165527080961",
+    "amount": 1234,
+    "accountId": "6155165527080960",
+    "externalId": "my-internal-id-654321",
+    "scheduled": "2026-10-28T17:59:26+00:00",
+    "description": "Payment for service #1234",
+    "displayDescription": "Sword sharpening",
+    "tags": ["arya", "stark"],
+    "rules": [{"key": "resendingLimit", "value": 5}],
+    "fee": 200,
+    "status": "processing",
+    "transactionIds": ["19827356981274"],
+    "metadata": {"tracker": "xyz", "attempt": 1},
+    "created": "2026-09-16T12:00:00+00:00",
+    "updated": "2026-09-17T12:00:00+00:00",
+}
+
+SPLIT_RECEIVER = {
+    "id": "6155165527080962",
+    "name": "Anthony Edward Stark",
+    "taxId": "20.018.183/0001-80",
+    "bankCode": "20018183",
+    "branchCode": "1357-9",
+    "accountNumber": "876543-2",
+    "accountType": "checking",
+    "tags": ["seller/123456"],
+    "status": "success",
+    "created": "2026-09-16T12:00:00+00:00",
+    "updated": "2026-09-17T12:00:00+00:00",
+}
+
+SPLIT_RECEIVER_LOG = {
+    "id": "6341320293482503",
+    "created": "2026-09-16T12:00:00+00:00",
+    "type": "success",
+    "errors": [],
+    "receiver": SPLIT_RECEIVER,
+}
+
+SPLIT_PROFILE = {
+    "id": "6155165527080963",
+    "delay": 604800,
+    "interval": "week",
+    "tags": ["default"],
+    "status": "created",
+    "created": "2026-09-16T12:00:00+00:00",
+    "updated": "2026-09-17T12:00:00+00:00",
+}
+
+SPLIT_PROFILE_LOG = {
+    "id": "6341320293482504",
+    "created": "2026-09-16T12:00:00+00:00",
+    "type": "created",
+    "errors": [],
+    "profile": SPLIT_PROFILE,
+}
+
+SPLIT = {
+    "id": "6155165527080964",
+    "amount": 141,
+    "receiverId": "5706627130851328",
+    "externalId": "invoice/1234/receiver/5678",
+    "tags": ["war", "supply"],
+    "scheduled": "2026-09-16T15:17:03+00:00",
+    "source": "5155165527080960",
+    "status": "success",
+    "created": "2026-09-16T12:00:00+00:00",
+    "updated": "2026-09-17T12:00:00+00:00",
+}
+
+SPLIT_LOG = {
+    "id": "6341320293482505",
+    "created": "2026-09-16T12:00:00+00:00",
+    "type": "success",
+    "errors": [],
+    "split": SPLIT,
+}
+
 PDF = b"%PDF-1.4 fake"
 PNG = b"\x89PNG\r\n\x1a\n fake"
 
@@ -1887,6 +1990,111 @@ def main():
                                     "cursor": ""}],
            lambda: starkbank.paymentrequest.page(center_id="5656565656565656", limit=5)[0])
 
+    account = starkbank.VerifiedAccount(
+        tax_id="20.018.183/0001-80",
+        bank_code="20018183",
+        branch_code="1357-9",
+        key_id="tony@starkbank.com",
+        name="Anthony Edward Stark",
+        number="876543-2",
+        type="checking",
+        tags=["employees", "monthly"],
+    )
+    record("verifiedaccount.create", [{"accounts": [VERIFIED_ACCOUNT]}],
+           lambda: starkbank.verifiedaccount.create([account]))
+    record("verifiedaccount.get", [{"account": VERIFIED_ACCOUNT}],
+           lambda: starkbank.verifiedaccount.get("6155165527080960"))
+    record("verifiedaccount.delete", [{"account": VERIFIED_ACCOUNT}],
+           lambda: starkbank.verifiedaccount.cancel("6155165527080960"))
+    record("verifiedaccount.query", [{"accounts": [VERIFIED_ACCOUNT], "cursor": ""}],
+           lambda: list(starkbank.verifiedaccount.query(limit=5, status="active",
+                                                        tags=["employees"])))
+    record("verifiedaccount.page", [{"accounts": [VERIFIED_ACCOUNT], "cursor": ""}],
+           lambda: starkbank.verifiedaccount.page(limit=5)[0])
+    record("verifiedaccount.log.get", [{"log": VERIFIED_ACCOUNT_LOG}],
+           lambda: starkbank.verifiedaccount.log.get("6341320293482502"))
+    record("verifiedaccount.log.query", [{"logs": [VERIFIED_ACCOUNT_LOG], "cursor": ""}],
+           lambda: list(starkbank.verifiedaccount.log.query(
+               limit=5, types=["active"], account_ids=["6155165527080960"])))
+    record("verifiedaccount.log.page", [{"logs": [VERIFIED_ACCOUNT_LOG], "cursor": ""}],
+           lambda: starkbank.verifiedaccount.log.page(limit=5)[0])
+
+    transfer2 = starkbank.VerifiedTransfer(
+        amount=1234,
+        account_id="6155165527080960",
+        external_id="my-internal-id-654321",
+        description="Payment for service #1234",
+        display_description="Sword sharpening",
+        tags=["arya", "stark"],
+        rules=[starkbank.transfer.Rule(key="resendingLimit", value=5)],
+    )
+    record("verifiedtransfer.create", [{"transfers": [VERIFIED_TRANSFER]}],
+           lambda: starkbank.verifiedtransfer.create([transfer2]))
+
+    receiver = starkbank.SplitReceiver(
+        name="Anthony Edward Stark",
+        tax_id="20.018.183/0001-80",
+        bank_code="20018183",
+        branch_code="1357-9",
+        account_number="876543-2",
+        account_type="checking",
+        tags=["seller/123456"],
+    )
+    record("splitreceiver.create", [{"receivers": [SPLIT_RECEIVER]}],
+           lambda: starkbank.splitreceiver.create([receiver]))
+    record("splitreceiver.get", [{"receiver": SPLIT_RECEIVER}],
+           lambda: starkbank.splitreceiver.get("6155165527080962"))
+    record("splitreceiver.query", [{"receivers": [SPLIT_RECEIVER], "cursor": ""}],
+           lambda: list(starkbank.splitreceiver.query(
+               limit=5, status="success", tax_id="20.018.183/0001-80")))
+    record("splitreceiver.page", [{"receivers": [SPLIT_RECEIVER], "cursor": ""}],
+           lambda: starkbank.splitreceiver.page(limit=5)[0])
+    record("splitreceiver.log.get", [{"log": SPLIT_RECEIVER_LOG}],
+           lambda: starkbank.splitreceiver.log.get("6341320293482503"))
+    record("splitreceiver.log.query", [{"logs": [SPLIT_RECEIVER_LOG], "cursor": ""}],
+           lambda: list(starkbank.splitreceiver.log.query(
+               limit=5, types=["success"], receiver_ids=["6155165527080962"])))
+    record("splitreceiver.log.page", [{"logs": [SPLIT_RECEIVER_LOG], "cursor": ""}],
+           lambda: starkbank.splitreceiver.log.page(limit=5)[0])
+
+    profile = starkbank.SplitProfile(
+        delay=604800,
+        interval="week",
+        tags=["default"],
+    )
+    record("splitprofile.put", [{"profiles": [SPLIT_PROFILE]}],
+           lambda: starkbank.splitprofile.put([profile]))
+    record("splitprofile.get", [{"profile": SPLIT_PROFILE}],
+           lambda: starkbank.splitprofile.get("6155165527080963"))
+    record("splitprofile.query", [{"profiles": [SPLIT_PROFILE], "cursor": ""}],
+           lambda: list(starkbank.splitprofile.query(limit=5)))
+    record("splitprofile.page", [{"profiles": [SPLIT_PROFILE], "cursor": ""}],
+           lambda: starkbank.splitprofile.page(
+               limit=5, receiver_ids=["6155165527080962"])[0])
+    record("splitprofile.log.get", [{"log": SPLIT_PROFILE_LOG}],
+           lambda: starkbank.splitprofile.log.get("6341320293482504"))
+    record("splitprofile.log.query", [{"logs": [SPLIT_PROFILE_LOG], "cursor": ""}],
+           lambda: list(starkbank.splitprofile.log.query(
+               limit=5, types=["created"], profile_ids=["6155165527080963"])))
+    record("splitprofile.log.page", [{"logs": [SPLIT_PROFILE_LOG], "cursor": ""}],
+           lambda: starkbank.splitprofile.log.page(limit=5)[0])
+
+    record("split.get", [{"split": SPLIT}],
+           lambda: starkbank.split.get("6155165527080964"))
+    record("split.query", [{"splits": [SPLIT], "cursor": ""}],
+           lambda: list(starkbank.split.query(
+               limit=5, status="success", receiver_ids=["5706627130851328"])))
+    record("split.page", [{"splits": [SPLIT], "cursor": ""}],
+           lambda: starkbank.split.page(limit=5)[0])
+
+    record("split.log.get", [{"log": SPLIT_LOG}],
+           lambda: starkbank.split.log.get("6341320293482505"))
+    record("split.log.query", [{"logs": [SPLIT_LOG], "cursor": ""}],
+           lambda: list(starkbank.split.log.query(
+               limit=5, types=["success"], split_ids=["6155165527080964"])))
+    record("split.log.page", [{"logs": [SPLIT_LOG], "cursor": ""}],
+           lambda: starkbank.split.log.page(limit=5)[0])
+
     document = {
         "cases": CASES,
         "responses": {
@@ -1985,6 +2193,19 @@ def main():
             "paymentRequestBoletoPayment": {"requests": [PAYMENT_REQUEST_BOLETO_PAYMENT]},
             "paymentRequests": {"requests": [PAYMENT_REQUEST_TRANSFER,
                                              PAYMENT_REQUEST_BOLETO_PAYMENT], "cursor": ""},
+            "verifiedAccount": {"account": VERIFIED_ACCOUNT},
+            "verifiedAccounts": {"accounts": [VERIFIED_ACCOUNT], "cursor": ""},
+            "verifiedAccountLog": {"log": VERIFIED_ACCOUNT_LOG},
+            "verifiedTransfers": {"transfers": [VERIFIED_TRANSFER]},
+            "splitReceiver": {"receiver": SPLIT_RECEIVER},
+            "splitReceivers": {"receivers": [SPLIT_RECEIVER], "cursor": ""},
+            "splitReceiverLog": {"log": SPLIT_RECEIVER_LOG},
+            "splitProfile": {"profile": SPLIT_PROFILE},
+            "splitProfiles": {"profiles": [SPLIT_PROFILE], "cursor": ""},
+            "splitProfileLog": {"log": SPLIT_PROFILE_LOG},
+            "splitLog": {"log": SPLIT_LOG},
+            "split": {"split": SPLIT},
+            "splits": {"splits": [SPLIT], "cursor": ""},
         },
     }
     with open(OUT, "w") as handle:
