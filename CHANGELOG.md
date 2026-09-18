@@ -122,6 +122,34 @@ name-keyed accessors.
   CorporateTransaction is a read-only ledger entry with no create, update or
   delete anywhere in sdk-python; CorporateInvoice and CorporateWithdrawal are
   both `post_single`, the same shape as Webhook
+- MerchantSession (+ `MerchantSession.AllowedInstallment`, `Purchase`, Log):
+  `purchase(uuid, purchase)` needed a new engine verb,
+  `STARKBANK_VERB_POST_SUB_RESOURCE` / `starkbankVerbCreateSubResource` in
+  `starkc/verb.c`, built on `starkcore_rest_post_sub_resource` - already
+  exposed by core-c and unused by this SDK until now, so no core-c change was
+  needed. `AllowedInstallment` registers qualified
+  (`MerchantSession.AllowedInstallment`), not bare, because sdk-python
+  assigns it `_sub_resource`, not `_resource` - `tools/drift.py`'s python
+  reader qualifies every `_sub_resource` by its owning package regardless of
+  name collision, the same mechanism behind `Invoice.Rule`/`Transfer.Rule`.
+  `expiration` is `NUMBER`, not `SECONDS`: sdk-python's `__init__` never
+  calls `check_timedelta` on it, despite the docstring's "integer or
+  timedelta" wording. `merchantsession.Log.errors` is `LIST_STRING`, served
+  by a different backing service than the other three merchant logs
+- MerchantCard (+ Log): every field is RO, get/query/page only. `errors` on
+  the Log is a real `LIST_OBJECT`, the same shape CorporatePurchase.Log uses
+- MerchantInstallment (+ Log): every field is RO, generated automatically
+  when a MerchantPurchase is split. `purchaseIds` is a real query()/page()
+  filter the docs omit
+- MerchantPurchase (+ Log): `create` is `post_single`; `update(status,
+  amount)` sends exactly those two keys, both PATCH-only. `metadata` is the
+  first CREATE-writable single `OBJECT` field in this SDK - written with the
+  existing `starkbank_entity_set_json_raw` escape hatch, no new engine shape
+- CardMethod, MerchantCategory and MerchantCountry: query-only lookups for
+  `CorporateRule.methods`/`categories`/`countries`, each with sdk-python's
+  `query(search=None)` and no `limit` keyword, no `page()`. Promoting
+  `CorporateRule`'s matching fields from `LIST_OBJECT` to `LIST_RESOURCE` is
+  a mechanical follow-up left for that table, as its own header already flags
 
 ### Changed
 - `tests/reference/sdk-python.sha` moved to `be7755a5`, the sdk-python master
