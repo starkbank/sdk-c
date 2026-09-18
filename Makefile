@@ -23,6 +23,7 @@
 #   make check-handwritten  the linker-enforced opt-out, both directions
 #   make check-header   the header gate: C89, C++98, cffi, bindings
 #   make bindings       regenerate bindings/ from include/starkbank.h
+#   make dist           the release tarball for this OS and architecture, under dist/
 #   make clean
 #
 # core-c's Makefile discipline is copied deliberately, including keeping the
@@ -82,7 +83,7 @@ CFLAGS ?= -O2
 TEST_CFLAGS ?= -O1 -g
 REQUIRED_CFLAGS = -std=c99 -pedantic -Wall -Wextra -Wshadow -Wconversion -Wstrict-prototypes \
           -Wmissing-prototypes -Wpointer-arith -Wwrite-strings -Wcast-qual \
-          -fvisibility=hidden -fPIC -MMD -MP
+          $(PLATFORM_CFLAGS) -MMD -MP
 ALL_CFLAGS = $(REQUIRED_CFLAGS) $(CFLAGS)
 CPPFLAGS += -Iinclude -Istarkc -Istarkbank -I$(CORE_PREFIX)/include \
             -I$(ECDSA_PREFIX)/include -I$(SECP256K1_PREFIX)/include
@@ -193,20 +194,42 @@ TEST_CPPFLAGS = $(CPPFLAGS) -Itests/fixtures -DTEST_FIXTURE_DIR='"tests/fixtures
                 -DSTARKBANK_RESOURCES_HEADER='"testresources.h"'
 
 OBJECTS = $(SOURCES:.c=.o)
-DEPENDS = $(OBJECTS:.o=.d) libstarkbank.d tests/run.d tests/asan.d tests/slice.d
+DEPENDS = $(OBJECTS:.o=.d) starkc/facade_curl.d libstarkbank.d tests/run.d tests/asan.d tests/slice.d
 
+# Three platforms, one Makefile. Windows means MinGW-w64 under MSYS2 (the
+# UCRT64 environment): PE code is position independent so -fPIC only warns,
+# there is no soname and no version script, and only what the header marks
+# STARKBANK_API is exported because STARKBANK_BUILD_SHARED turns it into
+# __declspec(dllexport). The .def beside each DLL lets an MSVC host make a .lib
+# with `lib /def:`. libgcc is linked statically so a DLL depends on the system
+# alone; bcrypt is ecdsa-c's random source on Windows.
 UNAME := $(shell uname -s)
-ifeq ($(UNAME),Darwin)
+ifneq (,$(filter Windows_NT,$(OS))$(findstring MINGW,$(UNAME))$(findstring MSYS,$(UNAME)))
+  PLATFORM = windows
+  PLATFORM_CFLAGS =
+  SHARED_NAME = starkbank.dll
+  SHARED_FLAGS = -shared -static-libgcc -Wl,--out-implib,lib$(@:.dll=).dll.a -Wl,--output-def,$(@:.dll=.def) \
+                 -Wl,--exclude-libs,ALL
+  SYSTEM_LIBS = -lbcrypt
+else ifeq ($(UNAME),Darwin)
+  PLATFORM = darwin
+  PLATFORM_CFLAGS = -fvisibility=hidden -fPIC
   SHARED_NAME = libstarkbank.dylib
   SHARED_FLAGS = -dynamiclib -install_name @rpath/$(@F) \
                  -current_version $(VERSION) -compatibility_version $(ABI_VERSION) \
                  -Wl,-exported_symbols_list,exports.txt
 else
+  PLATFORM = linux
+  PLATFORM_CFLAGS = -fvisibility=hidden -fPIC
   SHARED_NAME = libstarkbank.so.$(ABI_VERSION)
   SHARED_FLAGS = -shared -Wl,-soname,$(SHARED_NAME) -Wl,--version-script,exports.map \
                  -Wl,--exclude-libs,ALL
-  LDLIBS += -pthread
+  SYSTEM_LIBS = -pthread
 endif
+# The bundles list the siblings as archives, not through LDLIBS, so the system
+# libraries those archives need are named apart: without bcrypt the Windows
+# bundle DLL fails on ecdsa-c's BCryptGenRandom.
+LDLIBS += $(SYSTEM_LIBS)
 
 # Ownership rule 1 hands out borrowed pointers everywhere and three entry
 # points transfer ownership, so this is where the real bugs in this tier are.
@@ -225,7 +248,7 @@ endif
         test-abi test-loose test-threads asan tsan leaks expand reflect \
         check-exports check-handwritten check-header check-drift check-goldens \
         check-drift-pinned check-tools \
-        samples samples-emit bindings print-ldflags clean version
+        samples samples-emit bindings print-ldflags dist clean version
 
 all: libstarkbank.a
 
@@ -242,9 +265,14 @@ libstarkbank.a: $(OBJECTS)
 # declares has a definition, which is the linker-enforced opt-out doing its
 # job: delete handwritten/event_parse.c and this target is the thing that
 # fails, with the symbol named.
-shared: ALL_CFLAGS += -DSTARKBANK_BUILD_SHARED
-shared: $(SOURCES) exports.txt exports.map
-	$(CC) $(ALL_CFLAGS) $(CPPFLAGS) $(SHARED_FLAGS) -o $(SHARED_NAME) $(SOURCES) \
+# A real file target, not the .PHONY alias: SHARED_FLAGS spells the install
+# name as $(@F), so building it from a phony `shared` stamped the dylib
+# @rpath/shared and every host that loaded it by rpath failed.
+shared: $(SHARED_NAME)
+
+$(SHARED_NAME): ALL_CFLAGS += -DSTARKBANK_BUILD_SHARED
+$(SHARED_NAME): $(SOURCES) exports.txt exports.map
+	$(CC) $(ALL_CFLAGS) $(CPPFLAGS) $(SHARED_FLAGS) -o $@ $(SOURCES) \
 		$(LDFLAGS) $(LDLIBS)
 
 # One artifact for a host that must name a single library: Delphi, .NET, and
@@ -255,7 +283,18 @@ shared: $(SOURCES) exports.txt exports.map
 # The static half is a merged archive rather than four: `make print-ldflags`
 # exists for the C/C++ shape, and this exists so nobody has to use it.
 BUNDLE_ARCHIVES = $(CORE_LIB) $(ECDSA_LIB) $(SECP256K1_LIB)
-ifeq ($(UNAME),Darwin)
+ifeq ($(PLATFORM),windows)
+  BUNDLE_SHARED_NAME = starkbank_full.dll
+  BUNDLE_CURL_SHARED_NAME = starkbank_full_curl.dll
+  # ar.exe is a native program that reads the MRI script from stdin, and MSYS2
+  # converts paths only on a command line: an absolute /d/... archive named in
+  # the script is "No such file or directory" to it. Windows-style paths work
+  # in both places, so the archives are converted once, here.
+  ifneq (,$(shell command -v cygpath 2>/dev/null))
+    BUNDLE_ARCHIVES := $(foreach archive,$(BUNDLE_ARCHIVES),$(shell cygpath -m '$(archive)'))
+    CORE_CURL_LIB := $(if $(CORE_CURL_LIB),$(shell cygpath -m '$(CORE_CURL_LIB)'))
+  endif
+else ifeq ($(PLATFORM),darwin)
   BUNDLE_SHARED_NAME = libstarkbank_full.dylib
   BUNDLE_CURL_SHARED_NAME = libstarkbank_full_curl.dylib
   MERGE = libtool -static -o
@@ -263,6 +302,18 @@ else
   BUNDLE_SHARED_NAME = libstarkbank_full.so.$(ABI_VERSION)
   BUNDLE_CURL_SHARED_NAME = libstarkbank_full_curl.so.$(ABI_VERSION)
 endif
+
+# The curl bundle is the one build where starkbank_client_set_curl_transport
+# installs core-c's transport instead of answering STARKCORE_ERROR_NO_TRANSPORT,
+# so its facade is compiled with STARKBANK_WITH_CURL - a second object, because
+# the plain archive and the plain bundle share starkc/facade.o and must keep
+# answering NO_TRANSPORT. Without this the facade never referenced the
+# transport, the linker dropped libstarkcore_curl.a's only member, and both
+# curl bundles were the plain ones under another name.
+CURL_OBJECTS = $(filter-out starkc/facade.o,$(OBJECTS)) starkc/facade_curl.o
+
+starkc/facade_curl.o: starkc/facade.c
+	$(CC) $(ALL_CFLAGS) $(CPPFLAGS) -DSTARKBANK_WITH_CURL -c $< -o $@
 
 bundle: libstarkbank_full.a $(BUNDLE_SHARED_NAME)
 
@@ -276,22 +327,23 @@ bundle-curl: libstarkbank_full_curl.a $(BUNDLE_CURL_SHARED_NAME)
 
 libstarkbank_full.a: $(OBJECTS)
 	@rm -f $@
-	$(call mergeArchive,$@,)
+	$(call mergeArchive,$@,,$(OBJECTS))
 
-libstarkbank_full_curl.a: $(OBJECTS)
+libstarkbank_full_curl.a: $(CURL_OBJECTS)
 	@test -n "$(CORE_CURL_LIB)" || { echo "bundle-curl: build core-c with 'make curl' first" >&2; exit 1; }
 	@rm -f $@
-	$(call mergeArchive,$@,$(CORE_CURL_LIB))
+	$(call mergeArchive,$@,$(CORE_CURL_LIB),$(CURL_OBJECTS))
 
-# One recipe, two artifacts. $(1) is the archive, $(2) the extra library.
-ifeq ($(UNAME),Darwin)
+# One recipe, two artifacts. $(1) is the archive, $(2) the extra library,
+# $(3) the objects. binutils ar reads MRI scripts on Linux and on MinGW alike.
+ifeq ($(PLATFORM),darwin)
 define mergeArchive
-	$(MERGE) $(1) $(OBJECTS) $(2) $(BUNDLE_ARCHIVES)
+	$(MERGE) $(1) $(3) $(2) $(BUNDLE_ARCHIVES)
 endef
 else
 define mergeArchive
 	@{ echo "create $(1)"; \
-	   for object in $(OBJECTS); do echo "addmod $$object"; done; \
+	   for object in $(3); do echo "addmod $$object"; done; \
 	   for archive in $(2) $(BUNDLE_ARCHIVES); do echo "addlib $$archive"; done; \
 	   echo save; echo end; } | $(AR) -M
 endef
@@ -299,18 +351,70 @@ endif
 
 $(BUNDLE_SHARED_NAME): ALL_CFLAGS += -DSTARKBANK_BUILD_SHARED
 $(BUNDLE_SHARED_NAME): $(SOURCES) exports.txt exports.map
-	$(CC) $(ALL_CFLAGS) $(CPPFLAGS) $(SHARED_FLAGS) -o $@ $(SOURCES) $(BUNDLE_ARCHIVES)
+	$(CC) $(ALL_CFLAGS) $(CPPFLAGS) $(SHARED_FLAGS) -o $@ $(SOURCES) $(BUNDLE_ARCHIVES) $(SYSTEM_LIBS)
 
-$(BUNDLE_CURL_SHARED_NAME): ALL_CFLAGS += -DSTARKBANK_BUILD_SHARED
+$(BUNDLE_CURL_SHARED_NAME): ALL_CFLAGS += -DSTARKBANK_BUILD_SHARED -DSTARKBANK_WITH_CURL
 $(BUNDLE_CURL_SHARED_NAME): $(SOURCES) exports.txt exports.map
 	@test -n "$(CORE_CURL_LIB)" || { echo "bundle-curl: build core-c with 'make curl' first" >&2; exit 1; }
 	$(CC) $(ALL_CFLAGS) $(CPPFLAGS) $(SHARED_FLAGS) -o $@ $(SOURCES) \
-		$(CORE_CURL_LIB) $(BUNDLE_ARCHIVES) -lcurl
+		$(CORE_CURL_LIB) $(BUNDLE_ARCHIVES) -lcurl $(SYSTEM_LIBS)
 
 # Nobody should have to guess the static link order. The archives are listed
 # dependency-last because that is the only order a one-pass linker accepts.
 print-ldflags:
 	@echo "$(LDFLAGS) libstarkbank.a $(CORE_LIB) $(ECDSA_LIB) -lsecp256k1"
+
+# The release tarball: everything a consumer needs for one OS and architecture,
+# named so the GitHub Release can hold one per platform (make dist works on
+# Linux, macOS and Windows under MSYS2). The plain archive is
+# for a C host that links core-c, ecdsa-c and secp256k1 itself; the two bundles
+# carry all three inside, so an FFI host loads one file. The .pc inside is made
+# relocatable with ${pcfiledir}, because a tarball has no prefix until it is
+# unpacked somewhere; starkbank_full.pc describes the bundle, which needs no
+# sibling .pc files. Symlinks give the Linux shared libraries their unversioned
+# names, so -lstarkbank_full works without spelling the soname.
+# Windows ships no curl bundle: MSYS2's libcurl drags a chain of DLLs no host
+# should have to redistribute, and the Windows hosts this ABI exists for bring
+# their own HTTP stack through starkbank_client_set_transport. It ships the
+# import libraries and the .def files instead.
+DIST_ARCH := $(shell uname -m)
+DIST_NAME = starkbank-c-$(VERSION)-$(PLATFORM)-$(DIST_ARCH)
+DIST_DIR = dist/$(DIST_NAME)
+ifeq ($(PLATFORM),windows)
+  DIST_DEPENDS = libstarkbank.a shared bundle starkbank.pc
+  DIST_STATIC = libstarkbank.a libstarkbank_full.a libstarkbank.dll.a libstarkbank_full.dll.a \
+                starkbank.def starkbank_full.def
+  DIST_SHARED = $(SHARED_NAME) $(BUNDLE_SHARED_NAME)
+else
+  DIST_DEPENDS = libstarkbank.a shared bundle bundle-curl starkbank.pc
+  DIST_STATIC = libstarkbank.a libstarkbank_full.a libstarkbank_full_curl.a
+  DIST_SHARED = $(SHARED_NAME) $(BUNDLE_SHARED_NAME) $(BUNDLE_CURL_SHARED_NAME)
+endif
+
+dist: $(DIST_DEPENDS)
+	rm -rf $(DIST_DIR) dist/$(DIST_NAME).tar.gz dist/$(DIST_NAME).tar.gz.sha256
+	install -d $(DIST_DIR)/include $(DIST_DIR)/lib/pkgconfig $(DIST_DIR)/bindings
+	install -m 644 include/starkbank.h $(DIST_DIR)/include/
+	install -m 644 $(DIST_STATIC) $(DIST_DIR)/lib/
+	install -m 755 $(DIST_SHARED) $(DIST_DIR)/lib/
+	sed -e 's#^prefix=.*#prefix=$${pcfiledir}/../..#' -e 's#^libdir=.*#libdir=$${prefix}/lib#' \
+	    -e 's#^includedir=.*#includedir=$${prefix}/include#' starkbank.pc > $(DIST_DIR)/lib/pkgconfig/starkbank.pc
+	@printf 'prefix=$${pcfiledir}/../..\nexec_prefix=$${prefix}\nlibdir=$${prefix}/lib\nincludedir=$${prefix}/include\n\n' \
+		> $(DIST_DIR)/lib/pkgconfig/starkbank_full.pc
+	@printf 'Name: starkbank_full\nDescription: Stark Bank SDK with starkcore, starkecdsa and secp256k1 inside\n' \
+		>> $(DIST_DIR)/lib/pkgconfig/starkbank_full.pc
+	@printf 'Version: %s\nLibs: -L$${libdir} -lstarkbank_full\nCflags: -I$${includedir}\n' "$(VERSION)" \
+		>> $(DIST_DIR)/lib/pkgconfig/starkbank_full.pc
+	install -m 644 bindings/Starkbank.cs bindings/starkbank.pas $(DIST_DIR)/bindings/
+	install -m 644 LICENSE THIRD-PARTY-NOTICES README.md CHANGELOG.md $(DIST_DIR)/
+	@if [ "$(PLATFORM)" = "linux" ]; then \
+		ln -sf $(SHARED_NAME) $(DIST_DIR)/lib/libstarkbank.so; \
+		ln -sf $(BUNDLE_SHARED_NAME) $(DIST_DIR)/lib/libstarkbank_full.so; \
+		ln -sf $(BUNDLE_CURL_SHARED_NAME) $(DIST_DIR)/lib/libstarkbank_full_curl.so; \
+	fi
+	tar -C dist -czf dist/$(DIST_NAME).tar.gz $(DIST_NAME)
+	cd dist && shasum -a 256 $(DIST_NAME).tar.gz | sed 's/ \*/  /' > $(DIST_NAME).tar.gz.sha256
+	@echo "dist: dist/$(DIST_NAME).tar.gz"
 
 starkbank.pc: include/starkbank.h
 	@printf 'prefix=%s\nexec_prefix=$${prefix}\nlibdir=%s\nincludedir=%s\n\n' \
@@ -491,33 +595,72 @@ exports.map: include/starkbank.h
 # every cross-file helper, so starkbankFieldFind is legitimately there. What
 # must never appear in either is a bare starkcore_ or cJSON_ symbol we
 # re-exported by linking a dependency in.
+# The symbols a binary exports and the libraries it needs, per platform: ELF
+# through nm -D and readelf, Mach-O through nm -gU and otool, PE through the
+# tables objdump prints.
+ifeq ($(PLATFORM),windows)
+  # The export tables are the only part of objdump -p whose rows open with a
+  # bracketed index; the address table's rows end in "Export RVA" and the name
+  # table's in the name, whatever binutils prints in between (2.47 adds the
+  # ordinal in hex). The count check below is what catches a format this
+  # misreads: it fails on zero as loudly as on a leak.
+  EXPORTS_OF = objdump -p $(1) | awk '{sub(/\r$$/, "")} /^[ \t]*\[ *[0-9]+\]/ && $$NF != "RVA" {print $$NF}'
+  NEEDS_OF = objdump -p $(1) | grep 'DLL Name'
+else ifeq ($(PLATFORM),darwin)
+  EXPORTS_OF = nm -gU $(1) | awk '{print $$3}' | sed 's/^_//'
+  NEEDS_OF = otool -L $(1)
+else
+  EXPORTS_OF = nm -D --defined-only $(1) | awk '$$2 != "A" {print $$3}' | sed 's/@@.*//'
+  NEEDS_OF = readelf -d $(1) | grep NEEDED
+endif
+
+# The external symbols an archive defines. MinGW-w64 GCC adds a .refptr.<name>
+# stub for every data symbol referenced across translation units, a COMDAT the
+# linker merges and no host can name, so it is not part of the surface.
+ARCHIVE_EXTERNALS = nm -g $(1) 2>/dev/null | awk '$$2 ~ /^[A-TV-Z]$$/ {print $$3}' \
+	| sed 's/^_//' | grep -v '^\.refptr\.'
+
 check-exports: libstarkbank.a shared
-	@nm -g libstarkbank.a 2>/dev/null | awk '$$2 ~ /^[A-TV-Z]$$/ {print $$3}' \
-		| sed 's/^_//' | grep -v '^starkbank' | sort -u > exports.unexpected || true
+	@$(call ARCHIVE_EXTERNALS,libstarkbank.a) | grep -v '^starkbank' | sort -u > exports.unexpected || true
 	@if [ -s exports.unexpected ]; then \
 		echo "unexpected external symbols in libstarkbank.a:"; cat exports.unexpected; exit 1; fi
-	@if [ "$(UNAME)" = "Darwin" ]; then nm -gU $(SHARED_NAME) | awk '{print $$3}' | sed 's/^_//'; \
-	else nm -D --defined-only $(SHARED_NAME) | awk '$$2 != "A" {print $$3}' | sed 's/@@.*//'; fi \
-	| grep -v '^starkbank_' > exports.unexpected || true
+	@$(call EXPORTS_OF,$(SHARED_NAME)) | grep -v '^starkbank_' > exports.unexpected || true
 	@if [ -s exports.unexpected ]; then \
 		echo "unexpected exports in $(SHARED_NAME):"; cat exports.unexpected; exit 1; fi
-	@rm -f exports.unexpected
 	@for bundle in $(BUNDLE_SHARED_NAME) $(BUNDLE_CURL_SHARED_NAME); do \
 		test -f $$bundle || continue; \
-		if [ "$(UNAME)" = "Darwin" ]; then nm -gU $$bundle | awk '{print $$3}' | sed 's/^_//'; \
-		else nm -D --defined-only $$bundle | awk '$$2 != "A" {print $$3}' | sed 's/@@.*//'; fi \
-		| grep -v '^starkbank_' > exports.unexpected || true; \
+		$(call EXPORTS_OF,$$bundle) | grep -v '^starkbank_' > exports.unexpected || true; \
 		if [ -s exports.unexpected ]; then \
 			echo "unexpected exports in $$bundle:"; cat exports.unexpected; exit 1; fi; \
+		$(call assertExportCount,$$bundle); \
 		echo "check-exports: $$bundle exports only starkbank_* with the dependencies inside"; \
 	done
+	@if [ -f $(BUNDLE_SHARED_NAME) ] && $(call NEEDS_OF,$(BUNDLE_SHARED_NAME)) | grep -qi curl; then \
+		echo "check-exports: $(BUNDLE_SHARED_NAME) must not depend on libcurl"; exit 1; fi
+	@if [ -f $(BUNDLE_CURL_SHARED_NAME) ]; then \
+		nm $(BUNDLE_CURL_SHARED_NAME) | grep -q 'starkcore_transport_curl' || { \
+			echo "check-exports: $(BUNDLE_CURL_SHARED_NAME) carries no curl transport"; exit 1; }; \
+		$(call NEEDS_OF,$(BUNDLE_CURL_SHARED_NAME)) | grep -qi curl || { \
+			echo "check-exports: $(BUNDLE_CURL_SHARED_NAME) does not link libcurl"; exit 1; }; \
+		nm libstarkbank_full_curl.a | grep -q 'T _*starkcore_transport_curl' || { \
+			echo "check-exports: libstarkbank_full_curl.a carries no curl transport"; exit 1; }; \
+		echo "check-exports: the curl bundles carry starkcore_transport_curl and link libcurl"; fi
 	@rm -f exports.unexpected
-	@archive=$$(nm -g libstarkbank.a 2>/dev/null | awk '$$2 ~ /^[A-TV-Z]$$/ {print $$3}' \
-		| sed 's/^_//' | grep -c '^starkbank'); \
-	exported=$$(if [ "$(UNAME)" = "Darwin" ]; then nm -gU $(SHARED_NAME); \
-		else nm -D --defined-only $(SHARED_NAME); fi | grep -c 'starkbank_'); \
+	@$(call assertExportCount,$(SHARED_NAME))
+	@archive=$$($(call ARCHIVE_EXTERNALS,libstarkbank.a) | grep -c '^starkbank'); \
+	exported=$$($(call EXPORTS_OF,$(SHARED_NAME)) | grep -c 'starkbank_'); \
 	echo "check-exports: $$archive external symbols in libstarkbank.a, all starkbank*;" \
 		"$$exported exported from $(SHARED_NAME), all starkbank_*"
+
+# Every STARKBANK_API declaration is exported and nothing else is: the two
+# counts agree or the check fails, and a reader that misparses the export
+# table fails here on zero rather than passing on an empty list.
+define assertExportCount
+	exported=$$($(call EXPORTS_OF,$(1)) | grep -c '^starkbank_'); \
+	declared=$$(wc -l < exports.txt | tr -d ' '); \
+	test "$$exported" -eq "$$declared" || { \
+		echo "check-exports: $(1) exports $$exported starkbank_* symbols, the header declares $$declared"; exit 1; }
+endef
 
 # The one mitigation for macro-expanded verb bodies: when a -Werror diagnostic
 # or a breakpoint lands on verbs.h, this is how you read what the table
@@ -585,6 +728,8 @@ bindings:
 	python3 tools/emit.py
 
 clean:
+	rm -rf dist
+	rm -f starkc/facade_curl.o starkc/facade_curl.d starkbank*.dll libstarkbank*.dll.a starkbank*.def
 	rm -f $(OBJECTS) $(DEPENDS) libstarkbank.a $(SHARED_NAME) libstarkbank.so.*
 	rm -f exports.txt exports.map exports.defined exports.unexpected starkbank.pc
 	rm -f libstarkbank_full*.a libstarkbank_full*.dylib libstarkbank_full*.so.* libstarkbank_full*.d

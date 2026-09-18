@@ -150,6 +150,33 @@ name-keyed accessors.
   `query(search=None)` and no `limit` keyword, no `page()`. Promoting
   `CorporateRule`'s matching fields from `LIST_OBJECT` to `LIST_RESOURCE` is
   a mechanical follow-up left for that table, as its own header already flags
+- `make dist`: the release tarball for one OS and architecture - header, the
+  plain archive, the two bundles static and shared, a relocatable `.pc` and the
+  bindings - with a sha256 beside it
+- `.github/workflows/release.yml`: on a version tag, builds the tarball on
+  Linux x86_64 (Ubuntu 22.04 container, glibc 2.35 floor), macOS arm64, macOS
+  x86_64 and Windows x86_64, refuses a tag that disagrees with
+  `STARKBANK_VERSION`, and attaches the tarballs to a GitHub Release;
+  `workflow_dispatch` rehearses the packaging without publishing
+- The Linux and Windows release jobs build libsecp256k1 v0.7.1 from source:
+  Ubuntu 22.04's 0.1 package has a `SECP256K1_CONTEXT_NONE` that cannot sign,
+  so a build against it passes the compiler and fails every request, and MSYS2
+  has no package at all. Every release job runs the suites before packaging
+- Windows through MinGW-w64 in MSYS2's UCRT64 environment: the Makefile grows a
+  platform branch (`starkbank.dll` and `starkbank_full.dll` with import
+  libraries and `.def` files, no `-fPIC`, static libgcc, `-lbcrypt` for
+  ecdsa-c's random source on every DLL including the bundle). `check-exports`
+  reads the PE export table, ignores GCC's `.refptr.` stubs in the archive and
+  requires every shared artifact to export exactly the `STARKBANK_API` count;
+  the merged archives are handed to `ar -M` by Windows-style paths, because
+  MSYS2 converts none inside a script on stdin. A CI job builds libsecp256k1
+  from source with the recovery module, builds ecdsa-c with `SECP256K1_STATIC`
+  (the header declares the API `dllimport` without it and the link asks for
+  `__imp_secp256k1_*`), pins core-c 0.1.1, whose vendored cJSON no longer
+  marks itself `dllexport` (the directive survives `--exclude-libs`, so 0.1.0
+  leaked its 78 functions from every DLL), and runs the suites there. No curl
+  bundle on Windows. The MSVC compile-only gate now discovers every resource
+  directory instead of naming five
 
 ### Changed
 - `tests/reference/sdk-python.sha` moved to `be7755a5`, the sdk-python master
@@ -167,3 +194,16 @@ name-keyed accessors.
   vendored. Every CI job is red until both are reachable from this repository.
 - Windows is compile-only in CI and has no runner that links: core-c has no
   Windows build yet. The DLL path is the least-tested surface here.
+
+### Fixed
+- The curl bundles carried no curl transport. `starkbank_client_set_curl_transport`
+  is compiled under `STARKBANK_WITH_CURL`, which no bundle target defined, so
+  the facade never referenced `starkcore_transport_curl`, the linker dropped
+  libstarkcore_curl.a's only member, and both curl bundles were the plain ones
+  under another name. The curl bundles now compile the facade with the define
+  (a second object, so the plain bundle keeps answering NO_TRANSPORT), and
+  `check-exports` fails unless the curl bundle carries the transport and links
+  libcurl and the plain one does neither
+- `make shared` built the dylib from a phony target, so `-install_name
+  @rpath/$(@F)` stamped it `@rpath/shared` and no host loading it by rpath
+  found it. The shared library is a file target now

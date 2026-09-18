@@ -16,7 +16,7 @@ on:
 # contents:read on ecdsa-c and app-docs) and STARK_INFRA_TOKEN (owner starkinfra,
 # contents:read on core-c), falling back to the automatic token once public. A fork PR has neither and stays red.
 env:
-  CORE_C_REF: v0.1.0
+  CORE_C_REF: v0.1.1
   ECDSA_C_REF: v0.1.0
   # The drift checker reads sdk-python at the sha tests/reference/sdk-python.sha
   # pins and app-docs at its default branch. Neither is imported and neither is
@@ -100,6 +100,14 @@ jobs:
         run: |
           make -C starkbank/sdk-c bundle
           make -C starkbank/sdk-c bundle-curl
+          make -C starkbank/sdk-c check-exports
+
+      # release.yml cannot be rehearsed from a branch, so the tarball is built
+      # here too; the release job builds it in an Ubuntu 22.04 container.
+      - name: Release tarball for this platform
+        run: |
+          make -C starkbank/sdk-c dist
+          ls -la starkbank/sdk-c/dist/*/lib
 
       - name: Install into a staging prefix
         run: make -C starkbank/sdk-c install DESTDIR=/tmp/stage PREFIX=/usr/local
@@ -260,4 +268,79 @@ jobs:
         shell: cmd
         run: |
           cd starkbank\sdk-c
-          cl /nologo /TC /W4 /permissive- /c /Iinclude /Istarkc /Istarkbank /I..\..\starkinfra\core-c\include starkc\*.c starkbank\balance\*.c starkbank\event\*.c starkbank\invoice\*.c starkbank\split\*.c starkbank\transfer\*.c handwritten\*.c /Fo%TEMP%\\
+          cl /nologo /TC /W4 /permissive- /c /Iinclude /Istarkc /Istarkbank /I..\..\starkinfra\core-c\include /I..\ecdsa-c\include starkc\*.c handwritten\*.c /Fo%TEMP%\
+          for /d %%d in (starkbank\*) do cl /nologo /TC /W4 /permissive- /c /Iinclude /Istarkc /Istarkbank /I..\..\starkinfra\core-c\include /I..\ecdsa-c\include %%d\*.c /Fo%TEMP%\\
+
+  # The GCC route to Windows: MinGW-w64 in the runner's preinstalled MSYS2,
+  # UCRT64 environment. This is the job that proves a DLL and the static
+  # archives exist for Windows at all; MSVC builds are compile-only above,
+  # because core-c has no MSVC build to link. libsecp256k1 has no MSYS2
+  # package, so it is built from source with the recovery module ecdsa-c uses.
+  windows-mingw:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: C:\msys64\usr\bin\bash.exe -leo pipefail {0}
+    env:
+      MSYSTEM: UCRT64
+      CHERE_INVOKING: 1
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          path: starkbank/sdk-c
+
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          repository: starkinfra/core-c
+          token: ${{ secrets.STARK_INFRA_TOKEN || secrets.STARK_SIBLINGS_TOKEN || github.token }}
+          ref: ${{ env.CORE_C_REF }}
+          path: starkinfra/core-c
+
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          repository: starkbank/ecdsa-c
+          token: ${{ secrets.STARK_SIBLINGS_TOKEN || github.token }}
+          ref: ${{ env.ECDSA_C_REF }}
+          path: starkbank/ecdsa-c
+
+      - name: MinGW-w64 toolchain
+        run: |
+          pacman -Sy --noconfirm
+          pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake \
+            mingw-w64-ucrt-x86_64-ninja make git perl
+          gcc --version | head -1
+
+      - name: libsecp256k1, static, with the recovery module
+        run: |
+          git clone --depth 1 --branch v0.7.1 https://github.com/bitcoin-core/secp256k1 secp256k1-src
+          cmake -S secp256k1-src -B secp256k1-build -G Ninja -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_SHARED_LIBS=OFF -DSECP256K1_ENABLE_MODULE_RECOVERY=ON \
+            -DSECP256K1_BUILD_TESTS=OFF -DSECP256K1_BUILD_EXHAUSTIVE_TESTS=OFF \
+            -DSECP256K1_BUILD_BENCHMARK=OFF -DSECP256K1_BUILD_CTIME_TESTS=OFF \
+            -DCMAKE_INSTALL_PREFIX="$PWD/secp256k1-prefix"
+          cmake --build secp256k1-build
+          cmake --install secp256k1-build
+
+      # secp256k1.h declares its API __declspec(dllimport) on Windows unless
+      # SECP256K1_STATIC is defined; against the static archive built above,
+      # ecdsa-c's objects would otherwise ask the linker for __imp_secp256k1_*.
+      - name: Build the siblings
+        run: |
+          make -C starkbank/ecdsa-c SECP256K1_PREFIX="$PWD/secp256k1-prefix" CFLAGS="-O2 -DSECP256K1_STATIC"
+          make -C starkinfra/core-c SECP256K1_PREFIX="$PWD/secp256k1-prefix"
+
+      - name: Library, suites, DLLs, exports and the tarball
+        run: |
+          prefix="$PWD/secp256k1-prefix"
+          make -C starkbank/sdk-c SECP256K1_PREFIX="$prefix" CFLAGS="-O2 -Werror"
+          make -C starkbank/sdk-c SECP256K1_PREFIX="$prefix" test
+          make -C starkbank/sdk-c SECP256K1_PREFIX="$prefix" shared bundle
+          make -C starkbank/sdk-c SECP256K1_PREFIX="$prefix" check-exports
+          make -C starkbank/sdk-c SECP256K1_PREFIX="$prefix" dist
+          ls -la starkbank/sdk-c/dist/*/lib
+
+      # What check-exports reads, kept visible so a binutils format change
+      # is diagnosed from the log rather than from a second run.
+      - name: The export table as objdump prints it
+        if: always()
+        run: objdump -p starkbank/sdk-c/starkbank.dll | sed -n '/Ordinal Base/,+3p'
