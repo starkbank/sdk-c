@@ -459,6 +459,26 @@ namespace StarkBank
         public const string StarkbankInvoiceUpdated = "updated";
         public const int StarkbankLanguageEnUs = 0;
         public const int StarkbankLanguagePtBr = 1;
+        public const string StarkbankMerchantCardCreated = "created";
+        public const string StarkbankMerchantCardEnding = "ending";
+        public const string StarkbankMerchantCardExpiration = "expiration";
+        public const string StarkbankMerchantCardFundingType = "fundingType";
+        public const string StarkbankMerchantCardHolderName = "holderName";
+        public const string StarkbankMerchantCardId = "id";
+        public const string StarkbankMerchantCardLogCard = "card";
+        public const string StarkbankMerchantCardLogCreated = "created";
+        public const string StarkbankMerchantCardLogErrors = "errors";
+        public const string StarkbankMerchantCardLogId = "id";
+        public const string StarkbankMerchantCardLogType = "type";
+        public const string StarkbankMerchantCardLogUpdated = "updated";
+        public const string StarkbankMerchantCardNetwork = "network";
+        public const string StarkbankMerchantCardStatus = "status";
+        public const string StarkbankMerchantCardStatusActive = "active";
+        public const string StarkbankMerchantCardStatusBlocked = "blocked";
+        public const string StarkbankMerchantCardStatusCanceled = "canceled";
+        public const string StarkbankMerchantCardStatusExpired = "expired";
+        public const string StarkbankMerchantCardTags = "tags";
+        public const string StarkbankMerchantCardUpdated = "updated";
         public const string StarkbankMerchantSessionAllowedFundingTypes = "allowedFundingTypes";
         public const string StarkbankMerchantSessionAllowedInstallments = "allowedInstallments";
         public const string StarkbankMerchantSessionAllowedIps = "allowedIps";
@@ -1286,6 +1306,30 @@ namespace StarkBank
 
         [DllImport(Library, EntryPoint = "starkbank_list_new", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankListNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_merchant_card_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankMerchantCardGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_merchant_card_log_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankMerchantCardLogGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_merchant_card_log_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankMerchantCardLogPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_merchant_card_log_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankMerchantCardLogParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_merchant_card_log_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankMerchantCardLogQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_merchant_card_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankMerchantCardPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_merchant_card_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankMerchantCardParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_merchant_card_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankMerchantCardQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
 
         [DllImport(Library, EntryPoint = "starkbank_merchant_session_create", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankMerchantSessionCreate(IntPtr client, IntPtr session, out IntPtr @out, out IntPtr errors);
