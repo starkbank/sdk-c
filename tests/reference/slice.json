@@ -391,6 +391,499 @@
         }
       ]
     },
+    "corporatebalance.get": {
+      "hydrated": "{\"amount\":100000,\"currency\":\"BRL\",\"id\":\"5992663269507072\",\"limit\":0,\"maxLimit\":100000,\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-balance"
+        }
+      ]
+    },
+    "corporatecard.create": {
+      "hydrated": "{\"city\":\"Sao Paulo\",\"created\":\"2026-09-16T12:00:00+00:00\",\"displayName\":\"TONY STARK\",\"district\":\"Bela Vista\",\"expiration\":\"2030-01-01T00:00:00+00:00\",\"holderId\":\"5729405850615808\",\"holderName\":\"Tony Stark\",\"id\":\"5859665293850624\",\"number\":\"123\",\"rules\":[{\"amount\":200000,\"categories\":[],\"counterAmount\":1000,\"countries\":[],\"currencyCode\":\"BRL\",\"currencyName\":\"Brazilian Real\",\"currencySymbol\":\"R$\",\"id\":\"5714626427174912\",\"interval\":\"day\",\"methods\":[],\"name\":\"Travel\",\"purposes\":[\"purchase\"]}],\"securityCode\":\"123\",\"stateCode\":\"SP\",\"status\":\"active\",\"streetLine1\":\"Av. Paulista, 200\",\"streetLine2\":\"Apto. 123\",\"tags\":[\"travel\"],\"type\":\"virtual\",\"updated\":\"2026-09-17T12:00:00+00:00\",\"zipCode\":\"01311-200\"}",
+      "requests": [
+        {
+          "body": "{\"holderId\":\"5729405850615808\"}",
+          "bodyRaw": "{\"holderId\": \"5729405850615808\"}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-card/token"
+        }
+      ]
+    },
+    "corporatecard.delete": {
+      "hydrated": "{\"city\":\"Sao Paulo\",\"created\":\"2026-09-16T12:00:00+00:00\",\"displayName\":\"TONY STARK\",\"district\":\"Bela Vista\",\"expiration\":\"2030-01-01T00:00:00+00:00\",\"holderId\":\"5729405850615808\",\"holderName\":\"Tony Stark\",\"id\":\"5859665293850624\",\"number\":\"123\",\"rules\":[{\"amount\":200000,\"categories\":[],\"counterAmount\":1000,\"countries\":[],\"currencyCode\":\"BRL\",\"currencyName\":\"Brazilian Real\",\"currencySymbol\":\"R$\",\"id\":\"5714626427174912\",\"interval\":\"day\",\"methods\":[],\"name\":\"Travel\",\"purposes\":[\"purchase\"]}],\"securityCode\":\"123\",\"stateCode\":\"SP\",\"status\":\"active\",\"streetLine1\":\"Av. Paulista, 200\",\"streetLine2\":\"Apto. 123\",\"tags\":[\"travel\"],\"type\":\"virtual\",\"updated\":\"2026-09-17T12:00:00+00:00\",\"zipCode\":\"01311-200\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "DELETE",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-card/5859665293850624"
+        }
+      ]
+    },
+    "corporatecard.get": {
+      "hydrated": "{\"city\":\"Sao Paulo\",\"created\":\"2026-09-16T12:00:00+00:00\",\"displayName\":\"TONY STARK\",\"district\":\"Bela Vista\",\"expiration\":\"2030-01-01T00:00:00+00:00\",\"holderId\":\"5729405850615808\",\"holderName\":\"Tony Stark\",\"id\":\"5859665293850624\",\"number\":\"123\",\"rules\":[{\"amount\":200000,\"categories\":[],\"counterAmount\":1000,\"countries\":[],\"currencyCode\":\"BRL\",\"currencyName\":\"Brazilian Real\",\"currencySymbol\":\"R$\",\"id\":\"5714626427174912\",\"interval\":\"day\",\"methods\":[],\"name\":\"Travel\",\"purposes\":[\"purchase\"]}],\"securityCode\":\"123\",\"stateCode\":\"SP\",\"status\":\"active\",\"streetLine1\":\"Av. Paulista, 200\",\"streetLine2\":\"Apto. 123\",\"tags\":[\"travel\"],\"type\":\"virtual\",\"updated\":\"2026-09-17T12:00:00+00:00\",\"zipCode\":\"01311-200\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-card/5859665293850624"
+        }
+      ]
+    },
+    "corporatecard.log.get": {
+      "hydrated": "{\"card\":{\"city\":\"Sao Paulo\",\"created\":\"2026-09-16T12:00:00+00:00\",\"displayName\":\"TONY STARK\",\"district\":\"Bela Vista\",\"expiration\":\"2030-01-01T00:00:00+00:00\",\"holderId\":\"5729405850615808\",\"holderName\":\"Tony Stark\",\"id\":\"5859665293850624\",\"number\":\"123\",\"rules\":[{\"amount\":200000,\"categories\":[],\"counterAmount\":1000,\"countries\":[],\"currencyCode\":\"BRL\",\"currencyName\":\"Brazilian Real\",\"currencySymbol\":\"R$\",\"id\":\"5714626427174912\",\"interval\":\"day\",\"methods\":[],\"name\":\"Travel\",\"purposes\":[\"purchase\"]}],\"securityCode\":\"123\",\"stateCode\":\"SP\",\"status\":\"active\",\"streetLine1\":\"Av. Paulista, 200\",\"streetLine2\":\"Apto. 123\",\"tags\":[\"travel\"],\"type\":\"virtual\",\"updated\":\"2026-09-17T12:00:00+00:00\",\"zipCode\":\"01311-200\"},\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6341320293482500\",\"type\":\"created\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-card/log/6341320293482500"
+        }
+      ]
+    },
+    "corporatecard.log.page": {
+      "hydrated": [
+        "{\"card\":{\"city\":\"Sao Paulo\",\"created\":\"2026-09-16T12:00:00+00:00\",\"displayName\":\"TONY STARK\",\"district\":\"Bela Vista\",\"expiration\":\"2030-01-01T00:00:00+00:00\",\"holderId\":\"5729405850615808\",\"holderName\":\"Tony Stark\",\"id\":\"5859665293850624\",\"number\":\"123\",\"rules\":[{\"amount\":200000,\"categories\":[],\"counterAmount\":1000,\"countries\":[],\"currencyCode\":\"BRL\",\"currencyName\":\"Brazilian Real\",\"currencySymbol\":\"R$\",\"id\":\"5714626427174912\",\"interval\":\"day\",\"methods\":[],\"name\":\"Travel\",\"purposes\":[\"purchase\"]}],\"securityCode\":\"123\",\"stateCode\":\"SP\",\"status\":\"active\",\"streetLine1\":\"Av. Paulista, 200\",\"streetLine2\":\"Apto. 123\",\"tags\":[\"travel\"],\"type\":\"virtual\",\"updated\":\"2026-09-17T12:00:00+00:00\",\"zipCode\":\"01311-200\"},\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6341320293482500\",\"type\":\"created\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-card/log"
+        }
+      ]
+    },
+    "corporatecard.log.query": {
+      "hydrated": [
+        "{\"card\":{\"city\":\"Sao Paulo\",\"created\":\"2026-09-16T12:00:00+00:00\",\"displayName\":\"TONY STARK\",\"district\":\"Bela Vista\",\"expiration\":\"2030-01-01T00:00:00+00:00\",\"holderId\":\"5729405850615808\",\"holderName\":\"Tony Stark\",\"id\":\"5859665293850624\",\"number\":\"123\",\"rules\":[{\"amount\":200000,\"categories\":[],\"counterAmount\":1000,\"countries\":[],\"currencyCode\":\"BRL\",\"currencyName\":\"Brazilian Real\",\"currencySymbol\":\"R$\",\"id\":\"5714626427174912\",\"interval\":\"day\",\"methods\":[],\"name\":\"Travel\",\"purposes\":[\"purchase\"]}],\"securityCode\":\"123\",\"stateCode\":\"SP\",\"status\":\"active\",\"streetLine1\":\"Av. Paulista, 200\",\"streetLine2\":\"Apto. 123\",\"tags\":[\"travel\"],\"type\":\"virtual\",\"updated\":\"2026-09-17T12:00:00+00:00\",\"zipCode\":\"01311-200\"},\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6341320293482500\",\"type\":\"created\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "cardIds=5859665293850624&limit=5&types=created",
+          "queryRaw": "limit=5&types=created&cardIds=5859665293850624",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-card/log"
+        }
+      ]
+    },
+    "corporatecard.page": {
+      "hydrated": [
+        "{\"city\":\"Sao Paulo\",\"created\":\"2026-09-16T12:00:00+00:00\",\"displayName\":\"TONY STARK\",\"district\":\"Bela Vista\",\"expiration\":\"2030-01-01T00:00:00+00:00\",\"holderId\":\"5729405850615808\",\"holderName\":\"Tony Stark\",\"id\":\"5859665293850624\",\"number\":\"123\",\"rules\":[{\"amount\":200000,\"categories\":[],\"counterAmount\":1000,\"countries\":[],\"currencyCode\":\"BRL\",\"currencyName\":\"Brazilian Real\",\"currencySymbol\":\"R$\",\"id\":\"5714626427174912\",\"interval\":\"day\",\"methods\":[],\"name\":\"Travel\",\"purposes\":[\"purchase\"]}],\"securityCode\":\"123\",\"stateCode\":\"SP\",\"status\":\"active\",\"streetLine1\":\"Av. Paulista, 200\",\"streetLine2\":\"Apto. 123\",\"tags\":[\"travel\"],\"type\":\"virtual\",\"updated\":\"2026-09-17T12:00:00+00:00\",\"zipCode\":\"01311-200\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-card"
+        }
+      ]
+    },
+    "corporatecard.query": {
+      "hydrated": [
+        "{\"city\":\"Sao Paulo\",\"created\":\"2026-09-16T12:00:00+00:00\",\"displayName\":\"TONY STARK\",\"district\":\"Bela Vista\",\"expiration\":\"2030-01-01T00:00:00+00:00\",\"holderId\":\"5729405850615808\",\"holderName\":\"Tony Stark\",\"id\":\"5859665293850624\",\"number\":\"123\",\"rules\":[{\"amount\":200000,\"categories\":[],\"counterAmount\":1000,\"countries\":[],\"currencyCode\":\"BRL\",\"currencyName\":\"Brazilian Real\",\"currencySymbol\":\"R$\",\"id\":\"5714626427174912\",\"interval\":\"day\",\"methods\":[],\"name\":\"Travel\",\"purposes\":[\"purchase\"]}],\"securityCode\":\"123\",\"stateCode\":\"SP\",\"status\":\"active\",\"streetLine1\":\"Av. Paulista, 200\",\"streetLine2\":\"Apto. 123\",\"tags\":[\"travel\"],\"type\":\"virtual\",\"updated\":\"2026-09-17T12:00:00+00:00\",\"zipCode\":\"01311-200\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&status=active&tags=travel",
+          "queryRaw": "limit=5&status=active&tags=travel",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-card"
+        }
+      ]
+    },
+    "corporatecard.update": {
+      "hydrated": "{\"city\":\"Sao Paulo\",\"created\":\"2026-09-16T12:00:00+00:00\",\"displayName\":\"TONY STARK\",\"district\":\"Bela Vista\",\"expiration\":\"2030-01-01T00:00:00+00:00\",\"holderId\":\"5729405850615808\",\"holderName\":\"Tony Stark\",\"id\":\"5859665293850624\",\"number\":\"123\",\"rules\":[{\"amount\":200000,\"categories\":[],\"counterAmount\":1000,\"countries\":[],\"currencyCode\":\"BRL\",\"currencyName\":\"Brazilian Real\",\"currencySymbol\":\"R$\",\"id\":\"5714626427174912\",\"interval\":\"day\",\"methods\":[],\"name\":\"Travel\",\"purposes\":[\"purchase\"]}],\"securityCode\":\"123\",\"stateCode\":\"SP\",\"status\":\"active\",\"streetLine1\":\"Av. Paulista, 200\",\"streetLine2\":\"Apto. 123\",\"tags\":[\"travel\"],\"type\":\"virtual\",\"updated\":\"2026-09-17T12:00:00+00:00\",\"zipCode\":\"01311-200\"}",
+      "requests": [
+        {
+          "body": "{\"status\":\"blocked\",\"tags\":[\"travel\"]}",
+          "bodyRaw": "{\"status\": \"blocked\", \"tags\": [\"travel\"]}",
+          "method": "PATCH",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-card/5859665293850624"
+        }
+      ]
+    },
+    "corporateholder.create": {
+      "hydrated": [
+        "{\"centerId\":\"5656565656565656\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"5729405850615808\",\"name\":\"Tony Stark\",\"permissions\":[{\"created\":\"2026-09-16T12:00:00+00:00\",\"ownerEmail\":\"tony@starkbank.com\",\"ownerId\":\"5656565656565656\",\"ownerName\":\"Tony Stark\",\"ownerPictureUrl\":\"https://storage.googleapis.com/api-ms-workspace-sbx.appspot.com/pictures/1\",\"ownerStatus\":\"active\",\"ownerType\":\"project\"}],\"rules\":[{\"amount\":200000,\"categories\":[],\"counterAmount\":1000,\"countries\":[],\"currencyCode\":\"BRL\",\"currencyName\":\"Brazilian Real\",\"currencySymbol\":\"R$\",\"id\":\"5714626427174912\",\"interval\":\"day\",\"methods\":[],\"name\":\"Travel\",\"purposes\":[\"purchase\"]}],\"status\":\"active\",\"tags\":[\"iron\",\"man\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "{\"holders\":[{\"centerId\":\"5656565656565656\",\"name\":\"Tony Stark\",\"tags\":[\"iron\",\"man\"]}]}",
+          "bodyRaw": "{\"holders\": [{\"centerId\": \"5656565656565656\", \"name\": \"Tony Stark\", \"tags\": [\"iron\", \"man\"]}]}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-holder"
+        }
+      ]
+    },
+    "corporateholder.delete": {
+      "hydrated": "{\"centerId\":\"5656565656565656\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"5729405850615808\",\"name\":\"Tony Stark\",\"permissions\":[{\"created\":\"2026-09-16T12:00:00+00:00\",\"ownerEmail\":\"tony@starkbank.com\",\"ownerId\":\"5656565656565656\",\"ownerName\":\"Tony Stark\",\"ownerPictureUrl\":\"https://storage.googleapis.com/api-ms-workspace-sbx.appspot.com/pictures/1\",\"ownerStatus\":\"active\",\"ownerType\":\"project\"}],\"rules\":[{\"amount\":200000,\"categories\":[],\"counterAmount\":1000,\"countries\":[],\"currencyCode\":\"BRL\",\"currencyName\":\"Brazilian Real\",\"currencySymbol\":\"R$\",\"id\":\"5714626427174912\",\"interval\":\"day\",\"methods\":[],\"name\":\"Travel\",\"purposes\":[\"purchase\"]}],\"status\":\"active\",\"tags\":[\"iron\",\"man\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "DELETE",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-holder/5729405850615808"
+        }
+      ]
+    },
+    "corporateholder.get": {
+      "hydrated": "{\"centerId\":\"5656565656565656\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"5729405850615808\",\"name\":\"Tony Stark\",\"permissions\":[{\"created\":\"2026-09-16T12:00:00+00:00\",\"ownerEmail\":\"tony@starkbank.com\",\"ownerId\":\"5656565656565656\",\"ownerName\":\"Tony Stark\",\"ownerPictureUrl\":\"https://storage.googleapis.com/api-ms-workspace-sbx.appspot.com/pictures/1\",\"ownerStatus\":\"active\",\"ownerType\":\"project\"}],\"rules\":[{\"amount\":200000,\"categories\":[],\"counterAmount\":1000,\"countries\":[],\"currencyCode\":\"BRL\",\"currencyName\":\"Brazilian Real\",\"currencySymbol\":\"R$\",\"id\":\"5714626427174912\",\"interval\":\"day\",\"methods\":[],\"name\":\"Travel\",\"purposes\":[\"purchase\"]}],\"status\":\"active\",\"tags\":[\"iron\",\"man\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-holder/5729405850615808"
+        }
+      ]
+    },
+    "corporateholder.log.get": {
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"holder\":{\"centerId\":\"5656565656565656\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"5729405850615808\",\"name\":\"Tony Stark\",\"permissions\":[{\"created\":\"2026-09-16T12:00:00+00:00\",\"ownerEmail\":\"tony@starkbank.com\",\"ownerId\":\"5656565656565656\",\"ownerName\":\"Tony Stark\",\"ownerPictureUrl\":\"https://storage.googleapis.com/api-ms-workspace-sbx.appspot.com/pictures/1\",\"ownerStatus\":\"active\",\"ownerType\":\"project\"}],\"rules\":[{\"amount\":200000,\"categories\":[],\"counterAmount\":1000,\"countries\":[],\"currencyCode\":\"BRL\",\"currencyName\":\"Brazilian Real\",\"currencySymbol\":\"R$\",\"id\":\"5714626427174912\",\"interval\":\"day\",\"methods\":[],\"name\":\"Travel\",\"purposes\":[\"purchase\"]}],\"status\":\"active\",\"tags\":[\"iron\",\"man\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"id\":\"6341320293482499\",\"type\":\"created\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-holder/log/6341320293482499"
+        }
+      ]
+    },
+    "corporateholder.log.page": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"holder\":{\"centerId\":\"5656565656565656\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"5729405850615808\",\"name\":\"Tony Stark\",\"permissions\":[{\"created\":\"2026-09-16T12:00:00+00:00\",\"ownerEmail\":\"tony@starkbank.com\",\"ownerId\":\"5656565656565656\",\"ownerName\":\"Tony Stark\",\"ownerPictureUrl\":\"https://storage.googleapis.com/api-ms-workspace-sbx.appspot.com/pictures/1\",\"ownerStatus\":\"active\",\"ownerType\":\"project\"}],\"rules\":[{\"amount\":200000,\"categories\":[],\"counterAmount\":1000,\"countries\":[],\"currencyCode\":\"BRL\",\"currencyName\":\"Brazilian Real\",\"currencySymbol\":\"R$\",\"id\":\"5714626427174912\",\"interval\":\"day\",\"methods\":[],\"name\":\"Travel\",\"purposes\":[\"purchase\"]}],\"status\":\"active\",\"tags\":[\"iron\",\"man\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"id\":\"6341320293482499\",\"type\":\"created\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-holder/log"
+        }
+      ]
+    },
+    "corporateholder.log.query": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"holder\":{\"centerId\":\"5656565656565656\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"5729405850615808\",\"name\":\"Tony Stark\",\"permissions\":[{\"created\":\"2026-09-16T12:00:00+00:00\",\"ownerEmail\":\"tony@starkbank.com\",\"ownerId\":\"5656565656565656\",\"ownerName\":\"Tony Stark\",\"ownerPictureUrl\":\"https://storage.googleapis.com/api-ms-workspace-sbx.appspot.com/pictures/1\",\"ownerStatus\":\"active\",\"ownerType\":\"project\"}],\"rules\":[{\"amount\":200000,\"categories\":[],\"counterAmount\":1000,\"countries\":[],\"currencyCode\":\"BRL\",\"currencyName\":\"Brazilian Real\",\"currencySymbol\":\"R$\",\"id\":\"5714626427174912\",\"interval\":\"day\",\"methods\":[],\"name\":\"Travel\",\"purposes\":[\"purchase\"]}],\"status\":\"active\",\"tags\":[\"iron\",\"man\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"id\":\"6341320293482499\",\"type\":\"created\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "holderIds=5729405850615808&limit=5&types=created",
+          "queryRaw": "limit=5&types=created&holderIds=5729405850615808",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-holder/log"
+        }
+      ]
+    },
+    "corporateholder.page": {
+      "hydrated": [
+        "{\"centerId\":\"5656565656565656\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"5729405850615808\",\"name\":\"Tony Stark\",\"permissions\":[{\"created\":\"2026-09-16T12:00:00+00:00\",\"ownerEmail\":\"tony@starkbank.com\",\"ownerId\":\"5656565656565656\",\"ownerName\":\"Tony Stark\",\"ownerPictureUrl\":\"https://storage.googleapis.com/api-ms-workspace-sbx.appspot.com/pictures/1\",\"ownerStatus\":\"active\",\"ownerType\":\"project\"}],\"rules\":[{\"amount\":200000,\"categories\":[],\"counterAmount\":1000,\"countries\":[],\"currencyCode\":\"BRL\",\"currencyName\":\"Brazilian Real\",\"currencySymbol\":\"R$\",\"id\":\"5714626427174912\",\"interval\":\"day\",\"methods\":[],\"name\":\"Travel\",\"purposes\":[\"purchase\"]}],\"status\":\"active\",\"tags\":[\"iron\",\"man\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-holder"
+        }
+      ]
+    },
+    "corporateholder.query": {
+      "hydrated": [
+        "{\"centerId\":\"5656565656565656\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"5729405850615808\",\"name\":\"Tony Stark\",\"permissions\":[{\"created\":\"2026-09-16T12:00:00+00:00\",\"ownerEmail\":\"tony@starkbank.com\",\"ownerId\":\"5656565656565656\",\"ownerName\":\"Tony Stark\",\"ownerPictureUrl\":\"https://storage.googleapis.com/api-ms-workspace-sbx.appspot.com/pictures/1\",\"ownerStatus\":\"active\",\"ownerType\":\"project\"}],\"rules\":[{\"amount\":200000,\"categories\":[],\"counterAmount\":1000,\"countries\":[],\"currencyCode\":\"BRL\",\"currencyName\":\"Brazilian Real\",\"currencySymbol\":\"R$\",\"id\":\"5714626427174912\",\"interval\":\"day\",\"methods\":[],\"name\":\"Travel\",\"purposes\":[\"purchase\"]}],\"status\":\"active\",\"tags\":[\"iron\",\"man\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&status=active&tags=iron",
+          "queryRaw": "limit=5&status=active&tags=iron",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-holder"
+        }
+      ]
+    },
+    "corporateholder.update": {
+      "hydrated": "{\"centerId\":\"5656565656565656\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"5729405850615808\",\"name\":\"Tony Stark\",\"permissions\":[{\"created\":\"2026-09-16T12:00:00+00:00\",\"ownerEmail\":\"tony@starkbank.com\",\"ownerId\":\"5656565656565656\",\"ownerName\":\"Tony Stark\",\"ownerPictureUrl\":\"https://storage.googleapis.com/api-ms-workspace-sbx.appspot.com/pictures/1\",\"ownerStatus\":\"active\",\"ownerType\":\"project\"}],\"rules\":[{\"amount\":200000,\"categories\":[],\"counterAmount\":1000,\"countries\":[],\"currencyCode\":\"BRL\",\"currencyName\":\"Brazilian Real\",\"currencySymbol\":\"R$\",\"id\":\"5714626427174912\",\"interval\":\"day\",\"methods\":[],\"name\":\"Travel\",\"purposes\":[\"purchase\"]}],\"status\":\"active\",\"tags\":[\"iron\",\"man\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "{\"status\":\"blocked\",\"tags\":[\"iron\"]}",
+          "bodyRaw": "{\"status\": \"blocked\", \"tags\": [\"iron\"]}",
+          "method": "PATCH",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-holder/5729405850615808"
+        }
+      ]
+    },
+    "corporateinvoice.create": {
+      "hydrated": "{\"amount\":100000,\"brcode\":\"00020101021226800014br.gov.bcb.pix2571brcode-h\",\"corporateTransactionId\":\"\",\"created\":\"2026-09-16T12:00:00+00:00\",\"due\":\"2026-10-28T17:59:26+00:00\",\"id\":\"5155165527080963\",\"link\":\"https://my-workspace.sandbox.starkbank.com/invoicelink/abc\",\"name\":\"Iron Bank S.A.\",\"status\":\"created\",\"tags\":[\"load\"],\"taxId\":\"20.018.183/0001-80\",\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "{\"amount\":100000,\"tags\":[\"load\"]}",
+          "bodyRaw": "{\"amount\": 100000, \"tags\": [\"load\"]}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-invoice"
+        }
+      ]
+    },
+    "corporateinvoice.page": {
+      "hydrated": [
+        "{\"amount\":100000,\"brcode\":\"00020101021226800014br.gov.bcb.pix2571brcode-h\",\"corporateTransactionId\":\"\",\"created\":\"2026-09-16T12:00:00+00:00\",\"due\":\"2026-10-28T17:59:26+00:00\",\"id\":\"5155165527080963\",\"link\":\"https://my-workspace.sandbox.starkbank.com/invoicelink/abc\",\"name\":\"Iron Bank S.A.\",\"status\":\"created\",\"tags\":[\"load\"],\"taxId\":\"20.018.183/0001-80\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-invoice"
+        }
+      ]
+    },
+    "corporateinvoice.query": {
+      "hydrated": [
+        "{\"amount\":100000,\"brcode\":\"00020101021226800014br.gov.bcb.pix2571brcode-h\",\"corporateTransactionId\":\"\",\"created\":\"2026-09-16T12:00:00+00:00\",\"due\":\"2026-10-28T17:59:26+00:00\",\"id\":\"5155165527080963\",\"link\":\"https://my-workspace.sandbox.starkbank.com/invoicelink/abc\",\"name\":\"Iron Bank S.A.\",\"status\":\"created\",\"tags\":[\"load\"],\"taxId\":\"20.018.183/0001-80\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&status=created&tags=load",
+          "queryRaw": "limit=5&status=created&tags=load",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-invoice"
+        }
+      ]
+    },
+    "corporatepurchase.get": {
+      "hydrated": "{\"amount\":10000,\"cardEnding\":\"1234\",\"cardId\":\"5859665293850624\",\"centerId\":\"5656565656565656\",\"corporateTransactionIds\":[\"corporate-purchase/5992663269507073\"],\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Swords\",\"holderId\":\"5729405850615808\",\"holderName\":\"Tony Stark\",\"id\":\"5992663269507073\",\"issuerAmount\":10000,\"issuerCurrencyCode\":\"BRL\",\"issuerCurrencySymbol\":\"R$\",\"merchantAmount\":10000,\"merchantCategoryCode\":\"fastFoodRestaurants\",\"merchantCategoryType\":\"food\",\"merchantCountryCode\":\"BRA\",\"merchantCurrencyCode\":\"BRL\",\"merchantCurrencySymbol\":\"R$\",\"merchantDisplayName\":\"Iron Bank\",\"merchantDisplayUrl\":\"https://starkbank.com\",\"merchantFee\":0,\"merchantName\":\"Iron Bank S.A.\",\"methodCode\":\"chip\",\"status\":\"approved\",\"tags\":[\"war\"],\"tax\":0,\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-purchase/5992663269507073"
+        }
+      ]
+    },
+    "corporatepurchase.log.get": {
+      "hydrated": "{\"corporateTransactionId\":\"corporate-purchase/5992663269507073\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Approved\",\"errors\":[{\"code\":\"invalidPin\",\"message\":\"PIN is invalid\"}],\"id\":\"6341320293482501\",\"purchase\":{\"amount\":10000,\"cardEnding\":\"1234\",\"cardId\":\"5859665293850624\",\"centerId\":\"5656565656565656\",\"corporateTransactionIds\":[\"corporate-purchase/5992663269507073\"],\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Swords\",\"holderId\":\"5729405850615808\",\"holderName\":\"Tony Stark\",\"id\":\"5992663269507073\",\"issuerAmount\":10000,\"issuerCurrencyCode\":\"BRL\",\"issuerCurrencySymbol\":\"R$\",\"merchantAmount\":10000,\"merchantCategoryCode\":\"fastFoodRestaurants\",\"merchantCategoryType\":\"food\",\"merchantCountryCode\":\"BRA\",\"merchantCurrencyCode\":\"BRL\",\"merchantCurrencySymbol\":\"R$\",\"merchantDisplayName\":\"Iron Bank\",\"merchantDisplayUrl\":\"https://starkbank.com\",\"merchantFee\":0,\"merchantName\":\"Iron Bank S.A.\",\"methodCode\":\"chip\",\"status\":\"approved\",\"tags\":[\"war\"],\"tax\":0,\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"approved\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-purchase/log/6341320293482501"
+        }
+      ]
+    },
+    "corporatepurchase.log.page": {
+      "hydrated": [
+        "{\"corporateTransactionId\":\"corporate-purchase/5992663269507073\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Approved\",\"errors\":[{\"code\":\"invalidPin\",\"message\":\"PIN is invalid\"}],\"id\":\"6341320293482501\",\"purchase\":{\"amount\":10000,\"cardEnding\":\"1234\",\"cardId\":\"5859665293850624\",\"centerId\":\"5656565656565656\",\"corporateTransactionIds\":[\"corporate-purchase/5992663269507073\"],\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Swords\",\"holderId\":\"5729405850615808\",\"holderName\":\"Tony Stark\",\"id\":\"5992663269507073\",\"issuerAmount\":10000,\"issuerCurrencyCode\":\"BRL\",\"issuerCurrencySymbol\":\"R$\",\"merchantAmount\":10000,\"merchantCategoryCode\":\"fastFoodRestaurants\",\"merchantCategoryType\":\"food\",\"merchantCountryCode\":\"BRA\",\"merchantCurrencyCode\":\"BRL\",\"merchantCurrencySymbol\":\"R$\",\"merchantDisplayName\":\"Iron Bank\",\"merchantDisplayUrl\":\"https://starkbank.com\",\"merchantFee\":0,\"merchantName\":\"Iron Bank S.A.\",\"methodCode\":\"chip\",\"status\":\"approved\",\"tags\":[\"war\"],\"tax\":0,\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"approved\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-purchase/log"
+        }
+      ]
+    },
+    "corporatepurchase.log.query": {
+      "hydrated": [
+        "{\"corporateTransactionId\":\"corporate-purchase/5992663269507073\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Approved\",\"errors\":[{\"code\":\"invalidPin\",\"message\":\"PIN is invalid\"}],\"id\":\"6341320293482501\",\"purchase\":{\"amount\":10000,\"cardEnding\":\"1234\",\"cardId\":\"5859665293850624\",\"centerId\":\"5656565656565656\",\"corporateTransactionIds\":[\"corporate-purchase/5992663269507073\"],\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Swords\",\"holderId\":\"5729405850615808\",\"holderName\":\"Tony Stark\",\"id\":\"5992663269507073\",\"issuerAmount\":10000,\"issuerCurrencyCode\":\"BRL\",\"issuerCurrencySymbol\":\"R$\",\"merchantAmount\":10000,\"merchantCategoryCode\":\"fastFoodRestaurants\",\"merchantCategoryType\":\"food\",\"merchantCountryCode\":\"BRA\",\"merchantCurrencyCode\":\"BRL\",\"merchantCurrencySymbol\":\"R$\",\"merchantDisplayName\":\"Iron Bank\",\"merchantDisplayUrl\":\"https://starkbank.com\",\"merchantFee\":0,\"merchantName\":\"Iron Bank S.A.\",\"methodCode\":\"chip\",\"status\":\"approved\",\"tags\":[\"war\"],\"tax\":0,\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"approved\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&purchaseIds=5992663269507073&types=approved",
+          "queryRaw": "limit=5&types=approved&purchaseIds=5992663269507073",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-purchase/log"
+        }
+      ]
+    },
+    "corporatepurchase.page": {
+      "hydrated": [
+        "{\"amount\":10000,\"cardEnding\":\"1234\",\"cardId\":\"5859665293850624\",\"centerId\":\"5656565656565656\",\"corporateTransactionIds\":[\"corporate-purchase/5992663269507073\"],\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Swords\",\"holderId\":\"5729405850615808\",\"holderName\":\"Tony Stark\",\"id\":\"5992663269507073\",\"issuerAmount\":10000,\"issuerCurrencyCode\":\"BRL\",\"issuerCurrencySymbol\":\"R$\",\"merchantAmount\":10000,\"merchantCategoryCode\":\"fastFoodRestaurants\",\"merchantCategoryType\":\"food\",\"merchantCountryCode\":\"BRA\",\"merchantCurrencyCode\":\"BRL\",\"merchantCurrencySymbol\":\"R$\",\"merchantDisplayName\":\"Iron Bank\",\"merchantDisplayUrl\":\"https://starkbank.com\",\"merchantFee\":0,\"merchantName\":\"Iron Bank S.A.\",\"methodCode\":\"chip\",\"status\":\"approved\",\"tags\":[\"war\"],\"tax\":0,\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-purchase"
+        }
+      ]
+    },
+    "corporatepurchase.query": {
+      "hydrated": [
+        "{\"amount\":10000,\"cardEnding\":\"1234\",\"cardId\":\"5859665293850624\",\"centerId\":\"5656565656565656\",\"corporateTransactionIds\":[\"corporate-purchase/5992663269507073\"],\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Swords\",\"holderId\":\"5729405850615808\",\"holderName\":\"Tony Stark\",\"id\":\"5992663269507073\",\"issuerAmount\":10000,\"issuerCurrencyCode\":\"BRL\",\"issuerCurrencySymbol\":\"R$\",\"merchantAmount\":10000,\"merchantCategoryCode\":\"fastFoodRestaurants\",\"merchantCategoryType\":\"food\",\"merchantCountryCode\":\"BRA\",\"merchantCurrencyCode\":\"BRL\",\"merchantCurrencySymbol\":\"R$\",\"merchantDisplayName\":\"Iron Bank\",\"merchantDisplayUrl\":\"https://starkbank.com\",\"merchantFee\":0,\"merchantName\":\"Iron Bank S.A.\",\"methodCode\":\"chip\",\"status\":\"approved\",\"tags\":[\"war\"],\"tax\":0,\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "holderIds=5729405850615808&limit=5&status=approved",
+          "queryRaw": "limit=5&holderIds=5729405850615808&status=approved",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-purchase"
+        }
+      ]
+    },
+    "corporatetransaction.get": {
+      "hydrated": "{\"amount\":100000,\"balance\":200000,\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Buying food\",\"id\":\"5155165527080964\",\"source\":\"corporate-purchase/5992663269507073\",\"tags\":[\"tony\",\"stark\"]}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-transaction/5155165527080964"
+        }
+      ]
+    },
+    "corporatetransaction.page": {
+      "hydrated": [
+        "{\"amount\":100000,\"balance\":200000,\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Buying food\",\"id\":\"5155165527080964\",\"source\":\"corporate-purchase/5992663269507073\",\"tags\":[\"tony\",\"stark\"]}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-transaction"
+        }
+      ]
+    },
+    "corporatetransaction.query": {
+      "hydrated": [
+        "{\"amount\":100000,\"balance\":200000,\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Buying food\",\"id\":\"5155165527080964\",\"source\":\"corporate-purchase/5992663269507073\",\"tags\":[\"tony\",\"stark\"]}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "externalIds=19827356981276&ids=5155165527080964&limit=5&source=corporate-purchase%2F5992663269507073&tags=tony",
+          "queryRaw": "limit=5&source=corporate-purchase%2F5992663269507073&tags=tony&externalIds=19827356981276&ids=5155165527080964",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-transaction"
+        }
+      ]
+    },
+    "corporatewithdrawal.create": {
+      "hydrated": "{\"amount\":100000,\"corporateTransactionId\":\"corporate-withdrawal/5155165527080965\",\"created\":\"2026-09-16T12:00:00+00:00\",\"externalId\":\"12345\",\"id\":\"5155165527080965\",\"tags\":[\"cash\"],\"transactionId\":\"transaction/5155165527080965\",\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "{\"amount\":100000,\"externalId\":\"12345\",\"tags\":[\"cash\"]}",
+          "bodyRaw": "{\"amount\": 100000, \"externalId\": \"12345\", \"tags\": [\"cash\"]}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-withdrawal"
+        }
+      ]
+    },
+    "corporatewithdrawal.get": {
+      "hydrated": "{\"amount\":100000,\"corporateTransactionId\":\"corporate-withdrawal/5155165527080965\",\"created\":\"2026-09-16T12:00:00+00:00\",\"externalId\":\"12345\",\"id\":\"5155165527080965\",\"tags\":[\"cash\"],\"transactionId\":\"transaction/5155165527080965\",\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-withdrawal/5155165527080965"
+        }
+      ]
+    },
+    "corporatewithdrawal.page": {
+      "hydrated": [
+        "{\"amount\":100000,\"corporateTransactionId\":\"corporate-withdrawal/5155165527080965\",\"created\":\"2026-09-16T12:00:00+00:00\",\"externalId\":\"12345\",\"id\":\"5155165527080965\",\"tags\":[\"cash\"],\"transactionId\":\"transaction/5155165527080965\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-withdrawal"
+        }
+      ]
+    },
+    "corporatewithdrawal.query": {
+      "hydrated": [
+        "{\"amount\":100000,\"corporateTransactionId\":\"corporate-withdrawal/5155165527080965\",\"created\":\"2026-09-16T12:00:00+00:00\",\"externalId\":\"12345\",\"id\":\"5155165527080965\",\"tags\":[\"cash\"],\"transactionId\":\"transaction/5155165527080965\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "externalIds=12345&limit=5&tags=cash",
+          "queryRaw": "limit=5&externalIds=12345&tags=cash",
+          "url": "https://sandbox.api.starkbank.com/v2/corporate-withdrawal"
+        }
+      ]
+    },
     "darfpayment.create": {
       "hydrated": [
         "{\"amount\":24146,\"competence\":\"2026-08-31\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"DARF Payment - competence August\",\"due\":\"2026-10-17\",\"fee\":0,\"fineAmount\":234,\"id\":\"5155165527080962\",\"interestAmount\":456,\"nominalAmount\":23456,\"referenceNumber\":\"08.1.17.00-4\",\"revenueCode\":\"5948\",\"scheduled\":\"2026-09-22\",\"status\":\"success\",\"tags\":[\"darf\",\"federal\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981275\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
@@ -1894,6 +2387,521 @@
             "19827356981273"
           ],
           "type": "dynamic",
+          "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ]
+    },
+    "corporateBalances": {
+      "balances": [
+        {
+          "amount": 100000,
+          "currency": "BRL",
+          "id": "5992663269507072",
+          "limit": 0,
+          "maxLimit": 100000,
+          "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ],
+      "cursor": ""
+    },
+    "corporateCard": {
+      "card": {
+        "city": "Sao Paulo",
+        "created": "2026-09-16T12:00:00+00:00",
+        "displayName": "TONY STARK",
+        "district": "Bela Vista",
+        "expiration": "2030-01-01T00:00:00+00:00",
+        "holderId": "5729405850615808",
+        "holderName": "Tony Stark",
+        "id": "5859665293850624",
+        "number": "123",
+        "rules": [
+          {
+            "amount": 200000,
+            "categories": [],
+            "counterAmount": 1000,
+            "countries": [],
+            "currencyCode": "BRL",
+            "currencyName": "Brazilian Real",
+            "currencySymbol": "R$",
+            "id": "5714626427174912",
+            "interval": "day",
+            "methods": [],
+            "name": "Travel",
+            "purposes": [
+              "purchase"
+            ],
+            "schedule": null
+          }
+        ],
+        "securityCode": "123",
+        "stateCode": "SP",
+        "status": "active",
+        "streetLine1": "Av. Paulista, 200",
+        "streetLine2": "Apto. 123",
+        "tags": [
+          "travel"
+        ],
+        "type": "virtual",
+        "updated": "2026-09-17T12:00:00+00:00",
+        "zipCode": "01311-200"
+      }
+    },
+    "corporateCardLog": {
+      "log": {
+        "card": {
+          "city": "Sao Paulo",
+          "created": "2026-09-16T12:00:00+00:00",
+          "displayName": "TONY STARK",
+          "district": "Bela Vista",
+          "expiration": "2030-01-01T00:00:00+00:00",
+          "holderId": "5729405850615808",
+          "holderName": "Tony Stark",
+          "id": "5859665293850624",
+          "number": "123",
+          "rules": [
+            {
+              "amount": 200000,
+              "categories": [],
+              "counterAmount": 1000,
+              "countries": [],
+              "currencyCode": "BRL",
+              "currencyName": "Brazilian Real",
+              "currencySymbol": "R$",
+              "id": "5714626427174912",
+              "interval": "day",
+              "methods": [],
+              "name": "Travel",
+              "purposes": [
+                "purchase"
+              ],
+              "schedule": null
+            }
+          ],
+          "securityCode": "123",
+          "stateCode": "SP",
+          "status": "active",
+          "streetLine1": "Av. Paulista, 200",
+          "streetLine2": "Apto. 123",
+          "tags": [
+            "travel"
+          ],
+          "type": "virtual",
+          "updated": "2026-09-17T12:00:00+00:00",
+          "zipCode": "01311-200"
+        },
+        "created": "2026-09-16T12:00:00+00:00",
+        "id": "6341320293482500",
+        "type": "created"
+      }
+    },
+    "corporateCards": {
+      "cards": [
+        {
+          "city": "Sao Paulo",
+          "created": "2026-09-16T12:00:00+00:00",
+          "displayName": "TONY STARK",
+          "district": "Bela Vista",
+          "expiration": "2030-01-01T00:00:00+00:00",
+          "holderId": "5729405850615808",
+          "holderName": "Tony Stark",
+          "id": "5859665293850624",
+          "number": "123",
+          "rules": [
+            {
+              "amount": 200000,
+              "categories": [],
+              "counterAmount": 1000,
+              "countries": [],
+              "currencyCode": "BRL",
+              "currencyName": "Brazilian Real",
+              "currencySymbol": "R$",
+              "id": "5714626427174912",
+              "interval": "day",
+              "methods": [],
+              "name": "Travel",
+              "purposes": [
+                "purchase"
+              ],
+              "schedule": null
+            }
+          ],
+          "securityCode": "123",
+          "stateCode": "SP",
+          "status": "active",
+          "streetLine1": "Av. Paulista, 200",
+          "streetLine2": "Apto. 123",
+          "tags": [
+            "travel"
+          ],
+          "type": "virtual",
+          "updated": "2026-09-17T12:00:00+00:00",
+          "zipCode": "01311-200"
+        }
+      ],
+      "cursor": ""
+    },
+    "corporateHolder": {
+      "holder": {
+        "centerId": "5656565656565656",
+        "created": "2026-09-16T12:00:00+00:00",
+        "id": "5729405850615808",
+        "name": "Tony Stark",
+        "permissions": [
+          {
+            "created": "2026-09-16T12:00:00+00:00",
+            "ownerEmail": "tony@starkbank.com",
+            "ownerId": "5656565656565656",
+            "ownerName": "Tony Stark",
+            "ownerPictureUrl": "https://storage.googleapis.com/api-ms-workspace-sbx.appspot.com/pictures/1",
+            "ownerStatus": "active",
+            "ownerType": "project"
+          }
+        ],
+        "rules": [
+          {
+            "amount": 200000,
+            "categories": [],
+            "counterAmount": 1000,
+            "countries": [],
+            "currencyCode": "BRL",
+            "currencyName": "Brazilian Real",
+            "currencySymbol": "R$",
+            "id": "5714626427174912",
+            "interval": "day",
+            "methods": [],
+            "name": "Travel",
+            "purposes": [
+              "purchase"
+            ],
+            "schedule": null
+          }
+        ],
+        "status": "active",
+        "tags": [
+          "iron",
+          "man"
+        ],
+        "updated": "2026-09-17T12:00:00+00:00"
+      }
+    },
+    "corporateHolderLog": {
+      "log": {
+        "created": "2026-09-16T12:00:00+00:00",
+        "holder": {
+          "centerId": "5656565656565656",
+          "created": "2026-09-16T12:00:00+00:00",
+          "id": "5729405850615808",
+          "name": "Tony Stark",
+          "permissions": [
+            {
+              "created": "2026-09-16T12:00:00+00:00",
+              "ownerEmail": "tony@starkbank.com",
+              "ownerId": "5656565656565656",
+              "ownerName": "Tony Stark",
+              "ownerPictureUrl": "https://storage.googleapis.com/api-ms-workspace-sbx.appspot.com/pictures/1",
+              "ownerStatus": "active",
+              "ownerType": "project"
+            }
+          ],
+          "rules": [
+            {
+              "amount": 200000,
+              "categories": [],
+              "counterAmount": 1000,
+              "countries": [],
+              "currencyCode": "BRL",
+              "currencyName": "Brazilian Real",
+              "currencySymbol": "R$",
+              "id": "5714626427174912",
+              "interval": "day",
+              "methods": [],
+              "name": "Travel",
+              "purposes": [
+                "purchase"
+              ],
+              "schedule": null
+            }
+          ],
+          "status": "active",
+          "tags": [
+            "iron",
+            "man"
+          ],
+          "updated": "2026-09-17T12:00:00+00:00"
+        },
+        "id": "6341320293482499",
+        "type": "created"
+      }
+    },
+    "corporateHolders": {
+      "cursor": "",
+      "holders": [
+        {
+          "centerId": "5656565656565656",
+          "created": "2026-09-16T12:00:00+00:00",
+          "id": "5729405850615808",
+          "name": "Tony Stark",
+          "permissions": [
+            {
+              "created": "2026-09-16T12:00:00+00:00",
+              "ownerEmail": "tony@starkbank.com",
+              "ownerId": "5656565656565656",
+              "ownerName": "Tony Stark",
+              "ownerPictureUrl": "https://storage.googleapis.com/api-ms-workspace-sbx.appspot.com/pictures/1",
+              "ownerStatus": "active",
+              "ownerType": "project"
+            }
+          ],
+          "rules": [
+            {
+              "amount": 200000,
+              "categories": [],
+              "counterAmount": 1000,
+              "countries": [],
+              "currencyCode": "BRL",
+              "currencyName": "Brazilian Real",
+              "currencySymbol": "R$",
+              "id": "5714626427174912",
+              "interval": "day",
+              "methods": [],
+              "name": "Travel",
+              "purposes": [
+                "purchase"
+              ],
+              "schedule": null
+            }
+          ],
+          "status": "active",
+          "tags": [
+            "iron",
+            "man"
+          ],
+          "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ]
+    },
+    "corporateInvoice": {
+      "invoice": {
+        "amount": 100000,
+        "brcode": "00020101021226800014br.gov.bcb.pix2571brcode-h",
+        "corporateTransactionId": "",
+        "created": "2026-09-16T12:00:00+00:00",
+        "due": "2026-10-28T17:59:26+00:00",
+        "id": "5155165527080963",
+        "link": "https://my-workspace.sandbox.starkbank.com/invoicelink/abc",
+        "name": "Iron Bank S.A.",
+        "status": "created",
+        "tags": [
+          "load"
+        ],
+        "taxId": "20.018.183/0001-80",
+        "updated": "2026-09-17T12:00:00+00:00"
+      }
+    },
+    "corporateInvoices": {
+      "cursor": "",
+      "invoices": [
+        {
+          "amount": 100000,
+          "brcode": "00020101021226800014br.gov.bcb.pix2571brcode-h",
+          "corporateTransactionId": "",
+          "created": "2026-09-16T12:00:00+00:00",
+          "due": "2026-10-28T17:59:26+00:00",
+          "id": "5155165527080963",
+          "link": "https://my-workspace.sandbox.starkbank.com/invoicelink/abc",
+          "name": "Iron Bank S.A.",
+          "status": "created",
+          "tags": [
+            "load"
+          ],
+          "taxId": "20.018.183/0001-80",
+          "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ]
+    },
+    "corporatePurchase": {
+      "purchase": {
+        "amount": 10000,
+        "cardEnding": "1234",
+        "cardId": "5859665293850624",
+        "centerId": "5656565656565656",
+        "corporateTransactionIds": [
+          "corporate-purchase/5992663269507073"
+        ],
+        "created": "2026-09-16T12:00:00+00:00",
+        "description": "Swords",
+        "holderId": "5729405850615808",
+        "holderName": "Tony Stark",
+        "id": "5992663269507073",
+        "issuerAmount": 10000,
+        "issuerCurrencyCode": "BRL",
+        "issuerCurrencySymbol": "R$",
+        "merchantAmount": 10000,
+        "merchantCategoryCode": "fastFoodRestaurants",
+        "merchantCategoryType": "food",
+        "merchantCountryCode": "BRA",
+        "merchantCurrencyCode": "BRL",
+        "merchantCurrencySymbol": "R$",
+        "merchantDisplayName": "Iron Bank",
+        "merchantDisplayUrl": "https://starkbank.com",
+        "merchantFee": 0,
+        "merchantName": "Iron Bank S.A.",
+        "methodCode": "chip",
+        "status": "approved",
+        "tags": [
+          "war"
+        ],
+        "tax": 0,
+        "updated": "2026-09-17T12:00:00+00:00"
+      }
+    },
+    "corporatePurchaseLog": {
+      "log": {
+        "corporateTransactionId": "corporate-purchase/5992663269507073",
+        "created": "2026-09-16T12:00:00+00:00",
+        "description": "Approved",
+        "errors": [
+          {
+            "code": "invalidPin",
+            "message": "PIN is invalid"
+          }
+        ],
+        "id": "6341320293482501",
+        "purchase": {
+          "amount": 10000,
+          "cardEnding": "1234",
+          "cardId": "5859665293850624",
+          "centerId": "5656565656565656",
+          "corporateTransactionIds": [
+            "corporate-purchase/5992663269507073"
+          ],
+          "created": "2026-09-16T12:00:00+00:00",
+          "description": "Swords",
+          "holderId": "5729405850615808",
+          "holderName": "Tony Stark",
+          "id": "5992663269507073",
+          "issuerAmount": 10000,
+          "issuerCurrencyCode": "BRL",
+          "issuerCurrencySymbol": "R$",
+          "merchantAmount": 10000,
+          "merchantCategoryCode": "fastFoodRestaurants",
+          "merchantCategoryType": "food",
+          "merchantCountryCode": "BRA",
+          "merchantCurrencyCode": "BRL",
+          "merchantCurrencySymbol": "R$",
+          "merchantDisplayName": "Iron Bank",
+          "merchantDisplayUrl": "https://starkbank.com",
+          "merchantFee": 0,
+          "merchantName": "Iron Bank S.A.",
+          "methodCode": "chip",
+          "status": "approved",
+          "tags": [
+            "war"
+          ],
+          "tax": 0,
+          "updated": "2026-09-17T12:00:00+00:00"
+        },
+        "type": "approved"
+      }
+    },
+    "corporatePurchases": {
+      "cursor": "",
+      "purchases": [
+        {
+          "amount": 10000,
+          "cardEnding": "1234",
+          "cardId": "5859665293850624",
+          "centerId": "5656565656565656",
+          "corporateTransactionIds": [
+            "corporate-purchase/5992663269507073"
+          ],
+          "created": "2026-09-16T12:00:00+00:00",
+          "description": "Swords",
+          "holderId": "5729405850615808",
+          "holderName": "Tony Stark",
+          "id": "5992663269507073",
+          "issuerAmount": 10000,
+          "issuerCurrencyCode": "BRL",
+          "issuerCurrencySymbol": "R$",
+          "merchantAmount": 10000,
+          "merchantCategoryCode": "fastFoodRestaurants",
+          "merchantCategoryType": "food",
+          "merchantCountryCode": "BRA",
+          "merchantCurrencyCode": "BRL",
+          "merchantCurrencySymbol": "R$",
+          "merchantDisplayName": "Iron Bank",
+          "merchantDisplayUrl": "https://starkbank.com",
+          "merchantFee": 0,
+          "merchantName": "Iron Bank S.A.",
+          "methodCode": "chip",
+          "status": "approved",
+          "tags": [
+            "war"
+          ],
+          "tax": 0,
+          "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ]
+    },
+    "corporateTransaction": {
+      "transaction": {
+        "amount": 100000,
+        "balance": 200000,
+        "created": "2026-09-16T12:00:00+00:00",
+        "description": "Buying food",
+        "id": "5155165527080964",
+        "source": "corporate-purchase/5992663269507073",
+        "tags": [
+          "tony",
+          "stark"
+        ]
+      }
+    },
+    "corporateTransactions": {
+      "cursor": "",
+      "transactions": [
+        {
+          "amount": 100000,
+          "balance": 200000,
+          "created": "2026-09-16T12:00:00+00:00",
+          "description": "Buying food",
+          "id": "5155165527080964",
+          "source": "corporate-purchase/5992663269507073",
+          "tags": [
+            "tony",
+            "stark"
+          ]
+        }
+      ]
+    },
+    "corporateWithdrawal": {
+      "withdrawal": {
+        "amount": 100000,
+        "corporateTransactionId": "corporate-withdrawal/5155165527080965",
+        "created": "2026-09-16T12:00:00+00:00",
+        "externalId": "12345",
+        "id": "5155165527080965",
+        "tags": [
+          "cash"
+        ],
+        "transactionId": "transaction/5155165527080965",
+        "updated": "2026-09-17T12:00:00+00:00"
+      }
+    },
+    "corporateWithdrawals": {
+      "cursor": "",
+      "withdrawals": [
+        {
+          "amount": 100000,
+          "corporateTransactionId": "corporate-withdrawal/5155165527080965",
+          "created": "2026-09-16T12:00:00+00:00",
+          "externalId": "12345",
+          "id": "5155165527080965",
+          "tags": [
+            "cash"
+          ],
+          "transactionId": "transaction/5155165527080965",
           "updated": "2026-09-17T12:00:00+00:00"
         }
       ]

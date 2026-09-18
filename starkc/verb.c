@@ -8,6 +8,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "internal.h"
 
@@ -129,6 +130,107 @@ int starkbankVerbCreateSingle(const starkbank_client *client, const starkbankRes
         return status;
     }
     return wrapOwned(resource, reply, out);
+}
+
+/*
+ * CorporateCard.create's shape: rest.post_raw to endpoint(resource) + "/" +
+ * subPath, with no id in the path and the envelope key the RESOURCE's own
+ * singular name rather than a sibling's - sendSingle in core-c's rest.c comes
+ * within one field of this (it already skips the id segment when id is NULL)
+ * but always unwraps by the "sub" resource's name when a sub is given, which
+ * is right for starkcore_rest_post_sub_resource's real callers and wrong
+ * here. No existing starkcore_rest_* call fits both halves at once, and nothing
+ * about this needs core-c to change: it composes public entry points
+ * (starkcore_api_endpoint, starkcore_api_last_name, starkcore_api_cast,
+ * starkcore_fetch, starkcore_response_*) the exact way sendSingle does
+ * internally, just with the literal path segment sendSingle cannot take.
+ */
+int starkbankVerbCreateSub(const starkbank_client *client, const starkbankResource *resource,
+                           const char *subPath, const starkbank_entity *entity,
+                           starkbank_entity **out, starkbank_errors **errors)
+{
+    char *endpoint = NULL;
+    char *lastName = NULL;
+    char *path = NULL;
+    starkcore_json *dehydrated = NULL;
+    starkcore_json *cast = NULL;
+    starkcore_response *response = NULL;
+    starkcore_json *envelope = NULL;
+    starkcore_json *copy = NULL;
+    const starkcore_json *member;
+    size_t length;
+    int status;
+
+    if (out == NULL) {
+        return STARKCORE_ERROR_ARGUMENT;
+    }
+    *out = NULL;
+    status = checkVerb(client, errors);
+    if (status != STARKCORE_OK) {
+        return status;
+    }
+    if (starkbank_entity_json(entity) == NULL) {
+        return STARKCORE_ERROR_ARGUMENT;
+    }
+    if (entity->resource != resource) {
+        return STARKBANK_ERROR_RESOURCE;
+    }
+    status = starkbankEntityDehydrate(entity, STARKBANK_FLAG_CREATE, &dehydrated);
+    if (status != STARKCORE_OK) {
+        return status;
+    }
+    status = starkcore_api_cast(dehydrated, &cast);
+    starkcore_json_free(dehydrated);
+    if (status != STARKCORE_OK) {
+        return status;
+    }
+    status = starkcore_api_endpoint(resource->name, &endpoint);
+    if (status == STARKCORE_OK) {
+        status = starkcore_api_last_name(resource->name, &lastName);
+    }
+    if (status == STARKCORE_OK) {
+        length = strlen(endpoint) + 1 + strlen(subPath) + 1;
+        path = (char *)malloc(length);
+        if (path == NULL) {
+            status = STARKCORE_ERROR_MEMORY;
+        } else {
+            strcpy(path, endpoint);
+            strcat(path, "/");
+            strcat(path, subPath);
+        }
+    }
+    if (status == STARKCORE_OK) {
+        status = starkcore_fetch(starkbankClientCore(client), STARKCORE_METHOD_POST, path,
+                                 cast, NULL, NULL, &response);
+    }
+    starkcore_json_free(cast);
+    free(endpoint);
+    free(path);
+    if (status != STARKCORE_OK) {
+        free(lastName);
+        return status;
+    }
+    status = starkcore_response_check(response, errors);
+    if (status == STARKCORE_OK) {
+        status = starkcore_response_json(response, &envelope);
+    }
+    starkcore_response_free(response);
+    if (status != STARKCORE_OK) {
+        free(lastName);
+        return status;
+    }
+    member = starkcore_json_get(envelope, lastName);
+    free(lastName);
+    if (member == NULL) {
+        starkcore_json_free(envelope);
+        return STARKCORE_ERROR_MISSING_KEY;
+    }
+    status = starkcore_json_clone(member, &copy);
+    starkcore_json_free(envelope);
+    if (status != STARKCORE_OK) {
+        return status;
+    }
+    return wrapOwned(resource, copy, out);
 }
 
 int starkbankVerbGetId(const starkbank_client *client, const starkbankResource *resource,

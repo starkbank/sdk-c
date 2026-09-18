@@ -55,6 +55,22 @@
                                          out, errors);                                   \
     }
 
+/*
+ * rest.post_raw to endpoint(resource) + "/" + subPath: one entity, no id in
+ * the path, unwrapped by the resource's OWN singular name. CorporateCard.create
+ * is the reason this exists - see starkbankVerbCreateSub's comment in verb.c
+ * for why STARKBANK_VERB_POST_SINGLE and STARKBANK_VERB_SUB_RESOURCE each miss
+ * by one detail.
+ */
+#define STARKBANK_VERB_POST_SINGLE_SUB(ident, subPath)                                  \
+    STARKBANK_API int STARKBANK_CALL starkbank_##ident##_create(                        \
+        const starkbank_client *client, const starkbank_entity *entity,                 \
+        starkbank_entity **out, starkbank_errors **errors)                              \
+    {                                                                                    \
+        return starkbankVerbCreateSub(client, &starkbankTable_##ident, subPath, entity, \
+                                      out, errors);                                     \
+    }
+
 #define STARKBANK_VERB_GET_ID(ident)                                                     \
     STARKBANK_API int STARKBANK_CALL starkbank_##ident##_get(                            \
         const starkbank_client *client, const char *id,                                  \

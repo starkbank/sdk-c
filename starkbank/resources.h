@@ -22,6 +22,17 @@
     R(brcode_payment_log)      \
     R(brcode_payment_rule)     \
     R(brcode_preview)          \
+    R(corporate_balance)       \
+    R(corporate_card)          \
+    R(corporate_card_log)      \
+    R(corporate_holder)        \
+    R(corporate_holder_log)    \
+    R(corporate_invoice)       \
+    R(corporate_purchase)      \
+    R(corporate_purchase_log)  \
+    R(corporate_rule)          \
+    R(corporate_transaction)   \
+    R(corporate_withdrawal)    \
     R(darf_payment)            \
     R(darf_payment_log)        \
     R(deposit)                 \
@@ -35,6 +46,7 @@
     R(invoice_payment)         \
     R(invoice_rule)            \
     R(payment_preview)         \
+    R(permission)              \
     R(split)                   \
     R(tax_payment)             \
     R(tax_payment_log)         \

@@ -1721,6 +1721,618 @@ STARKBANK_API int STARKBANK_CALL starkbank_tax_payment_log_page(const starkbank_
     starkbank_errors **errors);
 
 /* =========================================================================
+ *                              CorporateCard
+ * =========================================================================
+ *
+ * create() posts to "corporate-card/token", not "corporate-card" - see
+ * starkbankVerbCreateSub in starkc/verb.c and the header comment in
+ * starkbank/corporatecard/corporatecard.h for why that needs its own verb
+ * macro, STARKBANK_VERB_POST_SINGLE_SUB, rather than STARKBANK_VERB_POST_SINGLE.
+ *
+ * Fields (wire keys; * = required on create, + = also accepted in an update).
+ *
+ *   holderId*  STRING
+ *   holderName streetLine1 streetLine2 district city stateCode zipCode
+ *     type number securityCode STRING (ro)
+ *   displayName+ status+ STRING
+ *   rules+ LIST_RESOURCE("CorporateRule")             tags+ LIST_STRING
+ *   pin+ STRING
+ *   expiration updated created DATETIME (ro)
+ *   id STRING (ro).
+ *
+ * Query keys: limit, after, before, status, types, holderIds, ids, tags, expand.
+ *
+ * pin has no field in sdk-python's CorporateCard class - update() sends it
+ * straight from a keyword argument and nothing ever reads it back - so it
+ * carries PATCH and nothing else; see known-drift.json's
+ * field.gone:CorporateCard:pin.
+ *
+ * number, securityCode and expiration are masked unless a caller passes
+ * expand, which create() and get() do not yet forward for the reason
+ * CorporateHolder's section explains; query() and page() do, through the
+ * "expand" query key above.
+ */
+
+#define STARKBANK_CORPORATE_CARD_HOLDER_ID      "holderId"
+#define STARKBANK_CORPORATE_CARD_HOLDER_NAME    "holderName"
+#define STARKBANK_CORPORATE_CARD_DISPLAY_NAME   "displayName"
+#define STARKBANK_CORPORATE_CARD_RULES          "rules"
+#define STARKBANK_CORPORATE_CARD_TAGS           "tags"
+#define STARKBANK_CORPORATE_CARD_PIN            "pin"
+#define STARKBANK_CORPORATE_CARD_STREET_LINE_1  "streetLine1"
+#define STARKBANK_CORPORATE_CARD_STREET_LINE_2  "streetLine2"
+#define STARKBANK_CORPORATE_CARD_DISTRICT       "district"
+#define STARKBANK_CORPORATE_CARD_CITY           "city"
+#define STARKBANK_CORPORATE_CARD_STATE_CODE     "stateCode"
+#define STARKBANK_CORPORATE_CARD_ZIP_CODE       "zipCode"
+#define STARKBANK_CORPORATE_CARD_TYPE           "type"
+#define STARKBANK_CORPORATE_CARD_STATUS         "status"
+#define STARKBANK_CORPORATE_CARD_NUMBER         "number"
+#define STARKBANK_CORPORATE_CARD_SECURITY_CODE  "securityCode"
+#define STARKBANK_CORPORATE_CARD_EXPIRATION     "expiration"
+#define STARKBANK_CORPORATE_CARD_ID             "id"
+#define STARKBANK_CORPORATE_CARD_UPDATED        "updated"
+#define STARKBANK_CORPORATE_CARD_CREATED        "created"
+
+/* Types and statuses, from the docs' enums. */
+#define STARKBANK_CORPORATE_CARD_TYPE_VIRTUAL   "virtual"
+#define STARKBANK_CORPORATE_CARD_TYPE_PHYSICAL  "physical"
+#define STARKBANK_CORPORATE_CARD_TYPE_WALLET    "wallet"
+
+#define STARKBANK_CORPORATE_CARD_STATUS_PENDING  "pending"
+#define STARKBANK_CORPORATE_CARD_STATUS_ACTIVE   "active"
+#define STARKBANK_CORPORATE_CARD_STATUS_BLOCKED  "blocked"
+#define STARKBANK_CORPORATE_CARD_STATUS_EXPIRED  "expired"
+#define STARKBANK_CORPORATE_CARD_STATUS_CANCELED "canceled"
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_card_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_card_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_card_create(const starkbank_client *client,
+    const starkbank_entity *card, starkbank_entity **out, starkbank_errors **errors);
+/* One card, posted to corporate-card/token. Free card with
+   starkbank_entity_free; unlike POST_MULTI's list, this call borrows it. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_card_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_card_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_card_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_card_update(const starkbank_client *client,
+    const char *id, const starkbank_entity *patch, starkbank_entity **out,
+    starkbank_errors **errors);
+/* Every key in patch must carry STARKBANK_FLAG_PATCH: displayName, rules,
+   tags, pin, status. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_card_delete(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+/* sdk-python names this cancel(); see CorporateHolder's section header. */
+
+/* ------------------------------------------------------- CorporateCardLog */
+/*
+ * Resource "CorporateCardLog"; endpoint "corporate-card/log", derived at run
+ * time.
+ * Fields: id STRING (ro), created DATETIME (ro), type STRING (ro),
+ *         card RESOURCE("CorporateCard") (ro).
+ * Query keys: limit, after, before, types, cardIds, ids.
+ *
+ * There is no corporatecard.Log pdf: sdk-python does not have one.
+ */
+#define STARKBANK_CORPORATE_CARD_LOG_ID       "id"
+#define STARKBANK_CORPORATE_CARD_LOG_CREATED  "created"
+#define STARKBANK_CORPORATE_CARD_LOG_TYPE     "type"
+#define STARKBANK_CORPORATE_CARD_LOG_CARD     "card"
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_card_log_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_card_log_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_card_log_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_card_log_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+
+/* =========================================================================
+ *                              CorporateHolder
+ * =========================================================================
+ *
+ * Fields (wire keys; * = required on create, + = also accepted in an update).
+ * Checked against the field table by tools/drift.py.
+ *
+ *   name*+ STRING                centerId+ STRING
+ *   permissions+ LIST_RESOURCE("CorporateHolder.Permission")
+ *   rules+ LIST_RESOURCE("CorporateRule")              tags+ LIST_STRING
+ *   status+ STRING
+ *   id STRING (ro)                                     updated created DATETIME (ro)
+ *
+ * Query keys: limit, after, before, ids, status, tags, expand.
+ *
+ * expand is listed as a query key even though no field carries it: QUERY and
+ * PAGE already forward any bare key their params entity is given, so a caller
+ * who lists or pages holders may set "expand" to "rules" today. create() and
+ * get() cannot yet - neither verb shape takes a query of its own - which is
+ * why sdk-python's expand keyword on those two is not modelled here.
+ *
+ * sdk-python spells the delete verb cancel(); sdk-c keeps the engine's DELETE_ID
+ * naming (starkbank_corporate_holder_delete) for the same reason sdk-c4's
+ * Institution keeps PAGE's own name instead of manufacturing a query() that
+ * is not one - see known-drift.json's verb.new/verb.gone:CorporateHolder pair.
+ */
+
+#define STARKBANK_CORPORATE_HOLDER_NAME         "name"
+#define STARKBANK_CORPORATE_HOLDER_CENTER_ID    "centerId"
+#define STARKBANK_CORPORATE_HOLDER_PERMISSIONS  "permissions"
+#define STARKBANK_CORPORATE_HOLDER_RULES        "rules"
+#define STARKBANK_CORPORATE_HOLDER_TAGS         "tags"
+#define STARKBANK_CORPORATE_HOLDER_STATUS       "status"
+#define STARKBANK_CORPORATE_HOLDER_ID           "id"
+#define STARKBANK_CORPORATE_HOLDER_UPDATED      "updated"
+#define STARKBANK_CORPORATE_HOLDER_CREATED      "created"
+
+/* Statuses, from the docs' enum; python's docstring gives examples only. */
+#define STARKBANK_CORPORATE_HOLDER_STATUS_ACTIVE   "active"
+#define STARKBANK_CORPORATE_HOLDER_STATUS_BLOCKED  "blocked"
+#define STARKBANK_CORPORATE_HOLDER_STATUS_CANCELED "canceled"
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_create(const starkbank_client *client,
+    const starkbank_list *holders, starkbank_list **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_update(const starkbank_client *client,
+    const char *id, const starkbank_entity *patch, starkbank_entity **out,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_delete(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+/* sdk-python names this cancel(); see the section header. */
+
+/* -------------------------------------------------------------- Permission */
+/* Access granted to a user for a particular CorporateHolder; embedded in its
+ * "permissions" list, never fetched on its own. Registered under its bare
+ * python name (corporateholder.__permission.py's _resource, not
+ * _sub_resource), the same way Split is "Split" and not "Invoice.Split".
+ * Fields: ownerId ownerType STRING, ownerEmail ownerName ownerPictureUrl
+ *         ownerStatus STRING (ro), created DATETIME (ro).
+ * No id: sdk-python's Permission is a SubResource, not a Resource.
+ */
+#define STARKBANK_PERMISSION_OWNER_ID          "ownerId"
+#define STARKBANK_PERMISSION_OWNER_TYPE        "ownerType"
+#define STARKBANK_PERMISSION_OWNER_EMAIL       "ownerEmail"
+#define STARKBANK_PERMISSION_OWNER_NAME        "ownerName"
+#define STARKBANK_PERMISSION_OWNER_PICTURE_URL "ownerPictureUrl"
+#define STARKBANK_PERMISSION_OWNER_STATUS      "ownerStatus"
+#define STARKBANK_PERMISSION_CREATED           "created"
+
+STARKBANK_API int STARKBANK_CALL starkbank_permission_new(starkbank_entity **out);
+
+/* ------------------------------------------------------ CorporateHolderLog */
+/*
+ * Resource "CorporateHolderLog"; endpoint "corporate-holder/log", derived at
+ * run time.
+ * Fields: id STRING (ro), created DATETIME (ro), type STRING (ro),
+ *         holder RESOURCE("CorporateHolder") (ro).
+ * Query keys: limit, after, before, types, holderIds, ids.
+ *
+ * There is no corporateholder.Log pdf: sdk-python does not have one.
+ */
+#define STARKBANK_CORPORATE_HOLDER_LOG_ID       "id"
+#define STARKBANK_CORPORATE_HOLDER_LOG_CREATED  "created"
+#define STARKBANK_CORPORATE_HOLDER_LOG_TYPE     "type"
+#define STARKBANK_CORPORATE_HOLDER_LOG_HOLDER   "holder"
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_log_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_log_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_log_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_holder_log_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+
+/* =========================================================================
+ *                            CorporatePurchase
+ * =========================================================================
+ *
+ * Every field RO: sdk-python's module has no create() (a network authorizes
+ * a purchase, nobody posts one) and no update(), even though the docs show a
+ * documented PATCH /v2/corporate-purchase/:id - python is normative for the
+ * verb surface, so this table carries no PATCH_ID verb.
+ *
+ * Fields (wire keys).
+ *
+ *   holderId holderName centerId cardId cardEnding description STRING (ro)
+ *   amount tax issuerAmount merchantAmount merchantFee AMOUNT (ro)
+ *   issuerCurrencyCode issuerCurrencySymbol merchantCurrencyCode
+ *     merchantCurrencySymbol merchantCategoryCode merchantCategoryType
+ *     merchantCountryCode merchantName merchantDisplayName merchantDisplayUrl
+ *     methodCode status STRING (ro)
+ *   tags corporateTransactionIds LIST_STRING (ro)
+ *   id STRING (ro)                                    updated created DATETIME (ro).
+ *
+ * Query keys: ids, limit, after, before, merchantCategoryTypes, holderIds, cardIds, status.
+ */
+
+#define STARKBANK_CORPORATE_PURCHASE_HOLDER_ID                 "holderId"
+#define STARKBANK_CORPORATE_PURCHASE_HOLDER_NAME               "holderName"
+#define STARKBANK_CORPORATE_PURCHASE_CENTER_ID                 "centerId"
+#define STARKBANK_CORPORATE_PURCHASE_CARD_ID                   "cardId"
+#define STARKBANK_CORPORATE_PURCHASE_CARD_ENDING               "cardEnding"
+#define STARKBANK_CORPORATE_PURCHASE_DESCRIPTION               "description"
+#define STARKBANK_CORPORATE_PURCHASE_AMOUNT                    "amount"
+#define STARKBANK_CORPORATE_PURCHASE_TAX                       "tax"
+#define STARKBANK_CORPORATE_PURCHASE_ISSUER_AMOUNT             "issuerAmount"
+#define STARKBANK_CORPORATE_PURCHASE_ISSUER_CURRENCY_CODE      "issuerCurrencyCode"
+#define STARKBANK_CORPORATE_PURCHASE_ISSUER_CURRENCY_SYMBOL    "issuerCurrencySymbol"
+#define STARKBANK_CORPORATE_PURCHASE_MERCHANT_AMOUNT           "merchantAmount"
+#define STARKBANK_CORPORATE_PURCHASE_MERCHANT_CURRENCY_CODE    "merchantCurrencyCode"
+#define STARKBANK_CORPORATE_PURCHASE_MERCHANT_CURRENCY_SYMBOL  "merchantCurrencySymbol"
+#define STARKBANK_CORPORATE_PURCHASE_MERCHANT_CATEGORY_CODE    "merchantCategoryCode"
+#define STARKBANK_CORPORATE_PURCHASE_MERCHANT_CATEGORY_TYPE    "merchantCategoryType"
+#define STARKBANK_CORPORATE_PURCHASE_MERCHANT_COUNTRY_CODE     "merchantCountryCode"
+#define STARKBANK_CORPORATE_PURCHASE_MERCHANT_NAME             "merchantName"
+#define STARKBANK_CORPORATE_PURCHASE_MERCHANT_DISPLAY_NAME     "merchantDisplayName"
+#define STARKBANK_CORPORATE_PURCHASE_MERCHANT_DISPLAY_URL      "merchantDisplayUrl"
+#define STARKBANK_CORPORATE_PURCHASE_MERCHANT_FEE              "merchantFee"
+#define STARKBANK_CORPORATE_PURCHASE_METHOD_CODE               "methodCode"
+#define STARKBANK_CORPORATE_PURCHASE_TAGS                      "tags"
+#define STARKBANK_CORPORATE_PURCHASE_CORPORATE_TRANSACTION_IDS "corporateTransactionIds"
+#define STARKBANK_CORPORATE_PURCHASE_STATUS                    "status"
+#define STARKBANK_CORPORATE_PURCHASE_ID                        "id"
+#define STARKBANK_CORPORATE_PURCHASE_UPDATED                   "updated"
+#define STARKBANK_CORPORATE_PURCHASE_CREATED                   "created"
+
+/* Statuses and method codes, from the docs' enums. */
+#define STARKBANK_CORPORATE_PURCHASE_STATUS_APPROVED  "approved"
+#define STARKBANK_CORPORATE_PURCHASE_STATUS_CANCELED  "canceled"
+#define STARKBANK_CORPORATE_PURCHASE_STATUS_DENIED    "denied"
+#define STARKBANK_CORPORATE_PURCHASE_STATUS_CONFIRMED "confirmed"
+#define STARKBANK_CORPORATE_PURCHASE_STATUS_VOIDED    "voided"
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_purchase_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_purchase_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_purchase_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_purchase_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_purchase_parse(const starkbank_client *client,
+    const char *content, size_t content_len, const char *signature_base64,
+    starkbank_entity **out, starkbank_errors **errors);
+/* Verifies a purchase authorization request against Stark's public key, then
+   hydrates the body directly as a CorporatePurchase - unlike
+   starkbank_parse_and_verify, there is no envelope key to unwrap.
+   STARKCORE_ERROR_SIGNATURE when it does not check out. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_purchase_response(const char *status,
+    int has_amount, double amount, const char *reason, const char *tags, char **out);
+/* Builds the JSON body a caller's own HTTP handler answers a
+   starkbank_corporate_purchase_parse authorization request with; makes no
+   network call. has_amount 0 and reason/tags NULL or "" all mean "omit this
+   key", matching sdk-python's api_json dropping a None value rather than
+   sending it as null - has_amount exists because amount 0 is a legal cents
+   value sdk-python's default None must stay distinguishable from. tags is
+   comma-joined, like STARKBANK_VERB_CONTENT_QUERY's hiddenFields. *out is
+   malloc'd; free with starkbank_free. */
+
+/* ---------------------------------------------------- CorporatePurchaseLog */
+/*
+ * Resource "CorporatePurchaseLog"; endpoint "corporate-purchase/log", derived
+ * at run time.
+ * Fields: id type STRING (ro), errors LIST_OBJECT (ro), description
+ *         corporateTransactionId STRING (ro), purchase RESOURCE("CorporatePurchase") (ro),
+ *         created DATETIME (ro).
+ * Query keys: ids, limit, after, before, types, purchaseIds.
+ *
+ * errors is a list of {code, message} objects here, unlike CorporateCardLog
+ * and CorporateHolderLog, which carry no errors field at all - the backend
+ * sends purchase authorization failures as structured errors and card/holder
+ * lifecycle events as none. There is no corporatepurchase.Log pdf.
+ */
+#define STARKBANK_CORPORATE_PURCHASE_LOG_ID                       "id"
+#define STARKBANK_CORPORATE_PURCHASE_LOG_CREATED                  "created"
+#define STARKBANK_CORPORATE_PURCHASE_LOG_TYPE                     "type"
+#define STARKBANK_CORPORATE_PURCHASE_LOG_ERRORS                   "errors"
+#define STARKBANK_CORPORATE_PURCHASE_LOG_DESCRIPTION              "description"
+#define STARKBANK_CORPORATE_PURCHASE_LOG_CORPORATE_TRANSACTION_ID "corporateTransactionId"
+#define STARKBANK_CORPORATE_PURCHASE_LOG_PURCHASE                 "purchase"
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_purchase_log_params_new(
+    starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_purchase_log_get(
+    const starkbank_client *client, const char *id, starkbank_entity **out,
+    starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_purchase_log_query(
+    const starkbank_client *client, const starkbank_entity *params, int limit,
+    starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_purchase_log_page(
+    const starkbank_client *client, const starkbank_entity *params, starkbank_list **out,
+    char **out_cursor, starkbank_errors **errors);
+
+
+/* =========================================================================
+ *                               CorporateRule
+ * =========================================================================
+ *
+ * A spending rule embedded in CorporateHolder.rules and CorporateCard.rules.
+ * Bare top-level resource - sdk-python's _resource, not _sub_resource - with
+ * no REST verbs of its own, the same shape as Split. No PATCH bit anywhere:
+ * python's corporaterule module has no update(), so a caller changes a rule
+ * by resending the owning holder's or card's whole "rules" list. categories,
+ * countries and methods are opaque objects, not LIST_RESOURCE: their python
+ * counterparts (MerchantCategory, MerchantCountry, CardMethod) are not
+ * registered in this build, so a caller sends them exactly as the docs show,
+ * e.g. [{"code": "fastFoodRestaurants"}].
+ *
+ * Fields (wire keys; * = required on create).
+ *
+ *   name*  STRING              amount* AMOUNT
+ *   interval schedule currencyCode STRING
+ *   purposes LIST_STRING
+ *   categories countries methods LIST_OBJECT
+ *   id currencySymbol currencyName STRING (ro)      counterAmount AMOUNT (ro).
+ */
+
+#define STARKBANK_CORPORATE_RULE_NAME            "name"
+#define STARKBANK_CORPORATE_RULE_AMOUNT          "amount"
+#define STARKBANK_CORPORATE_RULE_INTERVAL        "interval"
+#define STARKBANK_CORPORATE_RULE_SCHEDULE        "schedule"
+#define STARKBANK_CORPORATE_RULE_PURPOSES        "purposes"
+#define STARKBANK_CORPORATE_RULE_CURRENCY_CODE   "currencyCode"
+#define STARKBANK_CORPORATE_RULE_CATEGORIES      "categories"
+#define STARKBANK_CORPORATE_RULE_COUNTRIES       "countries"
+#define STARKBANK_CORPORATE_RULE_METHODS         "methods"
+#define STARKBANK_CORPORATE_RULE_ID              "id"
+#define STARKBANK_CORPORATE_RULE_COUNTER_AMOUNT  "counterAmount"
+#define STARKBANK_CORPORATE_RULE_CURRENCY_SYMBOL "currencySymbol"
+#define STARKBANK_CORPORATE_RULE_CURRENCY_NAME   "currencyName"
+
+/* Intervals, from the docs' enum. */
+#define STARKBANK_CORPORATE_RULE_INTERVAL_INSTANT  "instant"
+#define STARKBANK_CORPORATE_RULE_INTERVAL_DAY      "day"
+#define STARKBANK_CORPORATE_RULE_INTERVAL_WEEK     "week"
+#define STARKBANK_CORPORATE_RULE_INTERVAL_MONTH    "month"
+#define STARKBANK_CORPORATE_RULE_INTERVAL_YEAR     "year"
+#define STARKBANK_CORPORATE_RULE_INTERVAL_LIFETIME "lifetime"
+
+/* Purposes, from the docs' enum. */
+#define STARKBANK_CORPORATE_RULE_PURPOSE_PURCHASE    "purchase"
+#define STARKBANK_CORPORATE_RULE_PURPOSE_WITHDRAWAL  "withdrawal"
+#define STARKBANK_CORPORATE_RULE_PURPOSE_VERIFICATION "verification"
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_rule_new(starkbank_entity **out);
+
+
+/* =========================================================================
+ *                              CorporateBalance
+ * =========================================================================
+ *
+ * The degenerate shape, again: one object, no id, no filters, one verb - see
+ * Balance.
+ *
+ * Fields: id currency STRING (ro), amount limit maxLimit AMOUNT (ro), updated
+ * DATETIME (ro).
+ */
+
+#define STARKBANK_CORPORATE_BALANCE_ID         "id"
+#define STARKBANK_CORPORATE_BALANCE_AMOUNT     "amount"
+#define STARKBANK_CORPORATE_BALANCE_LIMIT      "limit"
+#define STARKBANK_CORPORATE_BALANCE_MAX_LIMIT  "maxLimit"
+#define STARKBANK_CORPORATE_BALANCE_CURRENCY   "currency"
+#define STARKBANK_CORPORATE_BALANCE_UPDATED    "updated"
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_balance_get(const starkbank_client *client,
+    starkbank_entity **out, starkbank_errors **errors);
+
+
+/* =========================================================================
+ *                             CorporateInvoice
+ * =========================================================================
+ *
+ * create() posts a single object - sdk-python's rest.post_single, the same
+ * shape as Webhook - so this uses STARKBANK_VERB_POST_SINGLE, not
+ * POST_MULTI. There is no get(): sdk-python's corporateinvoice module
+ * defines only create(), query() and page(), so this table has no GET_ID
+ * verb either.
+ *
+ * taxId, name, brcode, due, link, status, corporateTransactionId, updated
+ * and created are all sdk-python __init__ keywords, but every one of them is
+ * filed under the class docstring's "Attributes (return-only)", not under
+ * "## Parameters" - only amount is required and tags is optional at create -
+ * so they carry RO here and not CREATE, the same table convention
+ * CorporateCard.pin and CorporateWithdrawal's section below already use.
+ *
+ * due is DATE_OR_DATETIME, not DATETIME: sdk-python coerces it with
+ * check_datetime_or_date, the same coercion Invoice.due uses.
+ *
+ * Fields (wire keys; * = required on create).
+ *
+ *   amount* AMOUNT
+ *   tags LIST_STRING
+ *   taxId name brcode link status corporateTransactionId id STRING (ro)
+ *   due DATE_OR_DATETIME (ro)
+ *   updated created DATETIME (ro).
+ *
+ * Query keys: limit, after, before, status, tags.
+ */
+
+#define STARKBANK_CORPORATE_INVOICE_AMOUNT                   "amount"
+#define STARKBANK_CORPORATE_INVOICE_TAGS                     "tags"
+#define STARKBANK_CORPORATE_INVOICE_TAX_ID                   "taxId"
+#define STARKBANK_CORPORATE_INVOICE_NAME                     "name"
+#define STARKBANK_CORPORATE_INVOICE_BRCODE                   "brcode"
+#define STARKBANK_CORPORATE_INVOICE_DUE                      "due"
+#define STARKBANK_CORPORATE_INVOICE_LINK                     "link"
+#define STARKBANK_CORPORATE_INVOICE_STATUS                   "status"
+#define STARKBANK_CORPORATE_INVOICE_CORPORATE_TRANSACTION_ID "corporateTransactionId"
+#define STARKBANK_CORPORATE_INVOICE_ID                       "id"
+#define STARKBANK_CORPORATE_INVOICE_UPDATED                  "updated"
+#define STARKBANK_CORPORATE_INVOICE_CREATED                  "created"
+
+/* Statuses, from the docs' enum. */
+#define STARKBANK_CORPORATE_INVOICE_STATUS_CREATED "created"
+#define STARKBANK_CORPORATE_INVOICE_STATUS_EXPIRED "expired"
+#define STARKBANK_CORPORATE_INVOICE_STATUS_OVERDUE "overdue"
+#define STARKBANK_CORPORATE_INVOICE_STATUS_PAID    "paid"
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_invoice_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_invoice_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_invoice_create(const starkbank_client *client,
+    const starkbank_entity *invoice, starkbank_entity **out, starkbank_errors **errors);
+/* One invoice, posted to corporate-invoice. The entity stays yours - unlike
+   POST_MULTI's list, this does not take ownership. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_invoice_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_invoice_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+
+/* =========================================================================
+ *                            CorporateTransaction
+ * =========================================================================
+ *
+ * A read-only ledger entry. sdk-python's module has no create(), no
+ * update() and no delete() - a caller never posts a transaction, the API
+ * writes one for every balance shift (a purchase, an invoice, a withdrawal)
+ * - so this table has no CREATE bit anywhere and no NEW/POST verb.
+ *
+ * query()'s actual signature takes source, tags, external_ids, after,
+ * before, ids and limit; its docstring also prose-lists a "status" filter
+ * that signature does not accept, and the docs' GET /v2/corporate-transaction
+ * endpoint lists neither ids nor externalIds at all. Code is normative over
+ * docstring prose and over the docs' parameter list here, so "status" stays
+ * out of STARKBANK_CORPORATE_TRANSACTION_QUERY while ids and externalIds
+ * stay in - see known-drift.json's query.gone:CorporateTransaction:ids and
+ * query.gone:CorporateTransaction:externalIds.
+ *
+ * Fields (wire keys), every one read-only: a caller never posts a
+ * transaction.
+ *
+ *   id description source STRING (ro)
+ *   amount balance AMOUNT (ro)
+ *   tags LIST_STRING (ro)
+ *   created DATETIME (ro).
+ *
+ * Query keys: limit, after, before, tags, externalIds, ids, source.
+ */
+
+#define STARKBANK_CORPORATE_TRANSACTION_ID          "id"
+#define STARKBANK_CORPORATE_TRANSACTION_AMOUNT      "amount"
+#define STARKBANK_CORPORATE_TRANSACTION_BALANCE     "balance"
+#define STARKBANK_CORPORATE_TRANSACTION_DESCRIPTION "description"
+#define STARKBANK_CORPORATE_TRANSACTION_SOURCE      "source"
+#define STARKBANK_CORPORATE_TRANSACTION_TAGS        "tags"
+#define STARKBANK_CORPORATE_TRANSACTION_CREATED     "created"
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_transaction_params_new(
+    starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_transaction_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_transaction_query(
+    const starkbank_client *client, const starkbank_entity *params, int limit,
+    starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_transaction_page(
+    const starkbank_client *client, const starkbank_entity *params, starkbank_list **out,
+    char **out_cursor, starkbank_errors **errors);
+
+
+/* =========================================================================
+ *                            CorporateWithdrawal
+ * =========================================================================
+ *
+ * create() posts a single object, the same shape as CorporateInvoice and
+ * Webhook, so this uses STARKBANK_VERB_POST_SINGLE, not POST_MULTI.
+ *
+ * amount and externalId are the only two "## Parameters (required)" entries
+ * in sdk-python's class docstring and the only two constructor keywords with
+ * no default; tags is the lone "## Parameters (optional)" entry.
+ * transactionId, corporateTransactionId, updated and created are
+ * constructor keywords too but are filed under "Attributes (return-only)",
+ * so they carry RO here, not CREATE - the same convention CorporateInvoice's
+ * section above uses.
+ *
+ * The docs' GET /v2/corporate-withdrawal endpoint does not list externalId
+ * as a filter; sdk-python's query()/page() accept external_ids anyway, and
+ * python is normative for the verb surface - see known-drift.json's
+ * query.gone:CorporateWithdrawal:externalIds.
+ *
+ * Fields (wire keys; * = required on create).
+ *
+ *   amount* AMOUNT
+ *   externalId* STRING
+ *   tags LIST_STRING
+ *   transactionId corporateTransactionId id STRING (ro)
+ *   updated created DATETIME (ro).
+ *
+ * Query keys: limit, after, before, tags, externalIds.
+ */
+
+#define STARKBANK_CORPORATE_WITHDRAWAL_AMOUNT                   "amount"
+#define STARKBANK_CORPORATE_WITHDRAWAL_EXTERNAL_ID              "externalId"
+#define STARKBANK_CORPORATE_WITHDRAWAL_TAGS                     "tags"
+#define STARKBANK_CORPORATE_WITHDRAWAL_TRANSACTION_ID           "transactionId"
+#define STARKBANK_CORPORATE_WITHDRAWAL_CORPORATE_TRANSACTION_ID "corporateTransactionId"
+#define STARKBANK_CORPORATE_WITHDRAWAL_ID                       "id"
+#define STARKBANK_CORPORATE_WITHDRAWAL_UPDATED                  "updated"
+#define STARKBANK_CORPORATE_WITHDRAWAL_CREATED                  "created"
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_withdrawal_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_withdrawal_params_new(
+    starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_withdrawal_create(
+    const starkbank_client *client, const starkbank_entity *withdrawal, starkbank_entity **out,
+    starkbank_errors **errors);
+/* One withdrawal, posted to corporate-withdrawal. The entity stays yours -
+   unlike POST_MULTI's list, this does not take ownership. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_withdrawal_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_withdrawal_query(
+    const starkbank_client *client, const starkbank_entity *params, int limit,
+    starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_corporate_withdrawal_page(
+    const starkbank_client *client, const starkbank_entity *params, starkbank_list **out,
+    char **out_cursor, starkbank_errors **errors);
+
+
+/* =========================================================================
  *                               DarfPayment
  * =========================================================================
  *

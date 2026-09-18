@@ -42,6 +42,14 @@ an FFI generator and MSVC can all read it. `make check-header` proves that.
 
 | resource | verbs | notes |
 |---|---|---|
+| CorporateBalance | get | no id, no filters: the degenerate shape, again |
+| CorporateCard | create get query page update delete | `create` posts to `corporate-card/token` via `STARKBANK_VERB_POST_SINGLE_SUB`. + `corporatecard.Log` (get query page). `pin` is PATCH-only with no matching field: python's `update()` sends it but never stores it |
+| CorporateHolder | create get query page update delete | + `corporateholder.Log` (get query page), `CorporateHolder.Permission` (bare sub-resource), `CorporateRule` |
+| CorporateInvoice | create query page | `create` is `post_single`, the Webhook shape; no `get` - python has none |
+| CorporatePurchase | get query page parse response | every field is RO: a network authorizes a purchase, nobody posts one. + `corporatepurchase.Log` (get query page), whose `errors` is a real LIST_OBJECT. `parse`/`response` are hand-written, no network call in `response` |
+| CorporateRule | (none) | bare sub-resource embedded in `CorporateHolder.rules` and `CorporateCard.rules`, the same shape as `Split` |
+| CorporateTransaction | get query page | a read-only ledger entry; no create, update or delete anywhere in python |
+| CorporateWithdrawal | create get query page | `create` is `post_single`, the same shape as `CorporateInvoice` |
 | DarfPayment | create get delete query page pdf | + `darfpayment.Log` (get query page). Fully structured: no conditionally-required line/barCode pair, and no `type` attribute |
 | Invoice | create get query page update pdf qrcode payment | + `invoice.Log` (get query page pdf), `Invoice.Rule`, `Invoice.Payment`, `Split` |
 | TaxPayment | create get delete query page pdf | + `taxpayment.Log` (get query page). `line`/`barCode` are the conditionally-required pair; `scheduled` is a plain DATE |

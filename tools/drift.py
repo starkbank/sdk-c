@@ -75,6 +75,7 @@ FLAG_PATCH = 4
 VERB_PYTHON_NAME = {
     "POST_MULTI": "create",
     "POST_SINGLE": "create",
+    "POST_SINGLE_SUB": "create",
     "GET_ID": "get",
     "GET_FIRST": "get",
     "QUERY": "query",
@@ -538,7 +539,16 @@ def readDocs(directory):
 def verbEndpoint(shape, endpoint, verbName):
     """The (method, path) a verb macro reaches, from core-c's endpoint alone."""
     base = "/v2/" + endpoint
-    if shape in ("POST_MULTI", "POST_SINGLE"):
+    if shape in ("POST_MULTI", "POST_SINGLE", "POST_SINGLE_SUB"):
+        # POST_SINGLE_SUB's real path is base + "/" + a literal sub-path
+        # argument (CorporateCard.create posts to corporate-card/token), and
+        # that argument is a quoted string literal VERB_MACRO's regex does not
+        # capture - it only captures a bare identifier third argument, which
+        # every other named shape's third argument actually is. Checked
+        # against base alone, this only proves a POST to the resource's own
+        # endpoint is documented somewhere, which every sub-path create still
+        # implies; it does not prove the sub-path itself is documented, and
+        # nothing here can without teaching the regex a second argument shape.
         return ("POST", base)
     if shape in ("GET_FIRST", "QUERY", "PAGE"):
         return ("GET", base)
