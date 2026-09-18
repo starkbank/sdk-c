@@ -50,6 +50,8 @@
     R(merchant_card_log)       \
     R(merchant_installment)    \
     R(merchant_installment_log) \
+    R(merchant_purchase)       \
+    R(merchant_purchase_log)   \
     R(merchant_session)        \
     R(merchant_session_log)    \
     R(payment_preview)         \

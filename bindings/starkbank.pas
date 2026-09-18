@@ -505,6 +505,48 @@ const
   STARKBANK_MERCHANT_INSTALLMENT_TAGS = 'tags';
   STARKBANK_MERCHANT_INSTALLMENT_TRANSACTION_IDS = 'transactionIds';
   STARKBANK_MERCHANT_INSTALLMENT_UPDATED = 'updated';
+  STARKBANK_MERCHANT_PURCHASE_AMOUNT = 'amount';
+  STARKBANK_MERCHANT_PURCHASE_BILLING_CITY = 'billingCity';
+  STARKBANK_MERCHANT_PURCHASE_BILLING_COUNTRY_CODE = 'billingCountryCode';
+  STARKBANK_MERCHANT_PURCHASE_BILLING_STATE_CODE = 'billingStateCode';
+  STARKBANK_MERCHANT_PURCHASE_BILLING_STREET_LINE_1 = 'billingStreetLine1';
+  STARKBANK_MERCHANT_PURCHASE_BILLING_STREET_LINE_2 = 'billingStreetLine2';
+  STARKBANK_MERCHANT_PURCHASE_BILLING_ZIP_CODE = 'billingZipCode';
+  STARKBANK_MERCHANT_PURCHASE_CARD_ENDING = 'cardEnding';
+  STARKBANK_MERCHANT_PURCHASE_CARD_EXPIRATION = 'cardExpiration';
+  STARKBANK_MERCHANT_PURCHASE_CARD_ID = 'cardId';
+  STARKBANK_MERCHANT_PURCHASE_CARD_NUMBER = 'cardNumber';
+  STARKBANK_MERCHANT_PURCHASE_CARD_SECURITY_CODE = 'cardSecurityCode';
+  STARKBANK_MERCHANT_PURCHASE_CHALLENGE_MODE = 'challengeMode';
+  STARKBANK_MERCHANT_PURCHASE_CHALLENGE_URL = 'challengeUrl';
+  STARKBANK_MERCHANT_PURCHASE_CREATED = 'created';
+  STARKBANK_MERCHANT_PURCHASE_CURRENCY_CODE = 'currencyCode';
+  STARKBANK_MERCHANT_PURCHASE_END_TO_END_ID = 'endToEndId';
+  STARKBANK_MERCHANT_PURCHASE_FEE = 'fee';
+  STARKBANK_MERCHANT_PURCHASE_FUNDING_TYPE = 'fundingType';
+  STARKBANK_MERCHANT_PURCHASE_HOLDER_EMAIL = 'holderEmail';
+  STARKBANK_MERCHANT_PURCHASE_HOLDER_ID = 'holderId';
+  STARKBANK_MERCHANT_PURCHASE_HOLDER_NAME = 'holderName';
+  STARKBANK_MERCHANT_PURCHASE_HOLDER_PHONE = 'holderPhone';
+  STARKBANK_MERCHANT_PURCHASE_ID = 'id';
+  STARKBANK_MERCHANT_PURCHASE_INSTALLMENT_COUNT = 'installmentCount';
+  STARKBANK_MERCHANT_PURCHASE_LOG_CREATED = 'created';
+  STARKBANK_MERCHANT_PURCHASE_LOG_ERRORS = 'errors';
+  STARKBANK_MERCHANT_PURCHASE_LOG_ID = 'id';
+  STARKBANK_MERCHANT_PURCHASE_LOG_PURCHASE = 'purchase';
+  STARKBANK_MERCHANT_PURCHASE_LOG_TYPE = 'type';
+  STARKBANK_MERCHANT_PURCHASE_METADATA = 'metadata';
+  STARKBANK_MERCHANT_PURCHASE_NETWORK = 'network';
+  STARKBANK_MERCHANT_PURCHASE_SOFT_DESCRIPTOR = 'softDescriptor';
+  STARKBANK_MERCHANT_PURCHASE_SOURCE = 'source';
+  STARKBANK_MERCHANT_PURCHASE_STATUS = 'status';
+  STARKBANK_MERCHANT_PURCHASE_STATUS_APPROVED = 'approved';
+  STARKBANK_MERCHANT_PURCHASE_STATUS_CANCELED = 'canceled';
+  STARKBANK_MERCHANT_PURCHASE_STATUS_CONFIRMED = 'confirmed';
+  STARKBANK_MERCHANT_PURCHASE_STATUS_REVERSED = 'reversed';
+  STARKBANK_MERCHANT_PURCHASE_STATUS_VOIDED = 'voided';
+  STARKBANK_MERCHANT_PURCHASE_TAGS = 'tags';
+  STARKBANK_MERCHANT_PURCHASE_UPDATED = 'updated';
   STARKBANK_MERCHANT_SESSION_ALLOWED_FUNDING_TYPES = 'allowedFundingTypes';
   STARKBANK_MERCHANT_SESSION_ALLOWED_INSTALLMENTS = 'allowedInstallments';
   STARKBANK_MERCHANT_SESSION_ALLOWED_IPS = 'allowedIps';
@@ -1186,6 +1228,28 @@ function starkbank_merchant_installment_page(client: Pstarkbank_client; params: 
 function starkbank_merchant_installment_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_installment_params_new';
 
 function starkbank_merchant_installment_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_installment_query';
+
+function starkbank_merchant_purchase_create(client: Pstarkbank_client; purchase: Pstarkbank_entity; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_purchase_create';
+
+function starkbank_merchant_purchase_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_purchase_get';
+
+function starkbank_merchant_purchase_log_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_purchase_log_get';
+
+function starkbank_merchant_purchase_log_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_purchase_log_page';
+
+function starkbank_merchant_purchase_log_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_purchase_log_params_new';
+
+function starkbank_merchant_purchase_log_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_purchase_log_query';
+
+function starkbank_merchant_purchase_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_purchase_new';
+
+function starkbank_merchant_purchase_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_purchase_page';
+
+function starkbank_merchant_purchase_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_purchase_params_new';
+
+function starkbank_merchant_purchase_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_purchase_query';
+
+function starkbank_merchant_purchase_update(client: Pstarkbank_client; id: PAnsiChar; patch: Pstarkbank_entity; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_purchase_update';
 
 function starkbank_merchant_session_create(client: Pstarkbank_client; session: Pstarkbank_entity; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_session_create';
 
