@@ -480,7 +480,8 @@ static void testCanonical(void)
 static void testRegistry(void)
 {
     static const char *const expected[] = {
-        "Balance", "Boleto", "BoletoLog", "BoletoPayment", "BoletoPaymentLog",
+        "Balance", "Boleto", "BoletoHolmes", "BoletoHolmesLog", "BoletoLog",
+        "BoletoPayment", "BoletoPaymentLog",
         "BrcodePayment", "BrcodePaymentLog", "BrcodePayment.Rule",
         "CardMethod",
         "CorporateBalance", "CorporateCard", "CorporateCardLog",
@@ -488,8 +489,11 @@ static void testRegistry(void)
         "CorporatePurchase", "CorporatePurchaseLog", "CorporateRule",
         "CorporateTransaction", "CorporateWithdrawal",
         "DarfPayment", "DarfPaymentLog", "Deposit", "DepositLog", "DictKey",
+        "DynamicBrcode", "DynamicBrcode.Rule",
         "Event", "EventAttempt", "Institution", "Invoice", "InvoiceLog",
         "Invoice.Payment", "Invoice.Rule",
+        "InvoicePullRequest", "InvoicePullRequestLog",
+        "InvoicePullSubscription", "InvoicePullSubscriptionLog",
         "MerchantCard", "MerchantCardLog", "MerchantCategory",
         "MerchantCountry", "MerchantInstallment", "MerchantInstallmentLog",
         "MerchantPurchase", "MerchantPurchaseLog", "MerchantSession",
@@ -497,6 +501,7 @@ static void testRegistry(void)
         "PaymentPreview",
         "PaymentPreview.BoletoPreview", "PaymentPreview.BrcodePreview",
         "PaymentPreview.TaxPreview", "PaymentPreview.UtilityPreview",
+        "PaymentRequest",
         "Permission", "Purchase", "Split", "TaxPayment", "TaxPaymentLog",
         "Transaction", "Transfer", "TransferLog", "Transfer.Rule",
         "UtilityPayment", "UtilityPaymentLog", "Webhook", "Workspace"
@@ -4183,6 +4188,624 @@ static void testMerchantCountry(void)
     starkbank_client_free(client);
 }
 
+static void testBoletoHolmes(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_list *batch = NULL;
+    starkbank_list *created = NULL;
+    starkbank_list *page = NULL;
+    starkbank_entity *holmes = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+
+    startGroup("BoletoHolmes");
+    client = newClient(&fake);
+    replies(&fake, responseBody("boletoHolmesList"), NULL);
+    starkbank_boleto_holmes_new(&holmes);
+    starkbank_entity_set_string(holmes, STARKBANK_BOLETO_HOLMES_BOLETO_ID,
+                                "5155165527080960");
+    starkbank_entity_append_string(holmes, STARKBANK_BOLETO_HOLMES_TAGS, "sherlock");
+    starkbank_list_new(&batch);
+    starkbank_list_append(batch, holmes);
+    check("create returns the created list",
+          starkbank_boleto_holmes_create(client, batch, &created, NULL) == STARKBANK_OK
+          && starkbank_list_count(created) == 1, NULL);
+    checkRequests("boletoholmes.create", &fake);
+    checkHydration("boletoholmes.create", 0, starkbank_list_at(created, 0));
+    check("no unknown key: the table matches python field for field",
+          starkbank_entity_unknown_count(starkbank_list_at(created, 0)) == 0, NULL);
+    starkbank_list_free(batch);
+    starkbank_list_free(created);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("boletoHolmes"), NULL);
+    starkbank_boleto_holmes_get(client, "6234161654976514", &holmes, NULL);
+    checkRequests("boletoholmes.get", &fake);
+    checkHydration("boletoholmes.get", 0, holmes);
+    starkbank_entity_free(holmes);
+    holmes = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"holmes\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_boleto_holmes_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_set_string(params, "status", "solved");
+    starkbank_entity_set_string(params, "boletoId", "5155165527080960");
+    starkbank_boleto_holmes_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("boletoholmes.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"holmes\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_boleto_holmes_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_boleto_holmes_page(client, params, &page, NULL, NULL);
+    checkRequests("boletoholmes.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+static void testBoletoHolmesLog(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *log = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *nested = NULL;
+    starkbank_list *page = NULL;
+
+    startGroup("boletoholmes.Log - no errors field, no pdf");
+    client = newClient(&fake);
+    replies(&fake, responseBody("boletoHolmesLog"), NULL);
+    starkbank_boleto_holmes_log_get(client, "6234161654976515", &log, NULL);
+    checkRequests("boletoholmes.log.get", &fake);
+    checkHydration("boletoholmes.log.get", 0, log);
+    check("the nested holmes is tagged",
+          starkbank_entity_entity(log, STARKBANK_BOLETO_HOLMES_LOG_HOLMES, &nested)
+              == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested), "BoletoHolmes"), NULL);
+    starkbank_entity_free(log);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_boleto_holmes_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_append_string(params, "types", "solved");
+    starkbank_entity_append_string(params, "holmesIds", "6234161654976514");
+    starkbank_boleto_holmes_log_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("boletoholmes.log.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_boleto_holmes_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_boleto_holmes_log_page(client, params, &page, NULL, NULL);
+    checkRequests("boletoholmes.log.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+static void testDynamicBrcode(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_list *batch = NULL;
+    starkbank_list *created = NULL;
+    starkbank_list *page = NULL;
+    starkbank_entity *brcode = NULL;
+    starkbank_entity *rule = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *nested = NULL;
+    int size = 0;
+
+    startGroup("DynamicBrcode");
+    client = newClient(&fake);
+    replies(&fake, responseBody("dynamicBrcodes"), NULL);
+    starkbank_dynamic_brcode_new(&brcode);
+    starkbank_entity_set_amount(brcode, STARKBANK_DYNAMIC_BRCODE_AMOUNT, 100000);
+    starkbank_entity_set_seconds(brcode, STARKBANK_DYNAMIC_BRCODE_EXPIRATION, 3600);
+    starkbank_entity_set_string(brcode, STARKBANK_DYNAMIC_BRCODE_DISPLAY_DESCRIPTION,
+                                "Payment for service #1234");
+    starkbank_dynamic_brcode_rule_new(&rule);
+    starkbank_entity_set_string(rule, STARKBANK_DYNAMIC_BRCODE_RULE_KEY, "allowedTaxIds");
+    starkbank_entity_append_string(rule, STARKBANK_DYNAMIC_BRCODE_RULE_VALUE,
+                                   "012.345.678-90");
+    starkbank_entity_append_entity(brcode, STARKBANK_DYNAMIC_BRCODE_RULES, rule);
+    starkbank_entity_append_string(brcode, STARKBANK_DYNAMIC_BRCODE_TAGS, "dynamic");
+    starkbank_list_new(&batch);
+    starkbank_list_append(batch, brcode);
+    check("create returns the created list",
+          starkbank_dynamic_brcode_create(client, batch, &created, NULL) == STARKBANK_OK
+          && starkbank_list_count(created) == 1, NULL);
+    checkRequests("dynamicbrcode.create", &fake);
+    checkHydration("dynamicbrcode.create", 0, starkbank_list_at(created, 0));
+    check("no unknown key: the table matches python field for field",
+          starkbank_entity_unknown_count(starkbank_list_at(created, 0)) == 0, NULL);
+    check("rules is a LIST_RESOURCE tagged DynamicBrcode.Rule",
+          starkbank_entity_list_size(starkbank_list_at(created, 0),
+              STARKBANK_DYNAMIC_BRCODE_RULES, &size) == STARKBANK_OK && size == 1
+          && starkbank_entity_list_entity_at(starkbank_list_at(created, 0),
+                 STARKBANK_DYNAMIC_BRCODE_RULES, 0, &nested) == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested), "DynamicBrcode.Rule"), NULL);
+    starkbank_list_free(batch);
+    starkbank_list_free(created);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("dynamicBrcode"), NULL);
+    check("get reaches GET /v2/dynamic-brcode/:uuid - see dynamicbrcode.h",
+          starkbank_dynamic_brcode_get(client, "901e71f2447c43c886f58366a5432c4b",
+              &brcode, NULL) == STARKBANK_OK, NULL);
+    checkRequests("dynamicbrcode.get", &fake);
+    checkHydration("dynamicbrcode.get", 0, brcode);
+    starkbank_entity_free(brcode);
+    brcode = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"brcodes\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_dynamic_brcode_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_append_string(params, "tags", "dynamic");
+    starkbank_dynamic_brcode_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("dynamicbrcode.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"brcodes\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_dynamic_brcode_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_dynamic_brcode_page(client, params, &page, NULL, NULL);
+    checkRequests("dynamicbrcode.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+static void testInvoicePullSubscription(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_list *batch = NULL;
+    starkbank_list *created = NULL;
+    starkbank_list *page = NULL;
+    starkbank_entity *subscription = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+
+    startGroup("InvoicePullSubscription");
+    client = newClient(&fake);
+    replies(&fake, responseBody("invoicePullSubscriptions"), NULL);
+    starkbank_invoice_pull_subscription_new(&subscription);
+    starkbank_entity_set_date(subscription, STARKBANK_INVOICE_PULL_SUBSCRIPTION_START,
+                              2026, 9, 16);
+    starkbank_entity_set_string(subscription, STARKBANK_INVOICE_PULL_SUBSCRIPTION_INTERVAL,
+                                "month");
+    starkbank_entity_set_string(subscription, STARKBANK_INVOICE_PULL_SUBSCRIPTION_PULL_MODE,
+                                "automatic");
+    starkbank_entity_set_number(subscription,
+                                STARKBANK_INVOICE_PULL_SUBSCRIPTION_PULL_RETRY_LIMIT, 3);
+    starkbank_entity_set_string(subscription, STARKBANK_INVOICE_PULL_SUBSCRIPTION_TYPE,
+                                "qrcode");
+    starkbank_entity_set_amount(subscription, STARKBANK_INVOICE_PULL_SUBSCRIPTION_AMOUNT,
+                                100000);
+    starkbank_entity_append_string(subscription, STARKBANK_INVOICE_PULL_SUBSCRIPTION_TAGS,
+                                   "subscription");
+    starkbank_list_new(&batch);
+    starkbank_list_append(batch, subscription);
+    check("create returns the created list",
+          starkbank_invoice_pull_subscription_create(client, batch, &created, NULL)
+              == STARKBANK_OK
+          && starkbank_list_count(created) == 1, NULL);
+    checkRequests("invoicepullsubscription.create", &fake);
+    checkHydration("invoicepullsubscription.create", 0, starkbank_list_at(created, 0));
+    check("no unknown key: the table matches python field for field",
+          starkbank_entity_unknown_count(starkbank_list_at(created, 0)) == 0, NULL);
+    starkbank_list_free(batch);
+    starkbank_list_free(created);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("invoicePullSubscription"), NULL);
+    starkbank_invoice_pull_subscription_get(client, "6234161654976516", &subscription, NULL);
+    checkRequests("invoicepullsubscription.get", &fake);
+    checkHydration("invoicepullsubscription.get", 0, subscription);
+    starkbank_entity_free(subscription);
+    subscription = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"subscriptions\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_invoice_pull_subscription_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_set_string(params, "status", "active");
+    starkbank_entity_append_string(params, "tags", "subscription");
+    starkbank_invoice_pull_subscription_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("invoicepullsubscription.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"subscriptions\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_invoice_pull_subscription_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_invoice_pull_subscription_page(client, params, &page, NULL, NULL);
+    checkRequests("invoicepullsubscription.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("invoicePullSubscription"), NULL);
+    check("delete keeps sdk-c's uniform *_delete spelling for python's cancel()",
+          starkbank_invoice_pull_subscription_delete(client, "6234161654976516",
+              &subscription, NULL) == STARKBANK_OK, NULL);
+    checkRequests("invoicepullsubscription.delete", &fake);
+    starkbank_entity_free(subscription);
+    starkbank_client_free(client);
+}
+
+static void testInvoicePullSubscriptionLog(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *log = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *nested = NULL;
+    starkbank_list *page = NULL;
+    int size = 0;
+
+    startGroup("invoicepullsubscription.Log - errors is LIST_OBJECT, not LIST_STRING");
+    client = newClient(&fake);
+    replies(&fake, responseBody("invoicePullSubscriptionLog"), NULL);
+    starkbank_invoice_pull_subscription_log_get(client, "6234161654976517", &log, NULL);
+    checkRequests("invoicepullsubscription.log.get", &fake);
+    checkHydration("invoicepullsubscription.log.get", 0, log);
+    check("the nested subscription is tagged",
+          starkbank_entity_entity(log, STARKBANK_INVOICE_PULL_SUBSCRIPTION_LOG_SUBSCRIPTION,
+              &nested) == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested), "InvoicePullSubscription"), NULL);
+    check("errors is a real LIST_OBJECT: a LIST_STRING mistake would fail hydration",
+          starkbank_entity_list_size(log, STARKBANK_INVOICE_PULL_SUBSCRIPTION_LOG_ERRORS,
+              &size) == STARKBANK_OK && size == 1, NULL);
+    starkbank_entity_free(log);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_invoice_pull_subscription_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_append_string(params, "types", "active");
+    starkbank_entity_append_string(params, "subscriptionIds", "6234161654976516");
+    starkbank_invoice_pull_subscription_log_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("invoicepullsubscription.log.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_invoice_pull_subscription_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_invoice_pull_subscription_log_page(client, params, &page, NULL, NULL);
+    checkRequests("invoicepullsubscription.log.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+static void testInvoicePullRequest(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_list *batch = NULL;
+    starkbank_list *created = NULL;
+    starkbank_list *page = NULL;
+    starkbank_entity *request = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+
+    startGroup("InvoicePullRequest");
+    client = newClient(&fake);
+    replies(&fake, responseBody("invoicePullRequests"), NULL);
+    starkbank_invoice_pull_request_new(&request);
+    starkbank_entity_set_string(request, STARKBANK_INVOICE_PULL_REQUEST_SUBSCRIPTION_ID,
+                                "6234161654976516");
+    starkbank_entity_set_string(request, STARKBANK_INVOICE_PULL_REQUEST_INVOICE_ID,
+                                "5155165527080960");
+    starkbank_entity_set_datetime(request, STARKBANK_INVOICE_PULL_REQUEST_DUE,
+                                  2026, 10, 28, 17, 59, 26);
+    starkbank_entity_append_string(request, STARKBANK_INVOICE_PULL_REQUEST_TAGS, "pull");
+    starkbank_list_new(&batch);
+    starkbank_list_append(batch, request);
+    check("create returns the created list",
+          starkbank_invoice_pull_request_create(client, batch, &created, NULL) == STARKBANK_OK
+          && starkbank_list_count(created) == 1, NULL);
+    checkRequests("invoicepullrequest.create", &fake);
+    checkHydration("invoicepullrequest.create", 0, starkbank_list_at(created, 0));
+    check("no unknown key: the table matches python field for field",
+          starkbank_entity_unknown_count(starkbank_list_at(created, 0)) == 0, NULL);
+    starkbank_list_free(batch);
+    starkbank_list_free(created);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("invoicePullRequest"), NULL);
+    starkbank_invoice_pull_request_get(client, "6234161654976518", &request, NULL);
+    checkRequests("invoicepullrequest.get", &fake);
+    checkHydration("invoicepullrequest.get", 0, request);
+    starkbank_entity_free(request);
+    request = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"requests\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_invoice_pull_request_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_set_string(params, "status", "success");
+    starkbank_entity_append_string(params, "subscriptionIds", "6234161654976516");
+    starkbank_invoice_pull_request_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("invoicepullrequest.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"requests\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_invoice_pull_request_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_invoice_pull_request_page(client, params, &page, NULL, NULL);
+    checkRequests("invoicepullrequest.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("invoicePullRequest"), NULL);
+    check("delete keeps sdk-c's uniform *_delete spelling for python's cancel()",
+          starkbank_invoice_pull_request_delete(client, "6234161654976518", &request, NULL)
+              == STARKBANK_OK, NULL);
+    checkRequests("invoicepullrequest.delete", &fake);
+    starkbank_entity_free(request);
+    starkbank_client_free(client);
+}
+
+static void testInvoicePullRequestLog(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *log = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *nested = NULL;
+    starkbank_list *page = NULL;
+    int size = 0;
+
+    startGroup("invoicepullrequest.Log - errors is LIST_OBJECT, not LIST_STRING");
+    client = newClient(&fake);
+    replies(&fake, responseBody("invoicePullRequestLog"), NULL);
+    starkbank_invoice_pull_request_log_get(client, "6234161654976520", &log, NULL);
+    checkRequests("invoicepullrequest.log.get", &fake);
+    checkHydration("invoicepullrequest.log.get", 0, log);
+    check("the nested request is tagged",
+          starkbank_entity_entity(log, STARKBANK_INVOICE_PULL_REQUEST_LOG_REQUEST, &nested)
+              == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested), "InvoicePullRequest"), NULL);
+    check("errors is a real LIST_OBJECT: a LIST_STRING mistake would fail hydration",
+          starkbank_entity_list_size(log, STARKBANK_INVOICE_PULL_REQUEST_LOG_ERRORS, &size)
+              == STARKBANK_OK && size == 1, NULL);
+    starkbank_entity_free(log);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_invoice_pull_request_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_append_string(params, "types", "success");
+    starkbank_entity_append_string(params, "requestIds", "6234161654976518");
+    starkbank_invoice_pull_request_log_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("invoicepullrequest.log.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_invoice_pull_request_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_invoice_pull_request_log_page(client, params, &page, NULL, NULL);
+    checkRequests("invoicepullrequest.log.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+/* payment is polymorphic on "type"; this covers two of the seven, matching
+   the second create case recorded as "paymentrequest.create.boletopayment". */
+static void testPaymentRequest(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_list *batch = NULL;
+    starkbank_list *created = NULL;
+    starkbank_list *page = NULL;
+    starkbank_entity *request = NULL;
+    starkbank_entity *transfer = NULL;
+    starkbank_entity *rule = NULL;
+    starkbank_entity *boletoPayment = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *nested = NULL;
+    char *dumped = NULL;
+
+    startGroup("PaymentRequest - payment is polymorphic on type");
+    client = newClient(&fake);
+    replies(&fake, responseBody("paymentRequestTransfer"), NULL);
+
+    /* The payment leg is built with its own family's constructor, exactly as
+       testTransfer builds one, then embedded with set_json_raw - see
+       paymentrequest.h for why there is no dedicated setter. */
+    starkbank_transfer_new(&transfer);
+    starkbank_entity_set_amount(transfer, STARKBANK_TRANSFER_AMOUNT, 1000);
+    starkbank_entity_set_string(transfer, STARKBANK_TRANSFER_NAME,
+                                "Daenerys Targaryen Stormborn");
+    starkbank_entity_set_string(transfer, STARKBANK_TRANSFER_TAX_ID, "594.739.480-42");
+    starkbank_entity_set_string(transfer, STARKBANK_TRANSFER_BANK_CODE, "20018183");
+    starkbank_entity_set_string(transfer, STARKBANK_TRANSFER_BRANCH_CODE, "1357-9");
+    starkbank_entity_set_string(transfer, STARKBANK_TRANSFER_ACCOUNT_NUMBER, "876543-2");
+    starkbank_entity_set_string(transfer, STARKBANK_TRANSFER_ACCOUNT_TYPE, "checking");
+    starkbank_entity_set_string(transfer, STARKBANK_TRANSFER_EXTERNAL_ID,
+                                "my-internal-id-123456");
+    starkbank_entity_set_datetime(transfer, STARKBANK_TRANSFER_SCHEDULED,
+                                  2026, 10, 28, 17, 59, 26);
+    starkbank_entity_set_string(transfer, STARKBANK_TRANSFER_DESCRIPTION,
+                                "Payment for service #1234");
+    starkbank_entity_set_string(transfer, STARKBANK_TRANSFER_DISPLAY_DESCRIPTION,
+                                "Sword sharpening");
+    starkbank_entity_append_string(transfer, STARKBANK_TRANSFER_TAGS, "daenerys");
+    starkbank_entity_append_string(transfer, STARKBANK_TRANSFER_TAGS, "invoice/1234");
+    starkbank_transfer_rule_new(&rule);
+    starkbank_entity_set_string(rule, STARKBANK_TRANSFER_RULE_KEY, "resendingLimit");
+    starkbank_entity_set_number(rule, STARKBANK_TRANSFER_RULE_VALUE, 5);
+    starkbank_entity_append_entity(transfer, STARKBANK_TRANSFER_RULES, rule);
+
+    starkbank_payment_request_new(&request);
+    starkbank_entity_set_string(request, STARKBANK_PAYMENT_REQUEST_CENTER_ID,
+                                "5656565656565656");
+    /* type is not inferred here the way sdk-python's _parse_payment infers it
+       from the payment object's class - a caller must set it explicitly. */
+    starkbank_entity_set_string(request, STARKBANK_PAYMENT_REQUEST_TYPE, "transfer");
+    starkbank_entity_append_string(request, STARKBANK_PAYMENT_REQUEST_TAGS, "urgent");
+    check("dump the payment leg and embed it with set_json_raw",
+          starkbank_entity_dump(transfer, &dumped, NULL) == STARKBANK_OK
+          && starkbank_entity_set_json_raw(request, STARKBANK_PAYMENT_REQUEST_PAYMENT, dumped)
+              == STARKBANK_OK, NULL);
+    starkbank_free(dumped);
+    starkbank_entity_free(transfer);
+
+    starkbank_list_new(&batch);
+    starkbank_list_append(batch, request);
+    check("create returns the created list",
+          starkbank_payment_request_create(client, batch, &created, NULL) == STARKBANK_OK
+          && starkbank_list_count(created) == 1, NULL);
+    checkRequests("paymentrequest.create", &fake);
+    checkHydration("paymentrequest.create", 0, starkbank_list_at(created, 0));
+    check("payment hydrates as a tagged Transfer",
+          starkbank_entity_entity(starkbank_list_at(created, 0),
+              STARKBANK_PAYMENT_REQUEST_PAYMENT, &nested) == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested), "Transfer"), NULL);
+    starkbank_list_free(batch);
+    starkbank_list_free(created);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("paymentRequestBoletoPayment"), NULL);
+    starkbank_boleto_payment_new(&boletoPayment);
+    starkbank_entity_set_string(boletoPayment, STARKBANK_BOLETO_PAYMENT_TAX_ID,
+                                "20.018.183/0001-80");
+    starkbank_entity_set_string(boletoPayment, STARKBANK_BOLETO_PAYMENT_DESCRIPTION,
+                                "sword sharpening");
+    starkbank_entity_set_string(boletoPayment, STARKBANK_BOLETO_PAYMENT_LINE,
+        "34191.09008 63571.277308 71444.640008 5 81960000000062");
+    starkbank_entity_set_date(boletoPayment, STARKBANK_BOLETO_PAYMENT_SCHEDULED, 2026, 10, 28);
+    starkbank_entity_append_string(boletoPayment, STARKBANK_BOLETO_PAYMENT_TAGS, "war");
+    starkbank_entity_append_string(boletoPayment, STARKBANK_BOLETO_PAYMENT_TAGS, "supply");
+    starkbank_payment_request_new(&request);
+    starkbank_entity_set_string(request, STARKBANK_PAYMENT_REQUEST_CENTER_ID,
+                                "5656565656565656");
+    starkbank_entity_set_string(request, STARKBANK_PAYMENT_REQUEST_TYPE, "boleto-payment");
+    starkbank_entity_append_string(request, STARKBANK_PAYMENT_REQUEST_TAGS, "urgent");
+    starkbank_entity_dump(boletoPayment, &dumped, NULL);
+    starkbank_entity_set_json_raw(request, STARKBANK_PAYMENT_REQUEST_PAYMENT, dumped);
+    starkbank_free(dumped);
+    starkbank_entity_free(boletoPayment);
+    starkbank_list_new(&batch);
+    starkbank_list_append(batch, request);
+    check("a second payment type - boleto-payment - creates and hydrates too",
+          starkbank_payment_request_create(client, batch, &created, NULL) == STARKBANK_OK
+          && starkbank_list_count(created) == 1, NULL);
+    checkRequests("paymentrequest.create.boletopayment", &fake);
+    checkHydration("paymentrequest.create.boletopayment", 0, starkbank_list_at(created, 0));
+    check("payment hydrates as a tagged BoletoPayment",
+          starkbank_entity_entity(starkbank_list_at(created, 0),
+              STARKBANK_PAYMENT_REQUEST_PAYMENT, &nested) == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested), "BoletoPayment"), NULL);
+    starkbank_list_free(batch);
+    starkbank_list_free(created);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"requests\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_payment_request_params_new(&params);
+    starkbank_entity_set_string(params, "centerId", "5656565656565656");
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_payment_request_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("paymentrequest.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"requests\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_payment_request_params_new(&params);
+    starkbank_entity_set_string(params, "centerId", "5656565656565656");
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_payment_request_page(client, params, &page, NULL, NULL);
+    checkRequests("paymentrequest.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
 /* ============================================================== driver */
 
 int main(void)
@@ -4257,6 +4880,14 @@ int main(void)
     testCardMethod();
     testMerchantCategory();
     testMerchantCountry();
+    testBoletoHolmes();
+    testBoletoHolmesLog();
+    testDynamicBrcode();
+    testInvoicePullSubscription();
+    testInvoicePullSubscriptionLog();
+    testInvoicePullRequest();
+    testInvoicePullRequestLog();
+    testPaymentRequest();
     testNegatives();
     testErrorsAndAbi();
 
