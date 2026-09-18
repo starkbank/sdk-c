@@ -696,6 +696,27 @@ const
   STARKBANK_PAYMENT_PREVIEW_TYPE_BRCODE_PAYMENT = 'brcode-payment';
   STARKBANK_PAYMENT_PREVIEW_TYPE_TAX_PAYMENT = 'tax-payment';
   STARKBANK_PAYMENT_PREVIEW_TYPE_UTILITY_PAYMENT = 'utility-payment';
+  STARKBANK_PAYMENT_REQUEST_ACTIONS = 'actions';
+  STARKBANK_PAYMENT_REQUEST_AMOUNT = 'amount';
+  STARKBANK_PAYMENT_REQUEST_CENTER_ID = 'centerId';
+  STARKBANK_PAYMENT_REQUEST_CREATED = 'created';
+  STARKBANK_PAYMENT_REQUEST_DESCRIPTION = 'description';
+  STARKBANK_PAYMENT_REQUEST_DUE = 'due';
+  STARKBANK_PAYMENT_REQUEST_ID = 'id';
+  STARKBANK_PAYMENT_REQUEST_PAYMENT = 'payment';
+  STARKBANK_PAYMENT_REQUEST_STATUS = 'status';
+  STARKBANK_PAYMENT_REQUEST_STATUS_APPROVED = 'approved';
+  STARKBANK_PAYMENT_REQUEST_STATUS_PENDING = 'pending';
+  STARKBANK_PAYMENT_REQUEST_TAGS = 'tags';
+  STARKBANK_PAYMENT_REQUEST_TYPE = 'type';
+  STARKBANK_PAYMENT_REQUEST_TYPE_BOLETO_PAYMENT = 'boleto-payment';
+  STARKBANK_PAYMENT_REQUEST_TYPE_BRCODE_PAYMENT = 'brcode-payment';
+  STARKBANK_PAYMENT_REQUEST_TYPE_DARF_PAYMENT = 'darf-payment';
+  STARKBANK_PAYMENT_REQUEST_TYPE_TAX_PAYMENT = 'tax-payment';
+  STARKBANK_PAYMENT_REQUEST_TYPE_TRANSACTION = 'transaction';
+  STARKBANK_PAYMENT_REQUEST_TYPE_TRANSFER = 'transfer';
+  STARKBANK_PAYMENT_REQUEST_TYPE_UTILITY_PAYMENT = 'utility-payment';
+  STARKBANK_PAYMENT_REQUEST_UPDATED = 'updated';
   STARKBANK_PERMISSION_CREATED = 'created';
   STARKBANK_PERMISSION_OWNER_EMAIL = 'ownerEmail';
   STARKBANK_PERMISSION_OWNER_ID = 'ownerId';
@@ -1483,6 +1504,16 @@ function starkbank_parse_and_verify(client: Pstarkbank_client; content: PAnsiCha
 function starkbank_payment_preview_create(client: Pstarkbank_client; previews: Pstarkbank_list; &out: PPstarkbank_list; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_payment_preview_create';
 
 function starkbank_payment_preview_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_payment_preview_new';
+
+function starkbank_payment_request_create(client: Pstarkbank_client; requests: Pstarkbank_list; &out: PPstarkbank_list; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_payment_request_create';
+
+function starkbank_payment_request_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_payment_request_new';
+
+function starkbank_payment_request_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_payment_request_page';
+
+function starkbank_payment_request_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_payment_request_params_new';
+
+function starkbank_payment_request_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_payment_request_query';
 
 function starkbank_permission_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_permission_new';
 

@@ -691,6 +691,27 @@ namespace StarkBank
         public const string StarkbankPaymentPreviewTypeBrcodePayment = "brcode-payment";
         public const string StarkbankPaymentPreviewTypeTaxPayment = "tax-payment";
         public const string StarkbankPaymentPreviewTypeUtilityPayment = "utility-payment";
+        public const string StarkbankPaymentRequestActions = "actions";
+        public const string StarkbankPaymentRequestAmount = "amount";
+        public const string StarkbankPaymentRequestCenterId = "centerId";
+        public const string StarkbankPaymentRequestCreated = "created";
+        public const string StarkbankPaymentRequestDescription = "description";
+        public const string StarkbankPaymentRequestDue = "due";
+        public const string StarkbankPaymentRequestId = "id";
+        public const string StarkbankPaymentRequestPayment = "payment";
+        public const string StarkbankPaymentRequestStatus = "status";
+        public const string StarkbankPaymentRequestStatusApproved = "approved";
+        public const string StarkbankPaymentRequestStatusPending = "pending";
+        public const string StarkbankPaymentRequestTags = "tags";
+        public const string StarkbankPaymentRequestType = "type";
+        public const string StarkbankPaymentRequestTypeBoletoPayment = "boleto-payment";
+        public const string StarkbankPaymentRequestTypeBrcodePayment = "brcode-payment";
+        public const string StarkbankPaymentRequestTypeDarfPayment = "darf-payment";
+        public const string StarkbankPaymentRequestTypeTaxPayment = "tax-payment";
+        public const string StarkbankPaymentRequestTypeTransaction = "transaction";
+        public const string StarkbankPaymentRequestTypeTransfer = "transfer";
+        public const string StarkbankPaymentRequestTypeUtilityPayment = "utility-payment";
+        public const string StarkbankPaymentRequestUpdated = "updated";
         public const string StarkbankPermissionCreated = "created";
         public const string StarkbankPermissionOwnerEmail = "ownerEmail";
         public const string StarkbankPermissionOwnerId = "ownerId";
@@ -1745,6 +1766,21 @@ namespace StarkBank
 
         [DllImport(Library, EntryPoint = "starkbank_payment_preview_new", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankPaymentPreviewNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_payment_request_create", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankPaymentRequestCreate(IntPtr client, IntPtr requests, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_payment_request_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankPaymentRequestNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_payment_request_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankPaymentRequestPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_payment_request_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankPaymentRequestParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_payment_request_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankPaymentRequestQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
 
         [DllImport(Library, EntryPoint = "starkbank_permission_new", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankPermissionNew(out IntPtr @out);

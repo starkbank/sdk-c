@@ -3629,6 +3629,70 @@ STARKBANK_API int STARKBANK_CALL starkbank_dynamic_brcode_page(const starkbank_c
 STARKBANK_API int STARKBANK_CALL starkbank_dynamic_brcode_rule_new(starkbank_entity **out);
 /* Free it, or append it to a DynamicBrcode's "rules", which takes ownership. */
 
+/* =========================================================================
+ *                               PaymentRequest
+ * =========================================================================
+ *
+ * Fields (wire keys; * = required on create). No get() and no update verb -
+ * sdk-python's paymentrequest module has neither.
+ *
+ *   centerId* STRING                           payment* RESOURCE
+ *   type due STRING                            tags LIST_STRING
+ *   id description status STRING (ro)          amount AMOUNT (ro)
+ *   actions LIST_OBJECT (ro)                   updated created DATETIME (ro)
+ *
+ * Query keys: centerId, limit, after, before, sort, status, type, tags, ids.
+ *
+ * payment is polymorphic on the sibling "type" field, into whichever of
+ * Transfer, Transaction, BoletoPayment, BrcodePayment, UtilityPayment,
+ * DarfPayment or TaxPayment "type" names - see paymentrequest.h, which also
+ * covers why due is STRING and why payment is written with
+ * starkbank_entity_set_json_raw rather than a dedicated setter.
+ * centerId is required on every query()/page() call, not only on create; see
+ * paymentrequest.h for why the table cannot enforce that itself.
+ */
+#define STARKBANK_PAYMENT_REQUEST_CENTER_ID    "centerId"
+#define STARKBANK_PAYMENT_REQUEST_PAYMENT      "payment"
+#define STARKBANK_PAYMENT_REQUEST_TYPE         "type"
+#define STARKBANK_PAYMENT_REQUEST_DUE          "due"
+#define STARKBANK_PAYMENT_REQUEST_TAGS         "tags"
+#define STARKBANK_PAYMENT_REQUEST_ID           "id"
+#define STARKBANK_PAYMENT_REQUEST_AMOUNT       "amount"
+#define STARKBANK_PAYMENT_REQUEST_DESCRIPTION  "description"
+#define STARKBANK_PAYMENT_REQUEST_STATUS       "status"
+#define STARKBANK_PAYMENT_REQUEST_ACTIONS      "actions"
+#define STARKBANK_PAYMENT_REQUEST_UPDATED      "updated"
+#define STARKBANK_PAYMENT_REQUEST_CREATED      "created"
+
+#define STARKBANK_PAYMENT_REQUEST_TYPE_TRANSFER         "transfer"
+#define STARKBANK_PAYMENT_REQUEST_TYPE_TRANSACTION      "transaction"
+#define STARKBANK_PAYMENT_REQUEST_TYPE_BOLETO_PAYMENT   "boleto-payment"
+#define STARKBANK_PAYMENT_REQUEST_TYPE_BRCODE_PAYMENT   "brcode-payment"
+#define STARKBANK_PAYMENT_REQUEST_TYPE_UTILITY_PAYMENT  "utility-payment"
+#define STARKBANK_PAYMENT_REQUEST_TYPE_DARF_PAYMENT     "darf-payment"
+#define STARKBANK_PAYMENT_REQUEST_TYPE_TAX_PAYMENT      "tax-payment"
+
+#define STARKBANK_PAYMENT_REQUEST_STATUS_PENDING   "pending"
+#define STARKBANK_PAYMENT_REQUEST_STATUS_APPROVED  "approved"
+
+STARKBANK_API int STARKBANK_CALL starkbank_payment_request_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_payment_request_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_payment_request_create(const starkbank_client *client,
+    const starkbank_list *requests, starkbank_list **out, starkbank_errors **errors);
+/* Build the payment leg with its own family's _new, fill it in, dump it with
+   starkbank_entity_dump and embed the result with
+   starkbank_entity_set_json_raw(request, STARKBANK_PAYMENT_REQUEST_PAYMENT,
+   json) before appending request to the batch - see paymentrequest.h. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_payment_request_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+/* params must carry "centerId": build it with starkbank_payment_request_params_new. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_payment_request_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
 #ifdef __cplusplus
 }
 #endif

@@ -66,6 +66,7 @@
     R(merchant_session)        \
     R(merchant_session_log)    \
     R(payment_preview)         \
+    R(payment_request)         \
     R(permission)              \
     R(purchase)                \
     R(split)                   \
