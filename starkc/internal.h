@@ -181,6 +181,13 @@ starkcore_client * starkbankClientCore(const starkbank_client *client);
 int starkbankVerbCreate(const starkbank_client *client, const starkbankResource *resource,
                         const starkbank_list *entities, starkbank_list **out,
                         starkbank_errors **errors);
+/*
+ * rest.put_multi: SplitProfile.put's shape, structurally identical to
+ * starkbankVerbCreate but for the HTTP verb - see its comment in verb.c.
+ */
+int starkbankVerbPutMulti(const starkbank_client *client, const starkbankResource *resource,
+                          const starkbank_list *entities, starkbank_list **out,
+                          starkbank_errors **errors);
 int starkbankVerbCreateSingle(const starkbank_client *client, const starkbankResource *resource,
                               const starkbank_entity *entity, starkbank_entity **out,
                               starkbank_errors **errors);

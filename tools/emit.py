@@ -588,6 +588,35 @@ def sampleBody(ident, table, verb, shape, subTable=None, tables=None, identForNa
     printf("created %%s\\n", id);
     starkbank_list_free(created);
 """ % {"ident": ident, "setters": setters, "call": call, "declBlock": declBlock(extraDecls)})
+    if shape == "PUT_MULTI":
+        # Structurally identical to POST_MULTI above - a batch of one, owned
+        # by the list, sent as {plural: [...]} - the only difference is the
+        # HTTP verb, which the call name (starkbank_<ident>_put) already
+        # carries, so the body template is the same one word for word.
+        extraDecls, setterLines = requiredSetters(ident, table, tables, identForName)
+        setters = "\n".join(setterLines)
+        return ("""    starkbank_list *batch = NULL;
+    starkbank_list *created = NULL;
+    starkbank_entity *%(ident)s = NULL;
+    starkbank_errors *errors = NULL;
+    const char *id = NULL;
+    int status;
+%(declBlock)s
+    starkbank_%(ident)s_new(&%(ident)s);
+%(setters)s
+    starkbank_list_new(&batch);
+    starkbank_list_append(batch, %(ident)s);        /* the list owns it from here */
+
+    status = %(call)s(client, batch, &created, &errors);
+    starkbank_list_free(batch);
+    if (status != STARKBANK_OK) {
+        starkbank_client_free(client);
+        return report(status, errors);
+    }
+    starkbank_entity_string(starkbank_list_at(created, 0), "id", &id);
+    printf("put %%s\\n", id);
+    starkbank_list_free(created);
+""" % {"ident": ident, "setters": setters, "call": call, "declBlock": declBlock(extraDecls)})
     if shape in ("POST_SINGLE", "POST_SINGLE_SUB"):
         extraDecls, setterLines = requiredSetters(ident, table, tables, identForName)
         setters = "\n".join(setterLines)

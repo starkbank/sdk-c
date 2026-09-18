@@ -143,6 +143,14 @@ class Samples(unittest.TestCase):
                                    "POST_MULTI", None, None, tables, identForName)
         self.assertIn("starkbank_transfer_new(&payment)", source)
         self.assertIn("starkbank_entity_set_string(payment_request, \"type\", \"transfer\")", source)
+    def testAPutMultiSampleSendsPutNotCreate(self):
+        """PUT_MULTI is POST_MULTI's body word for word except the call name
+        - starkbank_widget_put, not _create - and the printed verb, the one
+        difference SplitProfile.put needs from rest.post_multi's shape."""
+        source = emit.sampleSource("widget", TABLE, "put", "PUT_MULTI", None)
+        self.assertIn("starkbank_widget_put(client, batch, &created, &errors)", source)
+        self.assertIn("starkbank_entity_set_amount(widget, \"amount\", 400000)", source)
+        self.assertIn("printf(\"put %s\\n\", id)", source)
 
     def testAPostSingleSampleHandsOverAnEntityAndFreesBoth(self):
         """The shape differs from POST_MULTI in the one way that matters to a
@@ -159,7 +167,8 @@ class Samples(unittest.TestCase):
         self.assertEqual((setter, value), ("append_string", "\"invoice\""))
 
     def testEverySampleFreesWhatItAllocates(self):
-        for verb, shape in (("create", "POST_MULTI"), ("create", "POST_SINGLE"),
+        for verb, shape in (("create", "POST_MULTI"), ("put", "PUT_MULTI"),
+                            ("create", "POST_SINGLE"),
                             ("get", "GET_ID"), ("query", "QUERY"),
                             ("page", "PAGE"), ("update", "PATCH_ID"), ("delete", "DELETE_ID"),
                             ("pdf", "CONTENT"), ("qrcode", "CONTENT_INT"),
