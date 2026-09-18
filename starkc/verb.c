@@ -596,3 +596,56 @@ int starkbankVerbSubResource(const starkbank_client *client, const starkbankReso
        than failing: a sub-resource this build predates is still readable. */
     return wrapOwned(starkbankRegistryFind(tagName), reply, out);
 }
+
+/*
+ * MerchantSession.purchase: rest.post_sub_resource, in full agreement with
+ * core-c's starkcore_rest_post_sub_resource - POST to
+ * endpoint(resource)/id/endpoint(subResourceName), body the dehydrated
+ * entity, response unwrapped by the SUB resource's own singular name. Unlike
+ * starkbankVerbCreateSub (CorporateCard.create: a literal subPath, no id, and
+ * the OWNING resource's own name unwraps the reply) this is the shape a real
+ * nested sub-resource create needs, and core-c already had it - no engine
+ * change below this function was required, only this shim and the macro that
+ * calls it.
+ */
+int starkbankVerbCreateSubResource(const starkbank_client *client,
+                                   const starkbankResource *resource, const char *id,
+                                   const char *subResourceName, const char *tagName,
+                                   const starkbank_entity *entity, starkbank_entity **out,
+                                   starkbank_errors **errors)
+{
+    const starkbankResource *subResource;
+    starkcore_json *payload = NULL;
+    starkcore_json *reply = NULL;
+    int status;
+
+    if (out == NULL) {
+        return STARKCORE_ERROR_ARGUMENT;
+    }
+    *out = NULL;
+    status = checkVerb(client, errors);
+    if (status != STARKCORE_OK) {
+        return status;
+    }
+    if (id == NULL) {
+        return STARKCORE_ERROR_ARGUMENT;
+    }
+    if (starkbank_entity_json(entity) == NULL) {
+        return STARKCORE_ERROR_ARGUMENT;
+    }
+    subResource = starkbankRegistryFind(tagName);
+    if (subResource != NULL && entity->resource != subResource) {
+        return STARKBANK_ERROR_RESOURCE;
+    }
+    status = starkbankEntityDehydrate(entity, STARKBANK_FLAG_CREATE, &payload);
+    if (status != STARKCORE_OK) {
+        return status;
+    }
+    status = starkcore_rest_post_sub_resource(starkbankClientCore(client), resource->name, id,
+                                              subResourceName, payload, &reply, errors);
+    starkcore_json_free(payload);
+    if (status != STARKCORE_OK) {
+        return status;
+    }
+    return wrapOwned(subResource, reply, out);
+}
