@@ -3195,6 +3195,97 @@ STARKBANK_API int STARKBANK_CALL starkbank_merchant_purchase_log_page(
     const starkbank_client *client, const starkbank_entity *params, starkbank_list **out,
     char **out_cursor, starkbank_errors **errors);
 
+/* =========================================================================
+ *                                 CardMethod
+ * =========================================================================
+ *
+ * A query-only lookup used to build CorporateRule.methods filters, e.g.
+ * [{"code": "chip"}]. sdk-python's module has one function, query(search=
+ * None, user=None) - no limit keyword, no page() - and the docs' GET
+ * /v2/card-method parameter list agrees (just "search"), so this table's
+ * query key list carries no "limit" and needs no known-drift entry: neither
+ * side has one to disagree about.
+ *
+ * Fields (wire keys; * = required on create, though nothing in this SDK
+ * posts one - see below).
+ *
+ *   code* STRING
+ *   name number STRING (ro)
+ *
+ * Query keys: search.
+ *
+ * No starkbank_card_method_new: CorporateRule.methods is not promoted from
+ * LIST_OBJECT to LIST_RESOURCE("CardMethod") in this build, so nothing needs
+ * to build one - see corporaterule.h and CorporateRule's own section.
+ */
+#define STARKBANK_CARD_METHOD_CODE    "code"
+#define STARKBANK_CARD_METHOD_NAME    "name"
+#define STARKBANK_CARD_METHOD_NUMBER  "number"
+
+/* Codes, from sdk-python's docstring. */
+#define STARKBANK_CARD_METHOD_CODE_CHIP        "chip"
+#define STARKBANK_CARD_METHOD_CODE_TOKEN       "token"
+#define STARKBANK_CARD_METHOD_CODE_SERVER      "server"
+#define STARKBANK_CARD_METHOD_CODE_MANUAL      "manual"
+#define STARKBANK_CARD_METHOD_CODE_MAGSTRIPE   "magstripe"
+#define STARKBANK_CARD_METHOD_CODE_CONTACTLESS "contactless"
+
+STARKBANK_API int STARKBANK_CALL starkbank_card_method_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_card_method_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+/* =========================================================================
+ *                              MerchantCategory
+ * =========================================================================
+ *
+ * A query-only lookup used to build CorporateRule.categories filters, e.g.
+ * [{"code": "fastFoodRestaurants"}]. Same shape as CardMethod above - no
+ * limit, no page().
+ *
+ * Fields (wire keys; a caller sets exactly one of code/type, never both).
+ *
+ *   code type STRING
+ *   name number STRING (ro)
+ *
+ * Query keys: search.
+ *
+ * code and type are both CREATE and neither is REQUIRED: sdk-python's
+ * docstring files them under "## Parameters (conditionally required)", which
+ * drift.py's checkFlags treats as creatable-but-not-required, the same
+ * bucket as plain "optional".
+ */
+#define STARKBANK_MERCHANT_CATEGORY_CODE    "code"
+#define STARKBANK_MERCHANT_CATEGORY_TYPE    "type"
+#define STARKBANK_MERCHANT_CATEGORY_NAME    "name"
+#define STARKBANK_MERCHANT_CATEGORY_NUMBER  "number"
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_category_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_category_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+/* =========================================================================
+ *                               MerchantCountry
+ * =========================================================================
+ *
+ * A query-only lookup used to build CorporateRule.countries filters, e.g.
+ * [{"code": "BRA"}]. Same shape as CardMethod above - no limit, no page().
+ *
+ * Fields (wire keys; * = required on create, though nothing in this SDK
+ * posts one).
+ *
+ *   code* STRING
+ *   name number shortCode STRING (ro)
+ *
+ * Query keys: search.
+ */
+#define STARKBANK_MERCHANT_COUNTRY_CODE        "code"
+#define STARKBANK_MERCHANT_COUNTRY_NAME        "name"
+#define STARKBANK_MERCHANT_COUNTRY_NUMBER      "number"
+#define STARKBANK_MERCHANT_COUNTRY_SHORT_CODE  "shortCode"
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_country_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_country_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
 
 #ifdef __cplusplus
 }

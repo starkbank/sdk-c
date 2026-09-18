@@ -145,6 +145,15 @@ const
   STARKBANK_BRCODE_PREVIEW_REDUCTION_AMOUNT = 'reductionAmount';
   STARKBANK_BRCODE_PREVIEW_STATUS = 'status';
   STARKBANK_BRCODE_PREVIEW_TAX_ID = 'taxId';
+  STARKBANK_CARD_METHOD_CODE = 'code';
+  STARKBANK_CARD_METHOD_CODE_CHIP = 'chip';
+  STARKBANK_CARD_METHOD_CODE_CONTACTLESS = 'contactless';
+  STARKBANK_CARD_METHOD_CODE_MAGSTRIPE = 'magstripe';
+  STARKBANK_CARD_METHOD_CODE_MANUAL = 'manual';
+  STARKBANK_CARD_METHOD_CODE_SERVER = 'server';
+  STARKBANK_CARD_METHOD_CODE_TOKEN = 'token';
+  STARKBANK_CARD_METHOD_NAME = 'name';
+  STARKBANK_CARD_METHOD_NUMBER = 'number';
   STARKBANK_CORPORATE_BALANCE_AMOUNT = 'amount';
   STARKBANK_CORPORATE_BALANCE_CURRENCY = 'currency';
   STARKBANK_CORPORATE_BALANCE_ID = 'id';
@@ -484,6 +493,14 @@ const
   STARKBANK_MERCHANT_CARD_STATUS_EXPIRED = 'expired';
   STARKBANK_MERCHANT_CARD_TAGS = 'tags';
   STARKBANK_MERCHANT_CARD_UPDATED = 'updated';
+  STARKBANK_MERCHANT_CATEGORY_CODE = 'code';
+  STARKBANK_MERCHANT_CATEGORY_NAME = 'name';
+  STARKBANK_MERCHANT_CATEGORY_NUMBER = 'number';
+  STARKBANK_MERCHANT_CATEGORY_TYPE = 'type';
+  STARKBANK_MERCHANT_COUNTRY_CODE = 'code';
+  STARKBANK_MERCHANT_COUNTRY_NAME = 'name';
+  STARKBANK_MERCHANT_COUNTRY_NUMBER = 'number';
+  STARKBANK_MERCHANT_COUNTRY_SHORT_CODE = 'shortCode';
   STARKBANK_MERCHANT_INSTALLMENT_AMOUNT = 'amount';
   STARKBANK_MERCHANT_INSTALLMENT_CREATED = 'created';
   STARKBANK_MERCHANT_INSTALLMENT_DUE = 'due';
@@ -877,6 +894,10 @@ function starkbank_brcode_payment_rule_new(&out: PPstarkbank_entity): Integer; c
 
 function starkbank_brcode_payment_update(client: Pstarkbank_client; id: PAnsiChar; patch: Pstarkbank_entity; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_brcode_payment_update';
 
+function starkbank_card_method_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_card_method_params_new';
+
+function starkbank_card_method_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_card_method_query';
+
 procedure starkbank_client_cache_clear(client: Pstarkbank_client); cdecl; external StarkbankLib name 'starkbank_client_cache_clear';
 
 procedure starkbank_client_free(client: Pstarkbank_client); cdecl; external StarkbankLib name 'starkbank_client_free';
@@ -1212,6 +1233,14 @@ function starkbank_merchant_card_page(client: Pstarkbank_client; params: Pstarkb
 function starkbank_merchant_card_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_card_params_new';
 
 function starkbank_merchant_card_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_card_query';
+
+function starkbank_merchant_category_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_category_params_new';
+
+function starkbank_merchant_category_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_category_query';
+
+function starkbank_merchant_country_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_country_params_new';
+
+function starkbank_merchant_country_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_country_query';
 
 function starkbank_merchant_installment_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_installment_get';
 
