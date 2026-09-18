@@ -468,7 +468,7 @@ def filterSetter(table):
     return None
 
 
-def sampleBody(ident, table, verb, shape):
+def sampleBody(ident, table, verb, shape, subTable=None):
     """The body of one sample, by verb shape. One function, one job: each arm
     is the smallest complete program that calls that verb and frees everything."""
     call = "starkbank_%s_%s" % (ident, verb)
@@ -683,16 +683,40 @@ def sampleBody(ident, table, verb, shape):
     printf("%%s\\n", starkbank_entity_resource(%(verb)s));
     starkbank_entity_free(%(verb)s);
 """ % {"verb": verb, "call": call})
+    if shape == "POST_SUB_RESOURCE":
+        # The entity posted is the sub-resource (verb-named, e.g. Purchase),
+        # never the owning table's own resource - requiredSetters only cares
+        # that its first argument is the C variable name, so passing verb
+        # here builds the sub-resource's own required fields correctly.
+        if subTable is None:
+            return None
+        setters = "\n".join(requiredSetters(verb, subTable))
+        return ("""    starkbank_entity *%(verb)s = NULL;
+    starkbank_entity *created = NULL;
+    starkbank_errors *errors = NULL;
+    int status;
+
+    starkbank_%(verb)s_new(&%(verb)s);
+%(setters)s
+    status = %(call)s(client, "5656565656565656", %(verb)s, &created, &errors);
+    starkbank_entity_free(%(verb)s);
+    if (status != STARKBANK_OK) {
+        starkbank_client_free(client);
+        return report(status, errors);
+    }
+    printf("created %%s\\n", starkbank_entity_id(created));
+    starkbank_entity_free(created);
+""" % {"verb": verb, "call": call, "setters": setters})
     return None
 
 
-def sampleSource(ident, table, verb, shape, example):
+def sampleSource(ident, table, verb, shape, example, subTable=None):
     """One sample program. `example` is the authored example block a resource
     will carry in step 6; until then the values are type-driven."""
     route = drift.verbEndpoint(shape, table["endpoint"], verb)
     if route is None:
         return None
-    body = sampleBody(ident, table, verb, shape)
+    body = sampleBody(ident, table, verb, shape, subTable)
     if body is None:
         return None
     # Declarations first, as everything else in this repo: each arm is written
@@ -750,6 +774,12 @@ def sampleOutputs():
     """
     tables = drift.readTables()
     verbs = drift.readVerbs(ROOT)
+    # POST_SUB_RESOURCE posts an entity of the sub-resource's own type, named
+    # by the verb (STARKBANK_VERB_POST_SUB_RESOURCE's verb and the sub-
+    # resource's STARKBANK_RESOURCE ident are the same identifier by
+    # convention - see merchantsession/purchase.c), so its required fields
+    # come from that resource's own table, found by ident here.
+    identToName = dict((entry["ident"], name) for name, entry in verbs.items())
 
     outputs = []
     for name in sorted(verbs):
@@ -757,7 +787,10 @@ def sampleOutputs():
             continue
         ident = verbs[name]["ident"]
         for verb, shape in sorted(verbs[name]["verbs"].items()):
-            source = sampleSource(ident, tables[name], verb, shape, None)
+            subTable = None
+            if shape == "POST_SUB_RESOURCE":
+                subTable = tables.get(identToName.get(verb))
+            source = sampleSource(ident, tables[name], verb, shape, None, subTable)
             if source is None:
                 continue
             outputs.append((os.path.join(ROOT, "samples", sampleName(ident, verb)), source))
