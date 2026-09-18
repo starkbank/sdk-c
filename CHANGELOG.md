@@ -98,6 +98,30 @@ name-keyed accessors.
   `data:<mime>;base64,<...>` wire string, so the existing generic
   `starkbank_entity_set_string` already covers it - the caller builds the same
   string sdk-python builds
+- CorporateHolder (+ Log), `CorporateHolder.Permission` (a bare sub-resource):
+  `delete` keeps sdk-c's uniform `starkbank_<resource>_delete` spelling even
+  though sdk-python calls the same DELETE call `cancel()`
+- CorporateRule (+ CorporateBalance): a bare sub-resource embedded in
+  `CorporateHolder.rules` and `CorporateCard.rules`, the same shape as
+  `Split`; `categories`/`countries`/`methods` are `LIST_OBJECT`, not
+  `LIST_RESOURCE`, because `MerchantCategory`, `MerchantCountry` and
+  `CardMethod` are not registered resources in this build. CorporateBalance
+  is the same degenerate no-id, one-verb shape `Balance` already established
+- CorporateCard (+ Log): `create` posts to `corporate-card/token`, which
+  needed a new engine verb macro, `STARKBANK_VERB_POST_SINGLE_SUB` -
+  `starkbankVerbCreateSub` in `starkc/verb.c`. `pin` is PATCH-only with no
+  matching field, the same shape as sdk-c4's `Workspace.picture`
+- CorporatePurchase (+ Log): every field is RO - a purchase is authorized by
+  the card network, nobody posts one. `errors` on the Log is a real
+  `LIST_OBJECT`, unlike CorporateCardLog and CorporateHolderLog, which carry
+  none. `parse` and `response` are hand-written in
+  `handwritten/corporatepurchase_parse.c` and `_response.c`: `parse` verifies
+  with no envelope key, and `response` builds `{"authorization": {...}}` with
+  no network call at all
+- CorporateTransaction, CorporateInvoice and CorporateWithdrawal:
+  CorporateTransaction is a read-only ledger entry with no create, update or
+  delete anywhere in sdk-python; CorporateInvoice and CorporateWithdrawal are
+  both `post_single`, the same shape as Webhook
 
 ### Changed
 - `tests/reference/sdk-python.sha` moved to `be7755a5`, the sdk-python master
