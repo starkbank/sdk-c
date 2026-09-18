@@ -455,6 +455,30 @@ const
   STARKBANK_INVOICE_PAYMENT_NAME = 'name';
   STARKBANK_INVOICE_PAYMENT_TAX_ID = 'taxId';
   STARKBANK_INVOICE_PDF = 'pdf';
+  STARKBANK_INVOICE_PULL_REQUEST_ATTEMPT_TYPE = 'attemptType';
+  STARKBANK_INVOICE_PULL_REQUEST_ATTEMPT_TYPE_DEFAULT = 'default';
+  STARKBANK_INVOICE_PULL_REQUEST_ATTEMPT_TYPE_RETRY = 'retry';
+  STARKBANK_INVOICE_PULL_REQUEST_CREATED = 'created';
+  STARKBANK_INVOICE_PULL_REQUEST_DISPLAY_DESCRIPTION = 'displayDescription';
+  STARKBANK_INVOICE_PULL_REQUEST_DUE = 'due';
+  STARKBANK_INVOICE_PULL_REQUEST_EXTERNAL_ID = 'externalId';
+  STARKBANK_INVOICE_PULL_REQUEST_ID = 'id';
+  STARKBANK_INVOICE_PULL_REQUEST_INSTALLMENT_ID = 'installmentId';
+  STARKBANK_INVOICE_PULL_REQUEST_INVOICE_ID = 'invoiceId';
+  STARKBANK_INVOICE_PULL_REQUEST_LOG_CREATED = 'created';
+  STARKBANK_INVOICE_PULL_REQUEST_LOG_ERRORS = 'errors';
+  STARKBANK_INVOICE_PULL_REQUEST_LOG_ID = 'id';
+  STARKBANK_INVOICE_PULL_REQUEST_LOG_REQUEST = 'request';
+  STARKBANK_INVOICE_PULL_REQUEST_LOG_TYPE = 'type';
+  STARKBANK_INVOICE_PULL_REQUEST_STATUS = 'status';
+  STARKBANK_INVOICE_PULL_REQUEST_STATUS_CANCELED = 'canceled';
+  STARKBANK_INVOICE_PULL_REQUEST_STATUS_FAILED = 'failed';
+  STARKBANK_INVOICE_PULL_REQUEST_STATUS_PENDING = 'pending';
+  STARKBANK_INVOICE_PULL_REQUEST_STATUS_SCHEDULED = 'scheduled';
+  STARKBANK_INVOICE_PULL_REQUEST_STATUS_SUCCESS = 'success';
+  STARKBANK_INVOICE_PULL_REQUEST_SUBSCRIPTION_ID = 'subscriptionId';
+  STARKBANK_INVOICE_PULL_REQUEST_TAGS = 'tags';
+  STARKBANK_INVOICE_PULL_REQUEST_UPDATED = 'updated';
   STARKBANK_INVOICE_PULL_SUBSCRIPTION_AMOUNT = 'amount';
   STARKBANK_INVOICE_PULL_SUBSCRIPTION_AMOUNT_MIN_LIMIT = 'amountMinLimit';
   STARKBANK_INVOICE_PULL_SUBSCRIPTION_BACEN_ID = 'bacenId';
@@ -1233,6 +1257,28 @@ function starkbank_invoice_params_new(&out: PPstarkbank_entity): Integer; cdecl;
 function starkbank_invoice_payment(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_payment';
 
 function starkbank_invoice_pdf(client: Pstarkbank_client; id: PAnsiChar; &out: PPByte; out_len: PNativeUInt; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_pdf';
+
+function starkbank_invoice_pull_request_create(client: Pstarkbank_client; requests: Pstarkbank_list; &out: PPstarkbank_list; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_pull_request_create';
+
+function starkbank_invoice_pull_request_delete(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_pull_request_delete';
+
+function starkbank_invoice_pull_request_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_pull_request_get';
+
+function starkbank_invoice_pull_request_log_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_pull_request_log_get';
+
+function starkbank_invoice_pull_request_log_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_pull_request_log_page';
+
+function starkbank_invoice_pull_request_log_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_pull_request_log_params_new';
+
+function starkbank_invoice_pull_request_log_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_pull_request_log_query';
+
+function starkbank_invoice_pull_request_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_pull_request_new';
+
+function starkbank_invoice_pull_request_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_pull_request_page';
+
+function starkbank_invoice_pull_request_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_pull_request_params_new';
+
+function starkbank_invoice_pull_request_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_pull_request_query';
 
 function starkbank_invoice_pull_subscription_create(client: Pstarkbank_client; subscriptions: Pstarkbank_list; &out: PPstarkbank_list; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_pull_subscription_create';
 

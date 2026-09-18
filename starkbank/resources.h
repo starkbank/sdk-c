@@ -46,6 +46,8 @@
     R(invoice)                 \
     R(invoice_log)             \
     R(invoice_payment)         \
+    R(invoice_pull_request)    \
+    R(invoice_pull_request_log) \
     R(invoice_pull_subscription) \
     R(invoice_pull_subscription_log) \
     R(invoice_rule)            \

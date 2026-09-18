@@ -3409,6 +3409,100 @@ STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_subscription_log_page(
     const starkbank_client *client, const starkbank_entity *params, starkbank_list **out,
     char **out_cursor, starkbank_errors **errors);
 
+/* =========================================================================
+ *                            InvoicePullRequest
+ * =========================================================================
+ *
+ * Fields (wire keys; * = required on create). No update verb.
+ *
+ *   subscriptionId* invoiceId* STRING          due* DATE_OR_DATETIME
+ *   attemptType externalId displayDescription STRING
+ *   tags LIST_STRING
+ *   status installmentId id STRING (ro)        created updated DATETIME (ro)
+ *
+ * Query keys: limit, after, before, status, invoiceIds, subscriptionIds, externalIds, tags, ids.
+ *
+ * due is DATE_OR_DATETIME here, unlike InvoicePullSubscription's due/end: see
+ * invoicepullrequest.h - sdk-python's coercion here is a direct call with no
+ * conditional guard, so the checker sees it plainly.
+ */
+#define STARKBANK_INVOICE_PULL_REQUEST_SUBSCRIPTION_ID       "subscriptionId"
+#define STARKBANK_INVOICE_PULL_REQUEST_INVOICE_ID            "invoiceId"
+#define STARKBANK_INVOICE_PULL_REQUEST_DUE                   "due"
+#define STARKBANK_INVOICE_PULL_REQUEST_ATTEMPT_TYPE          "attemptType"
+#define STARKBANK_INVOICE_PULL_REQUEST_TAGS                  "tags"
+#define STARKBANK_INVOICE_PULL_REQUEST_EXTERNAL_ID           "externalId"
+#define STARKBANK_INVOICE_PULL_REQUEST_DISPLAY_DESCRIPTION   "displayDescription"
+#define STARKBANK_INVOICE_PULL_REQUEST_STATUS                "status"
+#define STARKBANK_INVOICE_PULL_REQUEST_INSTALLMENT_ID        "installmentId"
+#define STARKBANK_INVOICE_PULL_REQUEST_ID                    "id"
+#define STARKBANK_INVOICE_PULL_REQUEST_CREATED               "created"
+#define STARKBANK_INVOICE_PULL_REQUEST_UPDATED               "updated"
+
+#define STARKBANK_INVOICE_PULL_REQUEST_ATTEMPT_TYPE_DEFAULT  "default"
+#define STARKBANK_INVOICE_PULL_REQUEST_ATTEMPT_TYPE_RETRY    "retry"
+
+#define STARKBANK_INVOICE_PULL_REQUEST_STATUS_PENDING    "pending"
+#define STARKBANK_INVOICE_PULL_REQUEST_STATUS_SCHEDULED  "scheduled"
+#define STARKBANK_INVOICE_PULL_REQUEST_STATUS_SUCCESS    "success"
+#define STARKBANK_INVOICE_PULL_REQUEST_STATUS_FAILED     "failed"
+#define STARKBANK_INVOICE_PULL_REQUEST_STATUS_CANCELED   "canceled"
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_request_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_request_params_new(
+    starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_request_create(
+    const starkbank_client *client, const starkbank_list *requests,
+    starkbank_list **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_request_get(
+    const starkbank_client *client, const char *id, starkbank_entity **out,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_request_query(
+    const starkbank_client *client, const starkbank_entity *params, int limit,
+    starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_request_page(
+    const starkbank_client *client, const starkbank_entity *params, starkbank_list **out,
+    char **out_cursor, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_request_delete(
+    const starkbank_client *client, const char *id, starkbank_entity **out,
+    starkbank_errors **errors);
+/* sdk-python names this cancel(); see InvoicePullSubscription's section
+   header for why the C symbol still says delete. */
+
+/* -------------------------------------------------- InvoicePullRequestLog */
+/*
+ * Resource "InvoicePullRequestLog"; endpoint "invoice-pull-request/log",
+ * derived at run time.
+ * Fields: id type STRING (ro), errors LIST_OBJECT (ro),
+ *         request RESOURCE("InvoicePullRequest") (ro), created DATETIME (ro).
+ * Query keys: limit, after, before, types, requestIds.
+ *
+ * errors is a list of {code, message} objects, not strings - as
+ * InvoicePullSubscriptionLog. There is no invoicepullrequest.Log pdf.
+ */
+#define STARKBANK_INVOICE_PULL_REQUEST_LOG_ID       "id"
+#define STARKBANK_INVOICE_PULL_REQUEST_LOG_CREATED  "created"
+#define STARKBANK_INVOICE_PULL_REQUEST_LOG_TYPE     "type"
+#define STARKBANK_INVOICE_PULL_REQUEST_LOG_ERRORS   "errors"
+#define STARKBANK_INVOICE_PULL_REQUEST_LOG_REQUEST  "request"
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_request_log_params_new(
+    starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_request_log_get(
+    const starkbank_client *client, const char *id, starkbank_entity **out,
+    starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_request_log_query(
+    const starkbank_client *client, const starkbank_entity *params, int limit,
+    starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_request_log_page(
+    const starkbank_client *client, const starkbank_entity *params, starkbank_list **out,
+    char **out_cursor, starkbank_errors **errors);
+
 #ifdef __cplusplus
 }
 #endif

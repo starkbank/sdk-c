@@ -305,6 +305,16 @@
       "key": "query.new:InvoicePullSubscriptionLog:tags",
       "owner": "eduardo.santos@starkbank.com",
       "reason": "The docs list tags as a GET /v2/invoice-pull-subscription/log filter; sdk-python's invoicepullsubscription.log.query()/page() accept no such keyword. python is normative for the verb surface, the same shape as query.new:InvoicePullSubscription:expand."
+    },
+    {
+      "key": "verb.new:InvoicePullRequest:cancel",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "As verb.new:InvoicePullSubscription:cancel - sdk-python spells DELETE /v2/invoice-pull-request/:id cancel(); sdk-c keeps the uniform starkbank_invoice_pull_request_delete spelling."
+    },
+    {
+      "key": "verb.gone:InvoicePullRequest:delete",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "The other half of verb.new:InvoicePullRequest:cancel."
     }
   ]
 }
