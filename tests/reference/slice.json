@@ -1634,7 +1634,7 @@
       ]
     },
     "merchantinstallment.log.get": {
-      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"5629632759480324\",\"installment\":{\"amount\":5000,\"created\":\"2026-09-16T12:00:00+00:00\",\"due\":\"2026-10-28T00:00:00+00:00\",\"fee\":100,\"fundingType\":\"credit\",\"id\":\"5629632759480322\",\"network\":\"mastercard\",\"purchaseId\":\"5629632759480323\",\"status\":\"created\",\"tags\":[\"labs\"],\"transactionIds\":[],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"created\",\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[{\"code\":\"insufficientFunds\",\"message\":\"Insufficient funds\"}],\"id\":\"5629632759480324\",\"installment\":{\"amount\":5000,\"created\":\"2026-09-16T12:00:00+00:00\",\"due\":\"2026-10-28T00:00:00+00:00\",\"fee\":100,\"fundingType\":\"credit\",\"id\":\"5629632759480322\",\"network\":\"mastercard\",\"purchaseId\":\"5629632759480323\",\"status\":\"created\",\"tags\":[\"labs\"],\"transactionIds\":[],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"created\",\"updated\":\"2026-09-17T12:00:00+00:00\"}",
       "requests": [
         {
           "body": "",
@@ -1648,7 +1648,7 @@
     },
     "merchantinstallment.log.page": {
       "hydrated": [
-        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"5629632759480324\",\"installment\":{\"amount\":5000,\"created\":\"2026-09-16T12:00:00+00:00\",\"due\":\"2026-10-28T00:00:00+00:00\",\"fee\":100,\"fundingType\":\"credit\",\"id\":\"5629632759480322\",\"network\":\"mastercard\",\"purchaseId\":\"5629632759480323\",\"status\":\"created\",\"tags\":[\"labs\"],\"transactionIds\":[],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"created\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[{\"code\":\"insufficientFunds\",\"message\":\"Insufficient funds\"}],\"id\":\"5629632759480324\",\"installment\":{\"amount\":5000,\"created\":\"2026-09-16T12:00:00+00:00\",\"due\":\"2026-10-28T00:00:00+00:00\",\"fee\":100,\"fundingType\":\"credit\",\"id\":\"5629632759480322\",\"network\":\"mastercard\",\"purchaseId\":\"5629632759480323\",\"status\":\"created\",\"tags\":[\"labs\"],\"transactionIds\":[],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"created\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
       ],
       "requests": [
         {
@@ -1663,7 +1663,7 @@
     },
     "merchantinstallment.log.query": {
       "hydrated": [
-        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"5629632759480324\",\"installment\":{\"amount\":5000,\"created\":\"2026-09-16T12:00:00+00:00\",\"due\":\"2026-10-28T00:00:00+00:00\",\"fee\":100,\"fundingType\":\"credit\",\"id\":\"5629632759480322\",\"network\":\"mastercard\",\"purchaseId\":\"5629632759480323\",\"status\":\"created\",\"tags\":[\"labs\"],\"transactionIds\":[],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"created\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[{\"code\":\"insufficientFunds\",\"message\":\"Insufficient funds\"}],\"id\":\"5629632759480324\",\"installment\":{\"amount\":5000,\"created\":\"2026-09-16T12:00:00+00:00\",\"due\":\"2026-10-28T00:00:00+00:00\",\"fee\":100,\"fundingType\":\"credit\",\"id\":\"5629632759480322\",\"network\":\"mastercard\",\"purchaseId\":\"5629632759480323\",\"status\":\"created\",\"tags\":[\"labs\"],\"transactionIds\":[],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"created\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
       ],
       "requests": [
         {
@@ -1733,7 +1733,7 @@
       ]
     },
     "merchantpurchase.log.get": {
-      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"5629632759480325\",\"purchase\":{\"amount\":10000,\"billingCity\":\"\",\"billingCountryCode\":\"\",\"billingStateCode\":\"\",\"billingStreetLine1\":\"\",\"billingStreetLine2\":\"\",\"billingZipCode\":\"\",\"cardEnding\":\"1234\",\"cardExpiration\":\"\",\"cardId\":\"5629632759480320\",\"cardNumber\":\"\",\"cardSecurityCode\":\"\",\"challengeMode\":\"enabled\",\"challengeUrl\":\"\",\"created\":\"2026-09-16T12:00:00+00:00\",\"currencyCode\":\"BRL\",\"endToEndId\":\"\",\"fee\":200,\"fundingType\":\"credit\",\"holderEmail\":\"\",\"holderId\":\"\",\"holderName\":\"\",\"holderPhone\":\"\",\"id\":\"5629632759480323\",\"installmentCount\":1,\"metadata\":{},\"network\":\"mastercard\",\"softDescriptor\":\"starkbank\",\"source\":\"merchant-session/901e71f2447c43c886f58366a5432c4b\",\"status\":\"approved\",\"tags\":[\"labs\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"approved\"}",
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[{\"code\":\"invalidCvv\",\"message\":\"CVV is invalid\"}],\"id\":\"5629632759480325\",\"purchase\":{\"amount\":10000,\"billingCity\":\"\",\"billingCountryCode\":\"\",\"billingStateCode\":\"\",\"billingStreetLine1\":\"\",\"billingStreetLine2\":\"\",\"billingZipCode\":\"\",\"cardEnding\":\"1234\",\"cardExpiration\":\"\",\"cardId\":\"5629632759480320\",\"cardNumber\":\"\",\"cardSecurityCode\":\"\",\"challengeMode\":\"enabled\",\"challengeUrl\":\"\",\"created\":\"2026-09-16T12:00:00+00:00\",\"currencyCode\":\"BRL\",\"endToEndId\":\"\",\"fee\":200,\"fundingType\":\"credit\",\"holderEmail\":\"\",\"holderId\":\"\",\"holderName\":\"\",\"holderPhone\":\"\",\"id\":\"5629632759480323\",\"installmentCount\":1,\"metadata\":{},\"network\":\"mastercard\",\"softDescriptor\":\"starkbank\",\"source\":\"merchant-session/901e71f2447c43c886f58366a5432c4b\",\"status\":\"approved\",\"tags\":[\"labs\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"approved\"}",
       "requests": [
         {
           "body": "",
@@ -1747,7 +1747,7 @@
     },
     "merchantpurchase.log.page": {
       "hydrated": [
-        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"5629632759480325\",\"purchase\":{\"amount\":10000,\"billingCity\":\"\",\"billingCountryCode\":\"\",\"billingStateCode\":\"\",\"billingStreetLine1\":\"\",\"billingStreetLine2\":\"\",\"billingZipCode\":\"\",\"cardEnding\":\"1234\",\"cardExpiration\":\"\",\"cardId\":\"5629632759480320\",\"cardNumber\":\"\",\"cardSecurityCode\":\"\",\"challengeMode\":\"enabled\",\"challengeUrl\":\"\",\"created\":\"2026-09-16T12:00:00+00:00\",\"currencyCode\":\"BRL\",\"endToEndId\":\"\",\"fee\":200,\"fundingType\":\"credit\",\"holderEmail\":\"\",\"holderId\":\"\",\"holderName\":\"\",\"holderPhone\":\"\",\"id\":\"5629632759480323\",\"installmentCount\":1,\"metadata\":{},\"network\":\"mastercard\",\"softDescriptor\":\"starkbank\",\"source\":\"merchant-session/901e71f2447c43c886f58366a5432c4b\",\"status\":\"approved\",\"tags\":[\"labs\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"approved\"}"
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[{\"code\":\"invalidCvv\",\"message\":\"CVV is invalid\"}],\"id\":\"5629632759480325\",\"purchase\":{\"amount\":10000,\"billingCity\":\"\",\"billingCountryCode\":\"\",\"billingStateCode\":\"\",\"billingStreetLine1\":\"\",\"billingStreetLine2\":\"\",\"billingZipCode\":\"\",\"cardEnding\":\"1234\",\"cardExpiration\":\"\",\"cardId\":\"5629632759480320\",\"cardNumber\":\"\",\"cardSecurityCode\":\"\",\"challengeMode\":\"enabled\",\"challengeUrl\":\"\",\"created\":\"2026-09-16T12:00:00+00:00\",\"currencyCode\":\"BRL\",\"endToEndId\":\"\",\"fee\":200,\"fundingType\":\"credit\",\"holderEmail\":\"\",\"holderId\":\"\",\"holderName\":\"\",\"holderPhone\":\"\",\"id\":\"5629632759480323\",\"installmentCount\":1,\"metadata\":{},\"network\":\"mastercard\",\"softDescriptor\":\"starkbank\",\"source\":\"merchant-session/901e71f2447c43c886f58366a5432c4b\",\"status\":\"approved\",\"tags\":[\"labs\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"approved\"}"
       ],
       "requests": [
         {
@@ -1762,7 +1762,7 @@
     },
     "merchantpurchase.log.query": {
       "hydrated": [
-        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"5629632759480325\",\"purchase\":{\"amount\":10000,\"billingCity\":\"\",\"billingCountryCode\":\"\",\"billingStateCode\":\"\",\"billingStreetLine1\":\"\",\"billingStreetLine2\":\"\",\"billingZipCode\":\"\",\"cardEnding\":\"1234\",\"cardExpiration\":\"\",\"cardId\":\"5629632759480320\",\"cardNumber\":\"\",\"cardSecurityCode\":\"\",\"challengeMode\":\"enabled\",\"challengeUrl\":\"\",\"created\":\"2026-09-16T12:00:00+00:00\",\"currencyCode\":\"BRL\",\"endToEndId\":\"\",\"fee\":200,\"fundingType\":\"credit\",\"holderEmail\":\"\",\"holderId\":\"\",\"holderName\":\"\",\"holderPhone\":\"\",\"id\":\"5629632759480323\",\"installmentCount\":1,\"metadata\":{},\"network\":\"mastercard\",\"softDescriptor\":\"starkbank\",\"source\":\"merchant-session/901e71f2447c43c886f58366a5432c4b\",\"status\":\"approved\",\"tags\":[\"labs\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"approved\"}"
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[{\"code\":\"invalidCvv\",\"message\":\"CVV is invalid\"}],\"id\":\"5629632759480325\",\"purchase\":{\"amount\":10000,\"billingCity\":\"\",\"billingCountryCode\":\"\",\"billingStateCode\":\"\",\"billingStreetLine1\":\"\",\"billingStreetLine2\":\"\",\"billingZipCode\":\"\",\"cardEnding\":\"1234\",\"cardExpiration\":\"\",\"cardId\":\"5629632759480320\",\"cardNumber\":\"\",\"cardSecurityCode\":\"\",\"challengeMode\":\"enabled\",\"challengeUrl\":\"\",\"created\":\"2026-09-16T12:00:00+00:00\",\"currencyCode\":\"BRL\",\"endToEndId\":\"\",\"fee\":200,\"fundingType\":\"credit\",\"holderEmail\":\"\",\"holderId\":\"\",\"holderName\":\"\",\"holderPhone\":\"\",\"id\":\"5629632759480323\",\"installmentCount\":1,\"metadata\":{},\"network\":\"mastercard\",\"softDescriptor\":\"starkbank\",\"source\":\"merchant-session/901e71f2447c43c886f58366a5432c4b\",\"status\":\"approved\",\"tags\":[\"labs\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"approved\"}"
       ],
       "requests": [
         {
@@ -1845,7 +1845,7 @@
       ]
     },
     "merchantsession.log.get": {
-      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6357482625564672\",\"session\":{\"allowedFundingTypes\":[\"credit\",\"debit\"],\"allowedInstallments\":[{\"count\":1,\"totalAmount\":100},{\"count\":2,\"totalAmount\":51}],\"allowedIps\":[],\"challengeMode\":\"enabled\",\"created\":\"2026-09-16T12:00:00+00:00\",\"expiration\":3600,\"holderId\":\"\",\"id\":\"6234161654976512\",\"softDescriptor\":\"\",\"status\":\"created\",\"tags\":[\"labs\"],\"updated\":\"2026-09-16T12:00:00+00:00\",\"uuid\":\"901e71f2447c43c886f58366a5432c4b\"},\"type\":\"created\"}",
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[\"expiredSession\"],\"id\":\"6357482625564672\",\"session\":{\"allowedFundingTypes\":[\"credit\",\"debit\"],\"allowedInstallments\":[{\"count\":1,\"totalAmount\":100},{\"count\":2,\"totalAmount\":51}],\"allowedIps\":[],\"challengeMode\":\"enabled\",\"created\":\"2026-09-16T12:00:00+00:00\",\"expiration\":3600,\"holderId\":\"\",\"id\":\"6234161654976512\",\"softDescriptor\":\"\",\"status\":\"created\",\"tags\":[\"labs\"],\"updated\":\"2026-09-16T12:00:00+00:00\",\"uuid\":\"901e71f2447c43c886f58366a5432c4b\"},\"type\":\"created\"}",
       "requests": [
         {
           "body": "",
@@ -1859,7 +1859,7 @@
     },
     "merchantsession.log.page": {
       "hydrated": [
-        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6357482625564672\",\"session\":{\"allowedFundingTypes\":[\"credit\",\"debit\"],\"allowedInstallments\":[{\"count\":1,\"totalAmount\":100},{\"count\":2,\"totalAmount\":51}],\"allowedIps\":[],\"challengeMode\":\"enabled\",\"created\":\"2026-09-16T12:00:00+00:00\",\"expiration\":3600,\"holderId\":\"\",\"id\":\"6234161654976512\",\"softDescriptor\":\"\",\"status\":\"created\",\"tags\":[\"labs\"],\"updated\":\"2026-09-16T12:00:00+00:00\",\"uuid\":\"901e71f2447c43c886f58366a5432c4b\"},\"type\":\"created\"}"
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[\"expiredSession\"],\"id\":\"6357482625564672\",\"session\":{\"allowedFundingTypes\":[\"credit\",\"debit\"],\"allowedInstallments\":[{\"count\":1,\"totalAmount\":100},{\"count\":2,\"totalAmount\":51}],\"allowedIps\":[],\"challengeMode\":\"enabled\",\"created\":\"2026-09-16T12:00:00+00:00\",\"expiration\":3600,\"holderId\":\"\",\"id\":\"6234161654976512\",\"softDescriptor\":\"\",\"status\":\"created\",\"tags\":[\"labs\"],\"updated\":\"2026-09-16T12:00:00+00:00\",\"uuid\":\"901e71f2447c43c886f58366a5432c4b\"},\"type\":\"created\"}"
       ],
       "requests": [
         {
@@ -1874,7 +1874,7 @@
     },
     "merchantsession.log.query": {
       "hydrated": [
-        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6357482625564672\",\"session\":{\"allowedFundingTypes\":[\"credit\",\"debit\"],\"allowedInstallments\":[{\"count\":1,\"totalAmount\":100},{\"count\":2,\"totalAmount\":51}],\"allowedIps\":[],\"challengeMode\":\"enabled\",\"created\":\"2026-09-16T12:00:00+00:00\",\"expiration\":3600,\"holderId\":\"\",\"id\":\"6234161654976512\",\"softDescriptor\":\"\",\"status\":\"created\",\"tags\":[\"labs\"],\"updated\":\"2026-09-16T12:00:00+00:00\",\"uuid\":\"901e71f2447c43c886f58366a5432c4b\"},\"type\":\"created\"}"
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[\"expiredSession\"],\"id\":\"6357482625564672\",\"session\":{\"allowedFundingTypes\":[\"credit\",\"debit\"],\"allowedInstallments\":[{\"count\":1,\"totalAmount\":100},{\"count\":2,\"totalAmount\":51}],\"allowedIps\":[],\"challengeMode\":\"enabled\",\"created\":\"2026-09-16T12:00:00+00:00\",\"expiration\":3600,\"holderId\":\"\",\"id\":\"6234161654976512\",\"softDescriptor\":\"\",\"status\":\"created\",\"tags\":[\"labs\"],\"updated\":\"2026-09-16T12:00:00+00:00\",\"uuid\":\"901e71f2447c43c886f58366a5432c4b\"},\"type\":\"created\"}"
       ],
       "requests": [
         {
@@ -4058,7 +4058,12 @@
     "merchantInstallmentLog": {
       "log": {
         "created": "2026-09-16T12:00:00+00:00",
-        "errors": [],
+        "errors": [
+          {
+            "code": "insufficientFunds",
+            "message": "Insufficient funds"
+          }
+        ],
         "id": "5629632759480324",
         "installment": {
           "amount": 5000,
@@ -4142,7 +4147,12 @@
     "merchantPurchaseLog": {
       "log": {
         "created": "2026-09-16T12:00:00+00:00",
-        "errors": [],
+        "errors": [
+          {
+            "code": "invalidCvv",
+            "message": "CVV is invalid"
+          }
+        ],
         "id": "5629632759480325",
         "purchase": {
           "amount": 10000,
@@ -4258,7 +4268,9 @@
     "merchantSessionLog": {
       "log": {
         "created": "2026-09-16T12:00:00+00:00",
-        "errors": [],
+        "errors": [
+          "expiredSession"
+        ],
         "id": "6357482625564672",
         "session": {
           "allowedFundingTypes": [

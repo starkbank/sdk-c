@@ -3724,6 +3724,17 @@ static void testMerchantSessionLog(void)
           starkbank_entity_entity(log, STARKBANK_MERCHANT_SESSION_LOG_SESSION, &nested)
               == STARKBANK_OK
           && equalStrings(starkbank_entity_resource(nested), "MerchantSession"), NULL);
+    {
+        int size = 0;
+        const char *errorString = NULL;
+        check("errors is a real LIST_STRING here, unlike the other merchant Logs",
+              starkbank_entity_list_size(log, STARKBANK_MERCHANT_SESSION_LOG_ERRORS, &size)
+                  == STARKBANK_OK
+              && size == 1
+              && starkbank_entity_list_string_at(log, STARKBANK_MERCHANT_SESSION_LOG_ERRORS,
+                     0, &errorString) == STARKBANK_OK
+              && equalStrings(errorString, "expiredSession"), NULL);
+    }
     starkbank_entity_free(log);
 
     starkbank_client_free(client);

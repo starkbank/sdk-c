@@ -893,7 +893,7 @@ MERCHANT_SESSION_LOG = {
     "id": "6357482625564672",
     "created": "2026-09-16T12:00:00+00:00",
     "type": "created",
-    "errors": [],
+    "errors": ["expiredSession"],
     "session": MERCHANT_SESSION,
 }
 
@@ -975,7 +975,7 @@ MERCHANT_INSTALLMENT_LOG = {
     "created": "2026-09-16T12:00:00+00:00",
     "updated": "2026-09-17T12:00:00+00:00",
     "type": "created",
-    "errors": [],
+    "errors": [{"code": "insufficientFunds", "message": "Insufficient funds"}],
     "installment": MERCHANT_INSTALLMENT,
 }
 
@@ -1018,7 +1018,7 @@ MERCHANT_PURCHASE_LOG = {
     "id": "5629632759480325",
     "created": "2026-09-16T12:00:00+00:00",
     "type": "approved",
-    "errors": [],
+    "errors": [{"code": "invalidCvv", "message": "CVV is invalid"}],
     "purchase": MERCHANT_PURCHASE,
 }
 
