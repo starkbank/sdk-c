@@ -139,6 +139,107 @@
         }
       ]
     },
+    "boletoholmes.create": {
+      "hydrated": [
+        "{\"boletoId\":\"5155165527080960\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6234161654976514\",\"result\":\"paid\",\"status\":\"solved\",\"tags\":[\"sherlock\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "{\"holmes\":[{\"boletoId\":\"5155165527080960\",\"tags\":[\"sherlock\"]}]}",
+          "bodyRaw": "{\"holmes\": [{\"boletoId\": \"5155165527080960\", \"tags\": [\"sherlock\"]}]}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/boleto-holmes"
+        }
+      ]
+    },
+    "boletoholmes.get": {
+      "hydrated": "{\"boletoId\":\"5155165527080960\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6234161654976514\",\"result\":\"paid\",\"status\":\"solved\",\"tags\":[\"sherlock\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/boleto-holmes/6234161654976514"
+        }
+      ]
+    },
+    "boletoholmes.log.get": {
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"holmes\":{\"boletoId\":\"5155165527080960\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6234161654976514\",\"result\":\"paid\",\"status\":\"solved\",\"tags\":[\"sherlock\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"id\":\"6234161654976515\",\"type\":\"solved\",\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/boleto-holmes/log/6234161654976515"
+        }
+      ]
+    },
+    "boletoholmes.log.page": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"holmes\":{\"boletoId\":\"5155165527080960\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6234161654976514\",\"result\":\"paid\",\"status\":\"solved\",\"tags\":[\"sherlock\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"id\":\"6234161654976515\",\"type\":\"solved\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/boleto-holmes/log"
+        }
+      ]
+    },
+    "boletoholmes.log.query": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"holmes\":{\"boletoId\":\"5155165527080960\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6234161654976514\",\"result\":\"paid\",\"status\":\"solved\",\"tags\":[\"sherlock\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"id\":\"6234161654976515\",\"type\":\"solved\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "holmesIds=6234161654976514&limit=5&types=solved",
+          "queryRaw": "limit=5&types=solved&holmesIds=6234161654976514",
+          "url": "https://sandbox.api.starkbank.com/v2/boleto-holmes/log"
+        }
+      ]
+    },
+    "boletoholmes.page": {
+      "hydrated": [
+        "{\"boletoId\":\"5155165527080960\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6234161654976514\",\"result\":\"paid\",\"status\":\"solved\",\"tags\":[\"sherlock\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/boleto-holmes"
+        }
+      ]
+    },
+    "boletoholmes.query": {
+      "hydrated": [
+        "{\"boletoId\":\"5155165527080960\",\"created\":\"2026-09-16T12:00:00+00:00\",\"id\":\"6234161654976514\",\"result\":\"paid\",\"status\":\"solved\",\"tags\":[\"sherlock\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "boletoId=5155165527080960&limit=5&status=solved",
+          "queryRaw": "limit=5&status=solved&boletoId=5155165527080960",
+          "url": "https://sandbox.api.starkbank.com/v2/boleto-holmes"
+        }
+      ]
+    },
     "boletopayment.create": {
       "hydrated": [
         "{\"amount\":23456,\"barCode\":\"34195819600000000621090063571277307144464000\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"sword sharpening\",\"fee\":200,\"id\":\"5155165527080960\",\"line\":\"34191.09008 63571.277308 71444.640008 5 81960000000062\",\"scheduled\":\"2026-10-28\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"]}"
@@ -1179,6 +1280,64 @@
         }
       ]
     },
+    "dynamicbrcode.create": {
+      "hydrated": [
+        "{\"amount\":100000,\"created\":\"2026-09-16T12:00:00+00:00\",\"displayDescription\":\"Payment for service #1234\",\"expiration\":3600,\"id\":\"901e71f2447c43c886f58366a5432c4b\",\"pictureUrl\":\"https://sandbox.starkbank.com/qr/901e71f2447c43c886f58366a5432c4b.png\",\"rules\":[{\"key\":\"allowedTaxIds\",\"value\":[\"012.345.678-90\"]}],\"tags\":[\"dynamic\"],\"updated\":\"2026-09-17T12:00:00+00:00\",\"uuid\":\"901e71f2447c43c886f58366a5432c4b\"}"
+      ],
+      "requests": [
+        {
+          "body": "{\"brcodes\":[{\"amount\":100000,\"displayDescription\":\"Payment for service #1234\",\"expiration\":3600,\"rules\":[{\"key\":\"allowedTaxIds\",\"value\":[\"012.345.678-90\"]}],\"tags\":[\"dynamic\"]}]}",
+          "bodyRaw": "{\"brcodes\": [{\"amount\": 100000, \"displayDescription\": \"Payment for service #1234\", \"expiration\": 3600, \"rules\": [{\"key\": \"allowedTaxIds\", \"value\": [\"012.345.678-90\"]}], \"tags\": [\"dynamic\"]}]}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/dynamic-brcode"
+        }
+      ]
+    },
+    "dynamicbrcode.get": {
+      "hydrated": "{\"amount\":100000,\"created\":\"2026-09-16T12:00:00+00:00\",\"displayDescription\":\"Payment for service #1234\",\"expiration\":3600,\"id\":\"901e71f2447c43c886f58366a5432c4b\",\"pictureUrl\":\"https://sandbox.starkbank.com/qr/901e71f2447c43c886f58366a5432c4b.png\",\"rules\":[{\"key\":\"allowedTaxIds\",\"value\":[\"012.345.678-90\"]}],\"tags\":[\"dynamic\"],\"updated\":\"2026-09-17T12:00:00+00:00\",\"uuid\":\"901e71f2447c43c886f58366a5432c4b\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/dynamic-brcode/901e71f2447c43c886f58366a5432c4b"
+        }
+      ]
+    },
+    "dynamicbrcode.page": {
+      "hydrated": [
+        "{\"amount\":100000,\"created\":\"2026-09-16T12:00:00+00:00\",\"displayDescription\":\"Payment for service #1234\",\"expiration\":3600,\"id\":\"901e71f2447c43c886f58366a5432c4b\",\"pictureUrl\":\"https://sandbox.starkbank.com/qr/901e71f2447c43c886f58366a5432c4b.png\",\"rules\":[{\"key\":\"allowedTaxIds\",\"value\":[\"012.345.678-90\"]}],\"tags\":[\"dynamic\"],\"updated\":\"2026-09-17T12:00:00+00:00\",\"uuid\":\"901e71f2447c43c886f58366a5432c4b\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/dynamic-brcode"
+        }
+      ]
+    },
+    "dynamicbrcode.query": {
+      "hydrated": [
+        "{\"amount\":100000,\"created\":\"2026-09-16T12:00:00+00:00\",\"displayDescription\":\"Payment for service #1234\",\"expiration\":3600,\"id\":\"901e71f2447c43c886f58366a5432c4b\",\"pictureUrl\":\"https://sandbox.starkbank.com/qr/901e71f2447c43c886f58366a5432c4b.png\",\"rules\":[{\"key\":\"allowedTaxIds\",\"value\":[\"012.345.678-90\"]}],\"tags\":[\"dynamic\"],\"updated\":\"2026-09-17T12:00:00+00:00\",\"uuid\":\"901e71f2447c43c886f58366a5432c4b\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&tags=dynamic",
+          "queryRaw": "limit=5&tags=dynamic",
+          "url": "https://sandbox.api.starkbank.com/v2/dynamic-brcode"
+        }
+      ]
+    },
     "event.attempt.get": {
       "hydrated": "{\"code\":\"500\",\"created\":\"2026-09-16T12:00:00+00:00\",\"eventId\":\"5764898044149760\",\"id\":\"1616161616161616\",\"message\":\"Internal Server Error\",\"webhookId\":\"6178044066660352\"}",
       "requests": [
@@ -1501,6 +1660,234 @@
           "query": "",
           "queryRaw": "",
           "url": "https://sandbox.api.starkbank.com/v2/invoice/5155165527080960"
+        }
+      ]
+    },
+    "invoicepullrequest.create": {
+      "hydrated": [
+        "{\"attemptType\":\"default\",\"created\":\"2026-09-16T12:00:00+00:00\",\"displayDescription\":\"Payment for services\",\"due\":\"2026-10-28T17:59:26+00:00\",\"externalId\":\"my-external-id-2\",\"id\":\"6234161654976518\",\"installmentId\":\"6234161654976519\",\"invoiceId\":\"5155165527080960\",\"status\":\"success\",\"subscriptionId\":\"6234161654976516\",\"tags\":[\"pull\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "{\"requests\":[{\"due\":\"2026-10-28T17:59:26+00:00\",\"invoiceId\":\"5155165527080960\",\"subscriptionId\":\"6234161654976516\",\"tags\":[\"pull\"]}]}",
+          "bodyRaw": "{\"requests\": [{\"due\": \"2026-10-28T17:59:26+00:00\", \"invoiceId\": \"5155165527080960\", \"subscriptionId\": \"6234161654976516\", \"tags\": [\"pull\"]}]}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice-pull-request"
+        }
+      ]
+    },
+    "invoicepullrequest.delete": {
+      "hydrated": "{\"attemptType\":\"default\",\"created\":\"2026-09-16T12:00:00+00:00\",\"displayDescription\":\"Payment for services\",\"due\":\"2026-10-28T17:59:26+00:00\",\"externalId\":\"my-external-id-2\",\"id\":\"6234161654976518\",\"installmentId\":\"6234161654976519\",\"invoiceId\":\"5155165527080960\",\"status\":\"success\",\"subscriptionId\":\"6234161654976516\",\"tags\":[\"pull\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "DELETE",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice-pull-request/6234161654976518"
+        }
+      ]
+    },
+    "invoicepullrequest.get": {
+      "hydrated": "{\"attemptType\":\"default\",\"created\":\"2026-09-16T12:00:00+00:00\",\"displayDescription\":\"Payment for services\",\"due\":\"2026-10-28T17:59:26+00:00\",\"externalId\":\"my-external-id-2\",\"id\":\"6234161654976518\",\"installmentId\":\"6234161654976519\",\"invoiceId\":\"5155165527080960\",\"status\":\"success\",\"subscriptionId\":\"6234161654976516\",\"tags\":[\"pull\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice-pull-request/6234161654976518"
+        }
+      ]
+    },
+    "invoicepullrequest.log.get": {
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[{\"code\":\"insufficientFunds\",\"message\":\"insufficient funds\"}],\"id\":\"6234161654976520\",\"request\":{\"attemptType\":\"default\",\"created\":\"2026-09-16T12:00:00+00:00\",\"displayDescription\":\"Payment for services\",\"due\":\"2026-10-28T17:59:26+00:00\",\"externalId\":\"my-external-id-2\",\"id\":\"6234161654976518\",\"installmentId\":\"6234161654976519\",\"invoiceId\":\"5155165527080960\",\"status\":\"success\",\"subscriptionId\":\"6234161654976516\",\"tags\":[\"pull\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"success\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice-pull-request/log/6234161654976520"
+        }
+      ]
+    },
+    "invoicepullrequest.log.page": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[{\"code\":\"insufficientFunds\",\"message\":\"insufficient funds\"}],\"id\":\"6234161654976520\",\"request\":{\"attemptType\":\"default\",\"created\":\"2026-09-16T12:00:00+00:00\",\"displayDescription\":\"Payment for services\",\"due\":\"2026-10-28T17:59:26+00:00\",\"externalId\":\"my-external-id-2\",\"id\":\"6234161654976518\",\"installmentId\":\"6234161654976519\",\"invoiceId\":\"5155165527080960\",\"status\":\"success\",\"subscriptionId\":\"6234161654976516\",\"tags\":[\"pull\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"success\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice-pull-request/log"
+        }
+      ]
+    },
+    "invoicepullrequest.log.query": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[{\"code\":\"insufficientFunds\",\"message\":\"insufficient funds\"}],\"id\":\"6234161654976520\",\"request\":{\"attemptType\":\"default\",\"created\":\"2026-09-16T12:00:00+00:00\",\"displayDescription\":\"Payment for services\",\"due\":\"2026-10-28T17:59:26+00:00\",\"externalId\":\"my-external-id-2\",\"id\":\"6234161654976518\",\"installmentId\":\"6234161654976519\",\"invoiceId\":\"5155165527080960\",\"status\":\"success\",\"subscriptionId\":\"6234161654976516\",\"tags\":[\"pull\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"success\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&requestIds=6234161654976518&types=success",
+          "queryRaw": "limit=5&types=success&requestIds=6234161654976518",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice-pull-request/log"
+        }
+      ]
+    },
+    "invoicepullrequest.page": {
+      "hydrated": [
+        "{\"attemptType\":\"default\",\"created\":\"2026-09-16T12:00:00+00:00\",\"displayDescription\":\"Payment for services\",\"due\":\"2026-10-28T17:59:26+00:00\",\"externalId\":\"my-external-id-2\",\"id\":\"6234161654976518\",\"installmentId\":\"6234161654976519\",\"invoiceId\":\"5155165527080960\",\"status\":\"success\",\"subscriptionId\":\"6234161654976516\",\"tags\":[\"pull\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice-pull-request"
+        }
+      ]
+    },
+    "invoicepullrequest.query": {
+      "hydrated": [
+        "{\"attemptType\":\"default\",\"created\":\"2026-09-16T12:00:00+00:00\",\"displayDescription\":\"Payment for services\",\"due\":\"2026-10-28T17:59:26+00:00\",\"externalId\":\"my-external-id-2\",\"id\":\"6234161654976518\",\"installmentId\":\"6234161654976519\",\"invoiceId\":\"5155165527080960\",\"status\":\"success\",\"subscriptionId\":\"6234161654976516\",\"tags\":[\"pull\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&status=success&subscriptionIds=6234161654976516",
+          "queryRaw": "limit=5&status=success&subscriptionIds=6234161654976516",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice-pull-request"
+        }
+      ]
+    },
+    "invoicepullsubscription.create": {
+      "hydrated": [
+        "{\"amount\":100000,\"amountMinLimit\":0,\"bacenId\":\"RR2001818320250616dtsPkBVaBYs\",\"brcode\":\"00020101021126580014br.gov.bcb.pix\",\"created\":\"2026-09-16T12:00:00+00:00\",\"data\":{},\"displayDescription\":\"Subscription payment\",\"due\":\"2026-09-18\",\"end\":\"2027-09-16\",\"externalId\":\"my-external-id\",\"id\":\"6234161654976516\",\"interval\":\"month\",\"name\":\"Iron Bank S.A.\",\"pullMode\":\"automatic\",\"pullRetryLimit\":3,\"referenceCode\":\"REF123456\",\"start\":\"2026-09-16\",\"status\":\"active\",\"tags\":[\"subscription\"],\"taxId\":\"20.018.183/0001-80\",\"type\":\"qrcode\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "{\"subscriptions\":[{\"amount\":100000,\"interval\":\"month\",\"pullMode\":\"automatic\",\"pullRetryLimit\":3,\"start\":\"2026-09-16\",\"tags\":[\"subscription\"],\"type\":\"qrcode\"}]}",
+          "bodyRaw": "{\"subscriptions\": [{\"amount\": 100000, \"interval\": \"month\", \"pullMode\": \"automatic\", \"pullRetryLimit\": 3, \"start\": \"2026-09-16\", \"tags\": [\"subscription\"], \"type\": \"qrcode\"}]}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice-pull-subscription"
+        }
+      ]
+    },
+    "invoicepullsubscription.delete": {
+      "hydrated": "{\"amount\":100000,\"amountMinLimit\":0,\"bacenId\":\"RR2001818320250616dtsPkBVaBYs\",\"brcode\":\"00020101021126580014br.gov.bcb.pix\",\"created\":\"2026-09-16T12:00:00+00:00\",\"data\":{},\"displayDescription\":\"Subscription payment\",\"due\":\"2026-09-18\",\"end\":\"2027-09-16\",\"externalId\":\"my-external-id\",\"id\":\"6234161654976516\",\"interval\":\"month\",\"name\":\"Iron Bank S.A.\",\"pullMode\":\"automatic\",\"pullRetryLimit\":3,\"referenceCode\":\"REF123456\",\"start\":\"2026-09-16\",\"status\":\"active\",\"tags\":[\"subscription\"],\"taxId\":\"20.018.183/0001-80\",\"type\":\"qrcode\",\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "DELETE",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice-pull-subscription/6234161654976516"
+        }
+      ]
+    },
+    "invoicepullsubscription.get": {
+      "hydrated": "{\"amount\":100000,\"amountMinLimit\":0,\"bacenId\":\"RR2001818320250616dtsPkBVaBYs\",\"brcode\":\"00020101021126580014br.gov.bcb.pix\",\"created\":\"2026-09-16T12:00:00+00:00\",\"data\":{},\"displayDescription\":\"Subscription payment\",\"due\":\"2026-09-18\",\"end\":\"2027-09-16\",\"externalId\":\"my-external-id\",\"id\":\"6234161654976516\",\"interval\":\"month\",\"name\":\"Iron Bank S.A.\",\"pullMode\":\"automatic\",\"pullRetryLimit\":3,\"referenceCode\":\"REF123456\",\"start\":\"2026-09-16\",\"status\":\"active\",\"tags\":[\"subscription\"],\"taxId\":\"20.018.183/0001-80\",\"type\":\"qrcode\",\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice-pull-subscription/6234161654976516"
+        }
+      ]
+    },
+    "invoicepullsubscription.log.get": {
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[{\"code\":\"invalidStart\",\"message\":\"start date is invalid\"}],\"id\":\"6234161654976517\",\"subscription\":{\"amount\":100000,\"amountMinLimit\":0,\"bacenId\":\"RR2001818320250616dtsPkBVaBYs\",\"brcode\":\"00020101021126580014br.gov.bcb.pix\",\"created\":\"2026-09-16T12:00:00+00:00\",\"data\":{},\"displayDescription\":\"Subscription payment\",\"due\":\"2026-09-18\",\"end\":\"2027-09-16\",\"externalId\":\"my-external-id\",\"id\":\"6234161654976516\",\"interval\":\"month\",\"name\":\"Iron Bank S.A.\",\"pullMode\":\"automatic\",\"pullRetryLimit\":3,\"referenceCode\":\"REF123456\",\"start\":\"2026-09-16\",\"status\":\"active\",\"tags\":[\"subscription\"],\"taxId\":\"20.018.183/0001-80\",\"type\":\"qrcode\",\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"active\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice-pull-subscription/log/6234161654976517"
+        }
+      ]
+    },
+    "invoicepullsubscription.log.page": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[{\"code\":\"invalidStart\",\"message\":\"start date is invalid\"}],\"id\":\"6234161654976517\",\"subscription\":{\"amount\":100000,\"amountMinLimit\":0,\"bacenId\":\"RR2001818320250616dtsPkBVaBYs\",\"brcode\":\"00020101021126580014br.gov.bcb.pix\",\"created\":\"2026-09-16T12:00:00+00:00\",\"data\":{},\"displayDescription\":\"Subscription payment\",\"due\":\"2026-09-18\",\"end\":\"2027-09-16\",\"externalId\":\"my-external-id\",\"id\":\"6234161654976516\",\"interval\":\"month\",\"name\":\"Iron Bank S.A.\",\"pullMode\":\"automatic\",\"pullRetryLimit\":3,\"referenceCode\":\"REF123456\",\"start\":\"2026-09-16\",\"status\":\"active\",\"tags\":[\"subscription\"],\"taxId\":\"20.018.183/0001-80\",\"type\":\"qrcode\",\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"active\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice-pull-subscription/log"
+        }
+      ]
+    },
+    "invoicepullsubscription.log.query": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[{\"code\":\"invalidStart\",\"message\":\"start date is invalid\"}],\"id\":\"6234161654976517\",\"subscription\":{\"amount\":100000,\"amountMinLimit\":0,\"bacenId\":\"RR2001818320250616dtsPkBVaBYs\",\"brcode\":\"00020101021126580014br.gov.bcb.pix\",\"created\":\"2026-09-16T12:00:00+00:00\",\"data\":{},\"displayDescription\":\"Subscription payment\",\"due\":\"2026-09-18\",\"end\":\"2027-09-16\",\"externalId\":\"my-external-id\",\"id\":\"6234161654976516\",\"interval\":\"month\",\"name\":\"Iron Bank S.A.\",\"pullMode\":\"automatic\",\"pullRetryLimit\":3,\"referenceCode\":\"REF123456\",\"start\":\"2026-09-16\",\"status\":\"active\",\"tags\":[\"subscription\"],\"taxId\":\"20.018.183/0001-80\",\"type\":\"qrcode\",\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"active\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&subscriptionIds=6234161654976516&types=active",
+          "queryRaw": "limit=5&types=active&subscriptionIds=6234161654976516",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice-pull-subscription/log"
+        }
+      ]
+    },
+    "invoicepullsubscription.page": {
+      "hydrated": [
+        "{\"amount\":100000,\"amountMinLimit\":0,\"bacenId\":\"RR2001818320250616dtsPkBVaBYs\",\"brcode\":\"00020101021126580014br.gov.bcb.pix\",\"created\":\"2026-09-16T12:00:00+00:00\",\"data\":{},\"displayDescription\":\"Subscription payment\",\"due\":\"2026-09-18\",\"end\":\"2027-09-16\",\"externalId\":\"my-external-id\",\"id\":\"6234161654976516\",\"interval\":\"month\",\"name\":\"Iron Bank S.A.\",\"pullMode\":\"automatic\",\"pullRetryLimit\":3,\"referenceCode\":\"REF123456\",\"start\":\"2026-09-16\",\"status\":\"active\",\"tags\":[\"subscription\"],\"taxId\":\"20.018.183/0001-80\",\"type\":\"qrcode\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice-pull-subscription"
+        }
+      ]
+    },
+    "invoicepullsubscription.query": {
+      "hydrated": [
+        "{\"amount\":100000,\"amountMinLimit\":0,\"bacenId\":\"RR2001818320250616dtsPkBVaBYs\",\"brcode\":\"00020101021126580014br.gov.bcb.pix\",\"created\":\"2026-09-16T12:00:00+00:00\",\"data\":{},\"displayDescription\":\"Subscription payment\",\"due\":\"2026-09-18\",\"end\":\"2027-09-16\",\"externalId\":\"my-external-id\",\"id\":\"6234161654976516\",\"interval\":\"month\",\"name\":\"Iron Bank S.A.\",\"pullMode\":\"automatic\",\"pullRetryLimit\":3,\"referenceCode\":\"REF123456\",\"start\":\"2026-09-16\",\"status\":\"active\",\"tags\":[\"subscription\"],\"taxId\":\"20.018.183/0001-80\",\"type\":\"qrcode\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&status=active&tags=subscription",
+          "queryRaw": "limit=5&status=active&tags=subscription",
+          "url": "https://sandbox.api.starkbank.com/v2/invoice-pull-subscription"
         }
       ]
     },
@@ -1960,6 +2347,68 @@
           "query": "",
           "queryRaw": "",
           "url": "https://sandbox.api.starkbank.com/v2/payment-preview"
+        }
+      ]
+    },
+    "paymentrequest.create": {
+      "hydrated": [
+        "{\"actions\":[{\"action\":\"requested\",\"id\":\"5656565656565656\",\"type\":\"member\"}],\"amount\":1000,\"centerId\":\"5656565656565656\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Tony Stark's Suit\",\"due\":\"2026-09-20\",\"id\":\"6234161654976521\",\"payment\":{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"amount\":1000,\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Payment for service #1234\",\"displayDescription\":\"Sword sharpening\",\"externalId\":\"my-internal-id-123456\",\"fee\":200,\"id\":\"5155165527080960\",\"metadata\":{\"attempt\":2,\"tracker\":\"abc\"},\"name\":\"Daenerys Targaryen Stormborn\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28T17:59:26+00:00\",\"status\":\"processing\",\"tags\":[\"daenerys\",\"invoice/1234\"],\"taxId\":\"594.739.480-42\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"status\":\"pending\",\"tags\":[\"urgent\"],\"type\":\"transfer\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "{\"requests\":[{\"centerId\":\"5656565656565656\",\"payment\":{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"amount\":1000,\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"description\":\"Payment for service #1234\",\"displayDescription\":\"Sword sharpening\",\"externalId\":\"my-internal-id-123456\",\"name\":\"Daenerys Targaryen Stormborn\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28T17:59:26+00:00\",\"tags\":[\"daenerys\",\"invoice/1234\"],\"taxId\":\"594.739.480-42\"},\"tags\":[\"urgent\"],\"type\":\"transfer\"}]}",
+          "bodyRaw": "{\"requests\": [{\"centerId\": \"5656565656565656\", \"payment\": {\"accountNumber\": \"876543-2\", \"accountType\": \"checking\", \"amount\": 1000, \"bankCode\": \"20018183\", \"branchCode\": \"1357-9\", \"description\": \"Payment for service #1234\", \"displayDescription\": \"Sword sharpening\", \"externalId\": \"my-internal-id-123456\", \"name\": \"Daenerys Targaryen Stormborn\", \"rules\": [{\"key\": \"resendingLimit\", \"value\": 5}], \"scheduled\": \"2026-10-28T17:59:26+00:00\", \"tags\": [\"daenerys\", \"invoice/1234\"], \"taxId\": \"594.739.480-42\"}, \"tags\": [\"urgent\"], \"type\": \"transfer\"}]}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/payment-request"
+        }
+      ]
+    },
+    "paymentrequest.create.boletopayment": {
+      "hydrated": [
+        "{\"actions\":[{\"action\":\"requested\",\"id\":\"5656565656565656\",\"type\":\"member\"}],\"amount\":100000,\"centerId\":\"5656565656565656\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Tony Stark's Suit\",\"due\":\"2026-09-20\",\"id\":\"6234161654976522\",\"payment\":{\"amount\":23456,\"barCode\":\"34195819600000000621090063571277307144464000\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"sword sharpening\",\"fee\":200,\"id\":\"5155165527080960\",\"line\":\"34191.09008 63571.277308 71444.640008 5 81960000000062\",\"scheduled\":\"2026-10-28\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"]},\"status\":\"pending\",\"tags\":[\"urgent\"],\"type\":\"boleto-payment\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "{\"requests\":[{\"centerId\":\"5656565656565656\",\"payment\":{\"description\":\"sword sharpening\",\"line\":\"34191.09008 63571.277308 71444.640008 5 81960000000062\",\"scheduled\":\"2026-10-28\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\"},\"tags\":[\"urgent\"],\"type\":\"boleto-payment\"}]}",
+          "bodyRaw": "{\"requests\": [{\"centerId\": \"5656565656565656\", \"payment\": {\"description\": \"sword sharpening\", \"line\": \"34191.09008 63571.277308 71444.640008 5 81960000000062\", \"scheduled\": \"2026-10-28\", \"tags\": [\"war\", \"supply\"], \"taxId\": \"20.018.183/0001-80\"}, \"tags\": [\"urgent\"], \"type\": \"boleto-payment\"}]}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/payment-request"
+        }
+      ]
+    },
+    "paymentrequest.page": {
+      "hydrated": [
+        "{\"actions\":[{\"action\":\"requested\",\"id\":\"5656565656565656\",\"type\":\"member\"}],\"amount\":1000,\"centerId\":\"5656565656565656\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Tony Stark's Suit\",\"due\":\"2026-09-20\",\"id\":\"6234161654976521\",\"payment\":{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"amount\":1000,\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Payment for service #1234\",\"displayDescription\":\"Sword sharpening\",\"externalId\":\"my-internal-id-123456\",\"fee\":200,\"id\":\"5155165527080960\",\"metadata\":{\"attempt\":2,\"tracker\":\"abc\"},\"name\":\"Daenerys Targaryen Stormborn\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28T17:59:26+00:00\",\"status\":\"processing\",\"tags\":[\"daenerys\",\"invoice/1234\"],\"taxId\":\"594.739.480-42\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"status\":\"pending\",\"tags\":[\"urgent\"],\"type\":\"transfer\",\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+        "{\"actions\":[{\"action\":\"requested\",\"id\":\"5656565656565656\",\"type\":\"member\"}],\"amount\":100000,\"centerId\":\"5656565656565656\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Tony Stark's Suit\",\"due\":\"2026-09-20\",\"id\":\"6234161654976522\",\"payment\":{\"amount\":23456,\"barCode\":\"34195819600000000621090063571277307144464000\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"sword sharpening\",\"fee\":200,\"id\":\"5155165527080960\",\"line\":\"34191.09008 63571.277308 71444.640008 5 81960000000062\",\"scheduled\":\"2026-10-28\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"]},\"status\":\"pending\",\"tags\":[\"urgent\"],\"type\":\"boleto-payment\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "centerId=5656565656565656&limit=5",
+          "queryRaw": "centerId=5656565656565656&limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/payment-request"
+        }
+      ]
+    },
+    "paymentrequest.query": {
+      "hydrated": [
+        "{\"actions\":[{\"action\":\"requested\",\"id\":\"5656565656565656\",\"type\":\"member\"}],\"amount\":1000,\"centerId\":\"5656565656565656\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Tony Stark's Suit\",\"due\":\"2026-09-20\",\"id\":\"6234161654976521\",\"payment\":{\"accountNumber\":\"876543-2\",\"accountType\":\"checking\",\"amount\":1000,\"bankCode\":\"20018183\",\"branchCode\":\"1357-9\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Payment for service #1234\",\"displayDescription\":\"Sword sharpening\",\"externalId\":\"my-internal-id-123456\",\"fee\":200,\"id\":\"5155165527080960\",\"metadata\":{\"attempt\":2,\"tracker\":\"abc\"},\"name\":\"Daenerys Targaryen Stormborn\",\"rules\":[{\"key\":\"resendingLimit\",\"value\":5}],\"scheduled\":\"2026-10-28T17:59:26+00:00\",\"status\":\"processing\",\"tags\":[\"daenerys\",\"invoice/1234\"],\"taxId\":\"594.739.480-42\",\"transactionIds\":[\"19827356981273\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"status\":\"pending\",\"tags\":[\"urgent\"],\"type\":\"transfer\",\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+        "{\"actions\":[{\"action\":\"requested\",\"id\":\"5656565656565656\",\"type\":\"member\"}],\"amount\":100000,\"centerId\":\"5656565656565656\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"Tony Stark's Suit\",\"due\":\"2026-09-20\",\"id\":\"6234161654976522\",\"payment\":{\"amount\":23456,\"barCode\":\"34195819600000000621090063571277307144464000\",\"created\":\"2026-09-16T12:00:00+00:00\",\"description\":\"sword sharpening\",\"fee\":200,\"id\":\"5155165527080960\",\"line\":\"34191.09008 63571.277308 71444.640008 5 81960000000062\",\"scheduled\":\"2026-10-28\",\"status\":\"success\",\"tags\":[\"war\",\"supply\"],\"taxId\":\"20.018.183/0001-80\",\"transactionIds\":[\"19827356981273\"]},\"status\":\"pending\",\"tags\":[\"urgent\"],\"type\":\"boleto-payment\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "centerId=5656565656565656&limit=5",
+          "queryRaw": "limit=5&centerId=5656565656565656",
+          "url": "https://sandbox.api.starkbank.com/v2/payment-request"
         }
       ]
     },
@@ -2564,6 +3013,54 @@
         ],
         "workspaceId": "4545454545454545",
         "zipCode": "01311-200"
+      }
+    },
+    "boletoHolmes": {
+      "holmes": {
+        "boletoId": "5155165527080960",
+        "created": "2026-09-16T12:00:00+00:00",
+        "id": "6234161654976514",
+        "result": "paid",
+        "status": "solved",
+        "tags": [
+          "sherlock"
+        ],
+        "updated": "2026-09-17T12:00:00+00:00"
+      }
+    },
+    "boletoHolmesList": {
+      "cursor": "",
+      "holmes": [
+        {
+          "boletoId": "5155165527080960",
+          "created": "2026-09-16T12:00:00+00:00",
+          "id": "6234161654976514",
+          "result": "paid",
+          "status": "solved",
+          "tags": [
+            "sherlock"
+          ],
+          "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ]
+    },
+    "boletoHolmesLog": {
+      "log": {
+        "created": "2026-09-16T12:00:00+00:00",
+        "holmes": {
+          "boletoId": "5155165527080960",
+          "created": "2026-09-16T12:00:00+00:00",
+          "id": "6234161654976514",
+          "result": "paid",
+          "status": "solved",
+          "tags": [
+            "sherlock"
+          ],
+          "updated": "2026-09-17T12:00:00+00:00"
+        },
+        "id": "6234161654976515",
+        "type": "solved",
+        "updated": "2026-09-17T12:00:00+00:00"
       }
     },
     "boletoLog": {
@@ -3561,6 +4058,55 @@
         }
       ]
     },
+    "dynamicBrcode": {
+      "brcode": {
+        "amount": 100000,
+        "created": "2026-09-16T12:00:00+00:00",
+        "displayDescription": "Payment for service #1234",
+        "expiration": 3600,
+        "id": "901e71f2447c43c886f58366a5432c4b",
+        "pictureUrl": "https://sandbox.starkbank.com/qr/901e71f2447c43c886f58366a5432c4b.png",
+        "rules": [
+          {
+            "key": "allowedTaxIds",
+            "value": [
+              "012.345.678-90"
+            ]
+          }
+        ],
+        "tags": [
+          "dynamic"
+        ],
+        "updated": "2026-09-17T12:00:00+00:00",
+        "uuid": "901e71f2447c43c886f58366a5432c4b"
+      }
+    },
+    "dynamicBrcodes": {
+      "brcodes": [
+        {
+          "amount": 100000,
+          "created": "2026-09-16T12:00:00+00:00",
+          "displayDescription": "Payment for service #1234",
+          "expiration": 3600,
+          "id": "901e71f2447c43c886f58366a5432c4b",
+          "pictureUrl": "https://sandbox.starkbank.com/qr/901e71f2447c43c886f58366a5432c4b.png",
+          "rules": [
+            {
+              "key": "allowedTaxIds",
+              "value": [
+                "012.345.678-90"
+              ]
+            }
+          ],
+          "tags": [
+            "dynamic"
+          ],
+          "updated": "2026-09-17T12:00:00+00:00",
+          "uuid": "901e71f2447c43c886f58366a5432c4b"
+        }
+      ],
+      "cursor": ""
+    },
     "event": {
       "event": {
         "created": "2026-09-16T12:00:00+00:00",
@@ -3856,6 +4402,172 @@
         "name": "Anthony Edward Stark",
         "taxId": "20.018.183/0001-80"
       }
+    },
+    "invoicePullRequest": {
+      "request": {
+        "attemptType": "default",
+        "created": "2026-09-16T12:00:00+00:00",
+        "displayDescription": "Payment for services",
+        "due": "2026-10-28T17:59:26+00:00",
+        "externalId": "my-external-id-2",
+        "id": "6234161654976518",
+        "installmentId": "6234161654976519",
+        "invoiceId": "5155165527080960",
+        "status": "success",
+        "subscriptionId": "6234161654976516",
+        "tags": [
+          "pull"
+        ],
+        "updated": "2026-09-17T12:00:00+00:00"
+      }
+    },
+    "invoicePullRequestLog": {
+      "log": {
+        "created": "2026-09-16T12:00:00+00:00",
+        "errors": [
+          {
+            "code": "insufficientFunds",
+            "message": "insufficient funds"
+          }
+        ],
+        "id": "6234161654976520",
+        "request": {
+          "attemptType": "default",
+          "created": "2026-09-16T12:00:00+00:00",
+          "displayDescription": "Payment for services",
+          "due": "2026-10-28T17:59:26+00:00",
+          "externalId": "my-external-id-2",
+          "id": "6234161654976518",
+          "installmentId": "6234161654976519",
+          "invoiceId": "5155165527080960",
+          "status": "success",
+          "subscriptionId": "6234161654976516",
+          "tags": [
+            "pull"
+          ],
+          "updated": "2026-09-17T12:00:00+00:00"
+        },
+        "type": "success"
+      }
+    },
+    "invoicePullRequests": {
+      "cursor": "",
+      "requests": [
+        {
+          "attemptType": "default",
+          "created": "2026-09-16T12:00:00+00:00",
+          "displayDescription": "Payment for services",
+          "due": "2026-10-28T17:59:26+00:00",
+          "externalId": "my-external-id-2",
+          "id": "6234161654976518",
+          "installmentId": "6234161654976519",
+          "invoiceId": "5155165527080960",
+          "status": "success",
+          "subscriptionId": "6234161654976516",
+          "tags": [
+            "pull"
+          ],
+          "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ]
+    },
+    "invoicePullSubscription": {
+      "subscription": {
+        "amount": 100000,
+        "amountMinLimit": 0,
+        "bacenId": "RR2001818320250616dtsPkBVaBYs",
+        "brcode": "00020101021126580014br.gov.bcb.pix",
+        "created": "2026-09-16T12:00:00+00:00",
+        "data": {},
+        "displayDescription": "Subscription payment",
+        "due": "2026-09-18",
+        "end": "2027-09-16",
+        "externalId": "my-external-id",
+        "id": "6234161654976516",
+        "interval": "month",
+        "name": "Iron Bank S.A.",
+        "pullMode": "automatic",
+        "pullRetryLimit": 3,
+        "referenceCode": "REF123456",
+        "start": "2026-09-16",
+        "status": "active",
+        "tags": [
+          "subscription"
+        ],
+        "taxId": "20.018.183/0001-80",
+        "type": "qrcode",
+        "updated": "2026-09-17T12:00:00+00:00"
+      }
+    },
+    "invoicePullSubscriptionLog": {
+      "log": {
+        "created": "2026-09-16T12:00:00+00:00",
+        "errors": [
+          {
+            "code": "invalidStart",
+            "message": "start date is invalid"
+          }
+        ],
+        "id": "6234161654976517",
+        "subscription": {
+          "amount": 100000,
+          "amountMinLimit": 0,
+          "bacenId": "RR2001818320250616dtsPkBVaBYs",
+          "brcode": "00020101021126580014br.gov.bcb.pix",
+          "created": "2026-09-16T12:00:00+00:00",
+          "data": {},
+          "displayDescription": "Subscription payment",
+          "due": "2026-09-18",
+          "end": "2027-09-16",
+          "externalId": "my-external-id",
+          "id": "6234161654976516",
+          "interval": "month",
+          "name": "Iron Bank S.A.",
+          "pullMode": "automatic",
+          "pullRetryLimit": 3,
+          "referenceCode": "REF123456",
+          "start": "2026-09-16",
+          "status": "active",
+          "tags": [
+            "subscription"
+          ],
+          "taxId": "20.018.183/0001-80",
+          "type": "qrcode",
+          "updated": "2026-09-17T12:00:00+00:00"
+        },
+        "type": "active"
+      }
+    },
+    "invoicePullSubscriptions": {
+      "cursor": "",
+      "subscriptions": [
+        {
+          "amount": 100000,
+          "amountMinLimit": 0,
+          "bacenId": "RR2001818320250616dtsPkBVaBYs",
+          "brcode": "00020101021126580014br.gov.bcb.pix",
+          "created": "2026-09-16T12:00:00+00:00",
+          "data": {},
+          "displayDescription": "Subscription payment",
+          "due": "2026-09-18",
+          "end": "2027-09-16",
+          "externalId": "my-external-id",
+          "id": "6234161654976516",
+          "interval": "month",
+          "name": "Iron Bank S.A.",
+          "pullMode": "automatic",
+          "pullRetryLimit": 3,
+          "referenceCode": "REF123456",
+          "start": "2026-09-16",
+          "status": "active",
+          "tags": [
+            "subscription"
+          ],
+          "taxId": "20.018.183/0001-80",
+          "type": "qrcode",
+          "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ]
     },
     "invoices": {
       "invoices": [
@@ -4335,6 +5047,269 @@
           ],
           "updated": "2026-09-16T12:00:00+00:00",
           "uuid": "901e71f2447c43c886f58366a5432c4b"
+        }
+      ]
+    },
+    "paymentRequest": {
+      "request": {
+        "actions": [
+          {
+            "action": "requested",
+            "id": "5656565656565656",
+            "type": "member"
+          }
+        ],
+        "amount": 1000,
+        "centerId": "5656565656565656",
+        "created": "2026-09-16T12:00:00+00:00",
+        "description": "Tony Stark's Suit",
+        "due": "2026-09-20",
+        "id": "6234161654976521",
+        "payment": {
+          "accountNumber": "876543-2",
+          "accountType": "checking",
+          "amount": 1000,
+          "bankCode": "20018183",
+          "branchCode": "1357-9",
+          "created": "2026-09-16T12:00:00+00:00",
+          "description": "Payment for service #1234",
+          "displayDescription": "Sword sharpening",
+          "externalId": "my-internal-id-123456",
+          "fee": 200,
+          "id": "5155165527080960",
+          "metadata": {
+            "attempt": 2,
+            "tracker": "abc"
+          },
+          "name": "Daenerys Targaryen Stormborn",
+          "rules": [
+            {
+              "key": "resendingLimit",
+              "value": 5
+            }
+          ],
+          "scheduled": "2026-10-28T17:59:26+00:00",
+          "status": "processing",
+          "tags": [
+            "daenerys",
+            "invoice/1234"
+          ],
+          "taxId": "594.739.480-42",
+          "transactionIds": [
+            "19827356981273"
+          ],
+          "updated": "2026-09-17T12:00:00+00:00"
+        },
+        "status": "pending",
+        "tags": [
+          "urgent"
+        ],
+        "type": "transfer",
+        "updated": "2026-09-17T12:00:00+00:00"
+      }
+    },
+    "paymentRequestBoletoPayment": {
+      "requests": [
+        {
+          "actions": [
+            {
+              "action": "requested",
+              "id": "5656565656565656",
+              "type": "member"
+            }
+          ],
+          "amount": 100000,
+          "centerId": "5656565656565656",
+          "created": "2026-09-16T12:00:00+00:00",
+          "description": "Tony Stark's Suit",
+          "due": "2026-09-20",
+          "id": "6234161654976522",
+          "payment": {
+            "amount": 23456,
+            "barCode": "34195819600000000621090063571277307144464000",
+            "created": "2026-09-16T12:00:00+00:00",
+            "description": "sword sharpening",
+            "fee": 200,
+            "id": "5155165527080960",
+            "line": "34191.09008 63571.277308 71444.640008 5 81960000000062",
+            "scheduled": "2026-10-28",
+            "status": "success",
+            "tags": [
+              "war",
+              "supply"
+            ],
+            "taxId": "20.018.183/0001-80",
+            "transactionIds": [
+              "19827356981273"
+            ]
+          },
+          "status": "pending",
+          "tags": [
+            "urgent"
+          ],
+          "type": "boleto-payment",
+          "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ]
+    },
+    "paymentRequestTransfer": {
+      "requests": [
+        {
+          "actions": [
+            {
+              "action": "requested",
+              "id": "5656565656565656",
+              "type": "member"
+            }
+          ],
+          "amount": 1000,
+          "centerId": "5656565656565656",
+          "created": "2026-09-16T12:00:00+00:00",
+          "description": "Tony Stark's Suit",
+          "due": "2026-09-20",
+          "id": "6234161654976521",
+          "payment": {
+            "accountNumber": "876543-2",
+            "accountType": "checking",
+            "amount": 1000,
+            "bankCode": "20018183",
+            "branchCode": "1357-9",
+            "created": "2026-09-16T12:00:00+00:00",
+            "description": "Payment for service #1234",
+            "displayDescription": "Sword sharpening",
+            "externalId": "my-internal-id-123456",
+            "fee": 200,
+            "id": "5155165527080960",
+            "metadata": {
+              "attempt": 2,
+              "tracker": "abc"
+            },
+            "name": "Daenerys Targaryen Stormborn",
+            "rules": [
+              {
+                "key": "resendingLimit",
+                "value": 5
+              }
+            ],
+            "scheduled": "2026-10-28T17:59:26+00:00",
+            "status": "processing",
+            "tags": [
+              "daenerys",
+              "invoice/1234"
+            ],
+            "taxId": "594.739.480-42",
+            "transactionIds": [
+              "19827356981273"
+            ],
+            "updated": "2026-09-17T12:00:00+00:00"
+          },
+          "status": "pending",
+          "tags": [
+            "urgent"
+          ],
+          "type": "transfer",
+          "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ]
+    },
+    "paymentRequests": {
+      "cursor": "",
+      "requests": [
+        {
+          "actions": [
+            {
+              "action": "requested",
+              "id": "5656565656565656",
+              "type": "member"
+            }
+          ],
+          "amount": 1000,
+          "centerId": "5656565656565656",
+          "created": "2026-09-16T12:00:00+00:00",
+          "description": "Tony Stark's Suit",
+          "due": "2026-09-20",
+          "id": "6234161654976521",
+          "payment": {
+            "accountNumber": "876543-2",
+            "accountType": "checking",
+            "amount": 1000,
+            "bankCode": "20018183",
+            "branchCode": "1357-9",
+            "created": "2026-09-16T12:00:00+00:00",
+            "description": "Payment for service #1234",
+            "displayDescription": "Sword sharpening",
+            "externalId": "my-internal-id-123456",
+            "fee": 200,
+            "id": "5155165527080960",
+            "metadata": {
+              "attempt": 2,
+              "tracker": "abc"
+            },
+            "name": "Daenerys Targaryen Stormborn",
+            "rules": [
+              {
+                "key": "resendingLimit",
+                "value": 5
+              }
+            ],
+            "scheduled": "2026-10-28T17:59:26+00:00",
+            "status": "processing",
+            "tags": [
+              "daenerys",
+              "invoice/1234"
+            ],
+            "taxId": "594.739.480-42",
+            "transactionIds": [
+              "19827356981273"
+            ],
+            "updated": "2026-09-17T12:00:00+00:00"
+          },
+          "status": "pending",
+          "tags": [
+            "urgent"
+          ],
+          "type": "transfer",
+          "updated": "2026-09-17T12:00:00+00:00"
+        },
+        {
+          "actions": [
+            {
+              "action": "requested",
+              "id": "5656565656565656",
+              "type": "member"
+            }
+          ],
+          "amount": 100000,
+          "centerId": "5656565656565656",
+          "created": "2026-09-16T12:00:00+00:00",
+          "description": "Tony Stark's Suit",
+          "due": "2026-09-20",
+          "id": "6234161654976522",
+          "payment": {
+            "amount": 23456,
+            "barCode": "34195819600000000621090063571277307144464000",
+            "created": "2026-09-16T12:00:00+00:00",
+            "description": "sword sharpening",
+            "fee": 200,
+            "id": "5155165527080960",
+            "line": "34191.09008 63571.277308 71444.640008 5 81960000000062",
+            "scheduled": "2026-10-28",
+            "status": "success",
+            "tags": [
+              "war",
+              "supply"
+            ],
+            "taxId": "20.018.183/0001-80",
+            "transactionIds": [
+              "19827356981273"
+            ]
+          },
+          "status": "pending",
+          "tags": [
+            "urgent"
+          ],
+          "type": "boleto-payment",
+          "updated": "2026-09-17T12:00:00+00:00"
         }
       ]
     },

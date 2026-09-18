@@ -32,6 +32,62 @@ TABLE = {
     ],
 }
 
+# A REQUIRED RESOURCE field whose ref names a real family - type 12 is
+# STARKBANK_FIELD_RESOURCE, type 4 is STARKBANK_FIELD_NUMBER, flags 3 is
+# REQUIRED | CREATE. This is what tests/tools/test_emit.py did not have when
+# the emitter shipped a PaymentRequest.create sample that could never
+# succeed: every REQUIRED field in TABLE above is a scalar, so
+# requiredSetters' `if setter is None: continue` had nothing to silently
+# drop and the gap stayed green.
+NESTED_TABLE = {
+    "name": "Nested",
+    "endpoint": "nested",
+    "queryKeys": [],
+    "fields": [{"key": "value", "type": 4, "flags": 3, "ref": None}],
+}
+
+RESOURCE_TABLE = {
+    "name": "Box",
+    "endpoint": "box",
+    "queryKeys": [],
+    "fields": [{"key": "content", "type": 12, "flags": 3, "ref": "Nested"}],
+}
+
+# The same REQUIRED RESOURCE type, but with no ref at all - a return-only
+# polymorph like Event.log carries this shape; PaymentRequest.payment is the
+# one REQUIRED example. With no ref and no override there is no family to
+# construct, so the fallback is a literal JSON object.
+POLYMORPH_TABLE = {
+    "name": "Envelope",
+    "endpoint": "envelope",
+    "queryKeys": [],
+    "fields": [{"key": "payload", "type": 12, "flags": 3, "ref": None}],
+}
+
+# type 11 is STARKBANK_FIELD_LIST_RESOURCE. "Missing" resolves to no table and
+# no ident, so this field has no sample strategy at all - the case the
+# emitter must now refuse to emit silently.
+LIST_RESOURCE_TABLE = {
+    "name": "Crate",
+    "endpoint": "crate",
+    "queryKeys": [],
+    "fields": [{"key": "items", "type": 11, "flags": 3, "ref": "Missing"}],
+}
+
+PAYMENT_REQUEST_TABLE = {
+    "name": "PaymentRequest",
+    "endpoint": "payment-request",
+    "queryKeys": [],
+    "fields": [{"key": "payment", "type": 12, "flags": 3, "ref": None}],
+}
+
+TRANSFER_TABLE = {
+    "name": "Transfer",
+    "endpoint": "transfer",
+    "queryKeys": [],
+    "fields": [{"key": "amount", "type": 1, "flags": 3, "ref": None}],
+}
+
 
 class Samples(unittest.TestCase):
 
@@ -45,6 +101,48 @@ class Samples(unittest.TestCase):
         self.assertNotIn("\"tags\"", source)        # CREATE without REQUIRED
         self.assertNotIn("\"status\"", source)      # PATCH only
         self.assertNotIn("set_string(widget, \"id\"", source)   # return-only
+
+    def testARequiredResourceFieldWithAKnownRefBuildsAndDumpsIt(self):
+        """The documented dance for a REQUIRED RESOURCE/OBJECT field whose ref
+        names a real family: build it with its own constructor, fill in its
+        own required fields, dump it, and embed the JSON."""
+        tables = {"Nested": NESTED_TABLE}
+        identForName = {"Nested": "nested"}
+        source = emit.sampleSource("box", RESOURCE_TABLE, "create", "POST_MULTI", None,
+                                   None, tables, identForName)
+        self.assertIn("starkbank_nested_new(&content)", source)
+        self.assertIn("starkbank_entity_set_number(content, \"value\", 5)", source)
+        self.assertIn("starkbank_entity_dump(content, &contentJson, NULL)", source)
+        self.assertIn("starkbank_entity_set_json_raw(box, \"content\", contentJson)", source)
+        self.assertIn("starkbank_entity_free(content)", source)
+
+    def testARequiredResourceFieldWithNoRefGetsALiteralJsonObject(self):
+        """The gap the finding named: every REQUIRED field in TABLE is a
+        scalar, so the old requiredSetters' `if setter is None: continue` had
+        nothing to silently drop and stayed green. A polymorphic REQUIRED
+        RESOURCE field (no ref, no override) must still get a working sample
+        strategy instead of vanishing."""
+        source = emit.sampleSource("envelope", POLYMORPH_TABLE, "create", "POST_MULTI", None)
+        self.assertIn("starkbank_entity_set_json_raw(envelope, \"payload\", \"{}\")", source)
+
+    def testARequiredFieldWithNoSampleStrategyFailsLoudly(self):
+        """requiredSetters used to skip a REQUIRED field it could not fill in
+        - exactly how PaymentRequest.create shipped a sample that omitted the
+        one field the API requires. It must refuse to emit rather than emit
+        something broken."""
+        with self.assertRaises(ValueError):
+            emit.sampleSource("crate", LIST_RESOURCE_TABLE, "create", "POST_MULTI", None)
+
+    def testPaymentRequestPaymentAlsoSetsTypeSoThePolymorphResolves(self):
+        """PaymentRequest.payment has no ref - it hydrates as whichever family
+        the sibling "type" field names - so a runnable sample has to pick one
+        and say so on both sides or the create fails validation."""
+        tables = {"Transfer": TRANSFER_TABLE}
+        identForName = {"Transfer": "transfer"}
+        source = emit.sampleSource("payment_request", PAYMENT_REQUEST_TABLE, "create",
+                                   "POST_MULTI", None, None, tables, identForName)
+        self.assertIn("starkbank_transfer_new(&payment)", source)
+        self.assertIn("starkbank_entity_set_string(payment_request, \"type\", \"transfer\")", source)
 
     def testAPostSingleSampleHandsOverAnEntityAndFreesBoth(self):
         """The shape differs from POST_MULTI in the one way that matters to a

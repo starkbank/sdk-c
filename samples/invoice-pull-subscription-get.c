@@ -1,7 +1,7 @@
 /*
- * POST /v2/merchant-session
+ * GET /v2/invoice-pull-subscription/:id
  *
- * Emitted from the MerchantSession table by tools/emit.py. Edit the table, never this
+ * Emitted from the InvoicePullSubscription table by tools/emit.py. Edit the table, never this
  * file: make check-emit regenerates it and fails on any difference.
  */
 #include <stdio.h>
@@ -43,32 +43,22 @@ static int report(int status, starkbank_errors *errors)
 int main(void)
 {
     starkbank_client *client = NULL;
-    starkbank_entity *merchant_session = NULL;
-    starkbank_entity *created = NULL;
+    starkbank_entity *invoice_pull_subscription = NULL;
     starkbank_errors *errors = NULL;
     int status;
-    starkbank_entity *allowedInstallmentsItem = NULL;
 
     client = connect();
     if (client == NULL) {
         return 1;
     }
 
-    starkbank_merchant_session_new(&merchant_session);
-    starkbank_entity_append_string(merchant_session, "allowedFundingTypes", "war");
-    starkbank_allowed_installment_new(&allowedInstallmentsItem);
-    starkbank_entity_set_amount(allowedInstallmentsItem, "totalAmount", 400000);
-    starkbank_entity_set_number(allowedInstallmentsItem, "count", 5);
-    starkbank_entity_append_entity(merchant_session, "allowedInstallments", allowedInstallmentsItem);
-    starkbank_entity_set_number(merchant_session, "expiration", 5);
-    status = starkbank_merchant_session_create(client, merchant_session, &created, &errors);
-    starkbank_entity_free(merchant_session);       /* post_single borrows it, unlike a list */
+    status = starkbank_invoice_pull_subscription_get(client, "5656565656565656", &invoice_pull_subscription, &errors);
     if (status != STARKBANK_OK) {
         starkbank_client_free(client);
         return report(status, errors);
     }
-    printf("created %s\n", starkbank_entity_id(created));
-    starkbank_entity_free(created);
+    printf("%s\n", starkbank_entity_id(invoice_pull_subscription));
+    starkbank_entity_free(invoice_pull_subscription);
 
     starkbank_client_free(client);
     return 0;

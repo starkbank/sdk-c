@@ -359,6 +359,18 @@ SAMPLE_LIST_VALUES = {
     "subscriptions": "\"invoice\"",
 }
 
+# A REQUIRED RESOURCE/OBJECT field with no ref in its row is polymorphic -
+# nothing in the table names the family to build, which is exactly why
+# sampleValue cannot answer for it generically. PaymentRequest.payment is the
+# one case in the SDK today: the field carries no ref because it can hydrate
+# as any of seven families (see paymentrequest.h), so this names the one
+# sdk-python's own _parse_payment lists first, Transfer, purely so the sample
+# is a runnable program instead of an inert JSON blob; "type" is set to match
+# so the polymorph on the wire resolves the same way the payment does.
+SAMPLE_POLYMORPH_REF = {
+    ("payment_request", "payment"): ("Transfer", "type", "\"transfer\""),
+}
+
 PROLOGUE = """#include <stdio.h>
 #include <stdlib.h>
 
@@ -437,17 +449,86 @@ def sampleValue(field):
     return (None, None)
 
 
-def requiredSetters(ident, table):
+def resourceSetter(ident, field, tables, identForName):
+    """The sample strategy for a REQUIRED RESOURCE or OBJECT field, which
+    sampleValue never answers for (there is no one-line value for a nested
+    entity). A field whose ref names a real resource gets that family's own
+    documented dance: build it with its constructor, fill in its own required
+    fields, dump it, and embed the JSON with starkbank_entity_set_json_raw. A
+    field with no resolvable ref - PaymentRequest.payment's true polymorphism,
+    or anything this build has not special-cased - gets a literal empty JSON
+    object instead, since there is no constructor to call.
+
+    Returns (extra declarations, statements), both already-indented lines.
+    """
+    key = field["key"]
+    override = SAMPLE_POLYMORPH_REF.get((ident, key))
+    ref = override[0] if override else field.get("ref")
+    if ref and ref in tables and ref in identForName:
+        refIdent = identForName[ref]
+        jsonVar = "%sJson" % key
+        nestedDecls, nestedLines = requiredSetters(key, tables[ref], tables, identForName)
+        declarations = nestedDecls + ["    starkbank_entity *%s = NULL;" % key,
+                                       "    char *%s = NULL;" % jsonVar]
+        statements = (["    starkbank_%s_new(&%s);" % (refIdent, key)] + nestedLines +
+                      ["    starkbank_entity_dump(%s, &%s, NULL);" % (key, jsonVar),
+                       "    starkbank_entity_set_json_raw(%s, \"%s\", %s);" % (ident, key, jsonVar),
+                       "    starkbank_free(%s);" % jsonVar,
+                       "    starkbank_entity_free(%s);" % key])
+    else:
+        declarations = []
+        statements = ["    starkbank_entity_set_json_raw(%s, \"%s\", \"{}\");" % (ident, key)]
+    if override is not None:
+        statements.append("    starkbank_entity_set_string(%s, \"%s\", %s);"
+                          % (ident, override[1], override[2]))
+    return declarations, statements
+
+
+def listResourceSetter(ident, field, tables, identForName):
+    """The sample strategy for a REQUIRED LIST_RESOURCE or LIST_OBJECT field:
+    build one member with its own family's constructor and its own required
+    setters, then append it. starkbank_entity_append_entity takes ownership on
+    both the success and the failure path, so - unlike resourceSetter's
+    dance - there is no json to dump and nothing left to free here.
+    """
+    key = field["key"]
+    ref = field.get("ref")
+    if not (ref and ref in tables and ref in identForName):
+        raise ValueError("emit: %s.%s is REQUIRED with no known ref to build (%s)"
+                         % (ident, key, fieldTypeName(field["type"])))
+    refIdent = identForName[ref]
+    member = "%sItem" % key
+    nestedDecls, nestedLines = requiredSetters(member, tables[ref], tables, identForName)
+    declarations = nestedDecls + ["    starkbank_entity *%s = NULL;" % member]
+    statements = (["    starkbank_%s_new(&%s);" % (refIdent, member)] + nestedLines +
+                  ["    starkbank_entity_append_entity(%s, \"%s\", %s);" % (ident, key, member)])
+    return declarations, statements
+
+
+def requiredSetters(ident, table, tables=None, identForName=None):
+    tables = tables if tables is not None else {}
+    identForName = identForName if identForName is not None else {}
+    declarations = []
     lines = []
     for field in table["fields"]:
         if not field["flags"] & drift.FLAG_REQUIRED:
             continue
         setter, value = sampleValue(field)
-        if setter is None:
+        if setter is not None:
+            lines.append("    starkbank_entity_%s(%s, \"%s\", %s);"
+                         % (setter, ident, field["key"], value))
             continue
-        lines.append("    starkbank_entity_%s(%s, \"%s\", %s);"
-                     % (setter, ident, field["key"], value))
-    return lines
+        typeName = fieldTypeName(field["type"])
+        if typeName in ("RESOURCE", "OBJECT"):
+            extraDecls, extraLines = resourceSetter(ident, field, tables, identForName)
+        elif typeName in ("LIST_RESOURCE", "LIST_OBJECT"):
+            extraDecls, extraLines = listResourceSetter(ident, field, tables, identForName)
+        else:
+            raise ValueError("emit: %s.%s is REQUIRED with no sample strategy (%s)"
+                             % (ident, field["key"], typeName))
+        declarations.extend(extraDecls)
+        lines.extend(extraLines)
+    return declarations, lines
 
 
 def patchSetter(ident, table):
@@ -468,19 +549,30 @@ def filterSetter(table):
     return None
 
 
-def sampleBody(ident, table, verb, shape, subTable=None):
+def declBlock(declarations):
+    """Extra local declarations a REQUIRED RESOURCE/OBJECT field needs, placed
+    right after a shape's own fixed declarations. Empty when every REQUIRED
+    field is a plain setter, which keeps every sample this does not touch
+    byte-identical to what it emitted before this existed."""
+    return "\n".join(declarations) + "\n" if declarations else ""
+
+
+def sampleBody(ident, table, verb, shape, subTable=None, tables=None, identForName=None):
     """The body of one sample, by verb shape. One function, one job: each arm
     is the smallest complete program that calls that verb and frees everything."""
+    tables = tables if tables is not None else {}
+    identForName = identForName if identForName is not None else {}
     call = "starkbank_%s_%s" % (ident, verb)
     if shape == "POST_MULTI":
-        setters = "\n".join(requiredSetters(ident, table))
+        extraDecls, setterLines = requiredSetters(ident, table, tables, identForName)
+        setters = "\n".join(setterLines)
         return ("""    starkbank_list *batch = NULL;
     starkbank_list *created = NULL;
     starkbank_entity *%(ident)s = NULL;
     starkbank_errors *errors = NULL;
     const char *id = NULL;
     int status;
-
+%(declBlock)s
     starkbank_%(ident)s_new(&%(ident)s);
 %(setters)s
     starkbank_list_new(&batch);
@@ -495,14 +587,15 @@ def sampleBody(ident, table, verb, shape, subTable=None):
     starkbank_entity_string(starkbank_list_at(created, 0), "id", &id);
     printf("created %%s\\n", id);
     starkbank_list_free(created);
-""" % {"ident": ident, "setters": setters, "call": call})
+""" % {"ident": ident, "setters": setters, "call": call, "declBlock": declBlock(extraDecls)})
     if shape in ("POST_SINGLE", "POST_SINGLE_SUB"):
-        setters = "\n".join(requiredSetters(ident, table))
+        extraDecls, setterLines = requiredSetters(ident, table, tables, identForName)
+        setters = "\n".join(setterLines)
         return ("""    starkbank_entity *%(ident)s = NULL;
     starkbank_entity *created = NULL;
     starkbank_errors *errors = NULL;
     int status;
-
+%(declBlock)s
     starkbank_%(ident)s_new(&%(ident)s);
 %(setters)s
     status = %(call)s(client, %(ident)s, &created, &errors);
@@ -513,7 +606,7 @@ def sampleBody(ident, table, verb, shape, subTable=None):
     }
     printf("created %%s\\n", starkbank_entity_id(created));
     starkbank_entity_free(created);
-""" % {"ident": ident, "setters": setters, "call": call})
+""" % {"ident": ident, "setters": setters, "call": call, "declBlock": declBlock(extraDecls)})
     if shape == "GET_ID":
         return ("""    starkbank_entity *%(ident)s = NULL;
     starkbank_errors *errors = NULL;
@@ -690,12 +783,13 @@ def sampleBody(ident, table, verb, shape, subTable=None):
         # here builds the sub-resource's own required fields correctly.
         if subTable is None:
             return None
-        setters = "\n".join(requiredSetters(verb, subTable))
+        extraDecls, setterLines = requiredSetters(verb, subTable, tables, identForName)
+        setters = "\n".join(setterLines)
         return ("""    starkbank_entity *%(verb)s = NULL;
     starkbank_entity *created = NULL;
     starkbank_errors *errors = NULL;
     int status;
-
+%(declBlock)s
     starkbank_%(verb)s_new(&%(verb)s);
 %(setters)s
     status = %(call)s(client, "5656565656565656", %(verb)s, &created, &errors);
@@ -706,17 +800,17 @@ def sampleBody(ident, table, verb, shape, subTable=None):
     }
     printf("created %%s\\n", starkbank_entity_id(created));
     starkbank_entity_free(created);
-""" % {"verb": verb, "call": call, "setters": setters})
+""" % {"verb": verb, "call": call, "setters": setters, "declBlock": declBlock(extraDecls)})
     return None
 
 
-def sampleSource(ident, table, verb, shape, example, subTable=None):
+def sampleSource(ident, table, verb, shape, example, subTable=None, tables=None, identForName=None):
     """One sample program. `example` is the authored example block a resource
     will carry in step 6; until then the values are type-driven."""
     route = drift.verbEndpoint(shape, table["endpoint"], verb)
     if route is None:
         return None
-    body = sampleBody(ident, table, verb, shape, subTable)
+    body = sampleBody(ident, table, verb, shape, subTable, tables, identForName)
     if body is None:
         return None
     # Declarations first, as everything else in this repo: each arm is written
@@ -780,6 +874,9 @@ def sampleOutputs():
     # convention - see merchantsession/purchase.c), so its required fields
     # come from that resource's own table, found by ident here.
     identToName = dict((entry["ident"], name) for name, entry in verbs.items())
+    # Same map, the other way round: a REQUIRED RESOURCE field's ref names a
+    # resource, and building it for real needs that resource's own ident.
+    identForName = dict((name, entry["ident"]) for name, entry in verbs.items())
 
     outputs = []
     for name in sorted(verbs):
@@ -790,7 +887,8 @@ def sampleOutputs():
             subTable = None
             if shape == "POST_SUB_RESOURCE":
                 subTable = tables.get(identToName.get(verb))
-            source = sampleSource(ident, tables[name], verb, shape, None, subTable)
+            source = sampleSource(ident, tables[name], verb, shape, None, subTable,
+                                  tables, identForName)
             if source is None:
                 continue
             outputs.append((os.path.join(ROOT, "samples", sampleName(ident, verb)), source))

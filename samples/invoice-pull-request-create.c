@@ -1,7 +1,7 @@
 /*
- * POST /v2/merchant-session
+ * POST /v2/invoice-pull-request
  *
- * Emitted from the MerchantSession table by tools/emit.py. Edit the table, never this
+ * Emitted from the InvoicePullRequest table by tools/emit.py. Edit the table, never this
  * file: make check-emit regenerates it and fails on any difference.
  */
 #include <stdio.h>
@@ -43,32 +43,34 @@ static int report(int status, starkbank_errors *errors)
 int main(void)
 {
     starkbank_client *client = NULL;
-    starkbank_entity *merchant_session = NULL;
-    starkbank_entity *created = NULL;
+    starkbank_list *batch = NULL;
+    starkbank_list *created = NULL;
+    starkbank_entity *invoice_pull_request = NULL;
     starkbank_errors *errors = NULL;
+    const char *id = NULL;
     int status;
-    starkbank_entity *allowedInstallmentsItem = NULL;
 
     client = connect();
     if (client == NULL) {
         return 1;
     }
 
-    starkbank_merchant_session_new(&merchant_session);
-    starkbank_entity_append_string(merchant_session, "allowedFundingTypes", "war");
-    starkbank_allowed_installment_new(&allowedInstallmentsItem);
-    starkbank_entity_set_amount(allowedInstallmentsItem, "totalAmount", 400000);
-    starkbank_entity_set_number(allowedInstallmentsItem, "count", 5);
-    starkbank_entity_append_entity(merchant_session, "allowedInstallments", allowedInstallmentsItem);
-    starkbank_entity_set_number(merchant_session, "expiration", 5);
-    status = starkbank_merchant_session_create(client, merchant_session, &created, &errors);
-    starkbank_entity_free(merchant_session);       /* post_single borrows it, unlike a list */
+    starkbank_invoice_pull_request_new(&invoice_pull_request);
+    starkbank_entity_set_string(invoice_pull_request, "subscriptionId", "example");
+    starkbank_entity_set_string(invoice_pull_request, "invoiceId", "example");
+    starkbank_entity_set_date(invoice_pull_request, "due", 2026, 10, 28);
+    starkbank_list_new(&batch);
+    starkbank_list_append(batch, invoice_pull_request);        /* the list owns it from here */
+
+    status = starkbank_invoice_pull_request_create(client, batch, &created, &errors);
+    starkbank_list_free(batch);
     if (status != STARKBANK_OK) {
         starkbank_client_free(client);
         return report(status, errors);
     }
-    printf("created %s\n", starkbank_entity_id(created));
-    starkbank_entity_free(created);
+    starkbank_entity_string(starkbank_list_at(created, 0), "id", &id);
+    printf("created %s\n", id);
+    starkbank_list_free(created);
 
     starkbank_client_free(client);
     return 0;

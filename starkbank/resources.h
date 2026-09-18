@@ -15,6 +15,8 @@
     R(allowed_installment)     \
     R(balance)                 \
     R(boleto)                  \
+    R(boleto_holmes)           \
+    R(boleto_holmes_log)       \
     R(boleto_log)              \
     R(boleto_payment)          \
     R(boleto_payment_log)      \
@@ -40,12 +42,18 @@
     R(deposit)                 \
     R(deposit_log)             \
     R(dict_key)                \
+    R(dynamic_brcode)          \
+    R(dynamic_brcode_rule)     \
     R(event)                   \
     R(event_attempt)           \
     R(institution)             \
     R(invoice)                 \
     R(invoice_log)             \
     R(invoice_payment)         \
+    R(invoice_pull_request)          \
+    R(invoice_pull_request_log)      \
+    R(invoice_pull_subscription)     \
+    R(invoice_pull_subscription_log) \
     R(invoice_rule)            \
     R(merchant_card)           \
     R(merchant_card_log)       \
@@ -58,6 +66,7 @@
     R(merchant_session)        \
     R(merchant_session_log)    \
     R(payment_preview)         \
+    R(payment_request)         \
     R(permission)              \
     R(purchase)                \
     R(split)                   \

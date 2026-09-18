@@ -1027,6 +1027,118 @@ MERCHANT_CATEGORY = {"code": "fastFoodRestaurants", "type": "food",
                      "name": "Fast food restaurants", "number": "5814"}
 MERCHANT_COUNTRY = {"code": "BRA", "name": "Brazil", "number": "076", "shortCode": "BR"}
 
+BOLETO_HOLMES = {
+    "id": "6234161654976514",
+    "boletoId": "5155165527080960",
+    "tags": ["sherlock"],
+    "status": "solved",
+    "result": "paid",
+    "created": "2026-09-16T12:00:00+00:00",
+    "updated": "2026-09-17T12:00:00+00:00",
+}
+
+BOLETO_HOLMES_LOG = {
+    "id": "6234161654976515",
+    "created": "2026-09-16T12:00:00+00:00",
+    "updated": "2026-09-17T12:00:00+00:00",
+    "type": "solved",
+    "holmes": BOLETO_HOLMES,
+}
+
+DYNAMIC_BRCODE = {
+    "id": "901e71f2447c43c886f58366a5432c4b",
+    "uuid": "901e71f2447c43c886f58366a5432c4b",
+    "amount": 100000,
+    "expiration": 3600,
+    "displayDescription": "Payment for service #1234",
+    "rules": [{"key": "allowedTaxIds", "value": ["012.345.678-90"]}],
+    "tags": ["dynamic"],
+    "pictureUrl": "https://sandbox.starkbank.com/qr/901e71f2447c43c886f58366a5432c4b.png",
+    "updated": "2026-09-17T12:00:00+00:00",
+    "created": "2026-09-16T12:00:00+00:00",
+}
+
+INVOICE_PULL_SUBSCRIPTION = {
+    "id": "6234161654976516",
+    "start": "2026-09-16",
+    "interval": "month",
+    "pullMode": "automatic",
+    "pullRetryLimit": 3,
+    "type": "qrcode",
+    "amount": 100000,
+    "amountMinLimit": 0,
+    "displayDescription": "Subscription payment",
+    "due": "2026-09-18",
+    "externalId": "my-external-id",
+    "referenceCode": "REF123456",
+    "end": "2027-09-16",
+    "data": {},
+    "name": "Iron Bank S.A.",
+    "taxId": "20.018.183/0001-80",
+    "tags": ["subscription"],
+    "status": "active",
+    "bacenId": "RR2001818320250616dtsPkBVaBYs",
+    "brcode": "00020101021126580014br.gov.bcb.pix",
+    "created": "2026-09-16T12:00:00+00:00",
+    "updated": "2026-09-17T12:00:00+00:00",
+}
+
+INVOICE_PULL_SUBSCRIPTION_LOG = {
+    "id": "6234161654976517",
+    "created": "2026-09-16T12:00:00+00:00",
+    "type": "active",
+    "errors": [{"code": "invalidStart", "message": "start date is invalid"}],
+    "subscription": INVOICE_PULL_SUBSCRIPTION,
+}
+
+INVOICE_PULL_REQUEST = {
+    "id": "6234161654976518",
+    "subscriptionId": "6234161654976516",
+    "invoiceId": "5155165527080960",
+    "due": "2026-10-28T17:59:26+00:00",
+    "attemptType": "default",
+    "tags": ["pull"],
+    "externalId": "my-external-id-2",
+    "displayDescription": "Payment for services",
+    "status": "success",
+    "installmentId": "6234161654976519",
+    "created": "2026-09-16T12:00:00+00:00",
+    "updated": "2026-09-17T12:00:00+00:00",
+}
+
+INVOICE_PULL_REQUEST_LOG = {
+    "id": "6234161654976520",
+    "created": "2026-09-16T12:00:00+00:00",
+    "type": "success",
+    "errors": [{"code": "insufficientFunds", "message": "insufficient funds"}],
+    "request": INVOICE_PULL_REQUEST,
+}
+
+PAYMENT_REQUEST_TRANSFER = {
+    "id": "6234161654976521",
+    "centerId": "5656565656565656",
+    "payment": TRANSFER,
+    "type": "transfer",
+    "due": "2026-09-20",
+    "tags": ["urgent"],
+    "amount": 1000,
+    "description": "Tony Stark's Suit",
+    "status": "pending",
+    "actions": [{"type": "member", "id": "5656565656565656", "action": "requested"}],
+    "updated": "2026-09-17T12:00:00+00:00",
+    "created": "2026-09-16T12:00:00+00:00",
+}
+
+# The second payment type this SDK's polymorphic hydration is exercised
+# against, alongside PAYMENT_REQUEST_TRANSFER - see paymentrequest.h.
+PAYMENT_REQUEST_BOLETO_PAYMENT = dict(
+    PAYMENT_REQUEST_TRANSFER,
+    id="6234161654976522",
+    payment=BOLETO_PAYMENT,
+    type="boleto-payment",
+    amount=100000,
+)
+
 PDF = b"%PDF-1.4 fake"
 PNG = b"\x89PNG\r\n\x1a\n fake"
 
@@ -1663,6 +1775,118 @@ def main():
     record("merchantcountry.query", [{"countries": [MERCHANT_COUNTRY], "cursor": ""}],
            lambda: list(starkbank.merchantcountry.query(search="brazil")))
 
+    holmes = starkbank.BoletoHolmes(boleto_id="5155165527080960", tags=["sherlock"])
+    record("boletoholmes.create", [{"holmes": [BOLETO_HOLMES]}],
+           lambda: starkbank.boletoholmes.create([holmes]))
+    record("boletoholmes.get", [{"holmes": BOLETO_HOLMES}],
+           lambda: starkbank.boletoholmes.get("6234161654976514"))
+    record("boletoholmes.query", [{"holmes": [BOLETO_HOLMES], "cursor": ""}],
+           lambda: list(starkbank.boletoholmes.query(limit=5, status="solved",
+                                                      boleto_id="5155165527080960")))
+    record("boletoholmes.page", [{"holmes": [BOLETO_HOLMES], "cursor": ""}],
+           lambda: starkbank.boletoholmes.page(limit=5)[0])
+    record("boletoholmes.log.get", [{"log": BOLETO_HOLMES_LOG}],
+           lambda: starkbank.boletoholmes.log.get("6234161654976515"))
+    record("boletoholmes.log.query", [{"logs": [BOLETO_HOLMES_LOG], "cursor": ""}],
+           lambda: list(starkbank.boletoholmes.log.query(
+               limit=5, types=["solved"], holmes_ids=["6234161654976514"])))
+    record("boletoholmes.log.page", [{"logs": [BOLETO_HOLMES_LOG], "cursor": ""}],
+           lambda: starkbank.boletoholmes.log.page(limit=5)[0])
+
+    brcode = starkbank.DynamicBrcode(
+        amount=100000,
+        expiration=3600,
+        display_description="Payment for service #1234",
+        rules=[starkbank.dynamicbrcode.Rule(key="allowedTaxIds",
+                                            value=["012.345.678-90"])],
+        tags=["dynamic"],
+    )
+    record("dynamicbrcode.create", [{"brcodes": [DYNAMIC_BRCODE]}],
+           lambda: starkbank.dynamicbrcode.create([brcode]))
+    record("dynamicbrcode.get", [{"brcode": DYNAMIC_BRCODE}],
+           lambda: starkbank.dynamicbrcode.get("901e71f2447c43c886f58366a5432c4b"))
+    record("dynamicbrcode.query", [{"brcodes": [DYNAMIC_BRCODE], "cursor": ""}],
+           lambda: list(starkbank.dynamicbrcode.query(limit=5, tags=["dynamic"])))
+    record("dynamicbrcode.page", [{"brcodes": [DYNAMIC_BRCODE], "cursor": ""}],
+           lambda: starkbank.dynamicbrcode.page(limit=5)[0])
+
+    subscription = starkbank.InvoicePullSubscription(
+        start="2026-09-16",
+        interval="month",
+        pull_mode="automatic",
+        pull_retry_limit=3,
+        type="qrcode",
+        amount=100000,
+        tags=["subscription"],
+    )
+    record("invoicepullsubscription.create", [{"subscriptions": [INVOICE_PULL_SUBSCRIPTION]}],
+           lambda: starkbank.invoicepullsubscription.create([subscription]))
+    record("invoicepullsubscription.get", [{"subscription": INVOICE_PULL_SUBSCRIPTION}],
+           lambda: starkbank.invoicepullsubscription.get("6234161654976516"))
+    record("invoicepullsubscription.query", [{"subscriptions": [INVOICE_PULL_SUBSCRIPTION],
+                                              "cursor": ""}],
+           lambda: list(starkbank.invoicepullsubscription.query(
+               limit=5, status=["active"], tags=["subscription"])))
+    record("invoicepullsubscription.page", [{"subscriptions": [INVOICE_PULL_SUBSCRIPTION],
+                                             "cursor": ""}],
+           lambda: starkbank.invoicepullsubscription.page(limit=5)[0])
+    record("invoicepullsubscription.delete", [{"subscription": INVOICE_PULL_SUBSCRIPTION}],
+           lambda: starkbank.invoicepullsubscription.cancel("6234161654976516"))
+    record("invoicepullsubscription.log.get", [{"log": INVOICE_PULL_SUBSCRIPTION_LOG}],
+           lambda: starkbank.invoicepullsubscription.log.get("6234161654976517"))
+    record("invoicepullsubscription.log.query", [{"logs": [INVOICE_PULL_SUBSCRIPTION_LOG],
+                                                  "cursor": ""}],
+           lambda: list(starkbank.invoicepullsubscription.log.query(
+               limit=5, types=["active"], subscription_ids=["6234161654976516"])))
+    record("invoicepullsubscription.log.page", [{"logs": [INVOICE_PULL_SUBSCRIPTION_LOG],
+                                                 "cursor": ""}],
+           lambda: starkbank.invoicepullsubscription.log.page(limit=5)[0])
+
+    pull_request = starkbank.InvoicePullRequest(
+        subscription_id="6234161654976516",
+        invoice_id="5155165527080960",
+        due="2026-10-28T17:59:26+00:00",
+        tags=["pull"],
+    )
+    record("invoicepullrequest.create", [{"requests": [INVOICE_PULL_REQUEST]}],
+           lambda: starkbank.invoicepullrequest.create([pull_request]))
+    record("invoicepullrequest.get", [{"request": INVOICE_PULL_REQUEST}],
+           lambda: starkbank.invoicepullrequest.get("6234161654976518"))
+    record("invoicepullrequest.query", [{"requests": [INVOICE_PULL_REQUEST], "cursor": ""}],
+           lambda: list(starkbank.invoicepullrequest.query(
+               limit=5, status=["success"], subscription_ids=["6234161654976516"])))
+    record("invoicepullrequest.page", [{"requests": [INVOICE_PULL_REQUEST], "cursor": ""}],
+           lambda: starkbank.invoicepullrequest.page(limit=5)[0])
+    record("invoicepullrequest.delete", [{"request": INVOICE_PULL_REQUEST}],
+           lambda: starkbank.invoicepullrequest.cancel("6234161654976518"))
+    record("invoicepullrequest.log.get", [{"log": INVOICE_PULL_REQUEST_LOG}],
+           lambda: starkbank.invoicepullrequest.log.get("6234161654976520"))
+    record("invoicepullrequest.log.query", [{"logs": [INVOICE_PULL_REQUEST_LOG], "cursor": ""}],
+           lambda: list(starkbank.invoicepullrequest.log.query(
+               limit=5, types=["success"], request_ids=["6234161654976518"])))
+    record("invoicepullrequest.log.page", [{"logs": [INVOICE_PULL_REQUEST_LOG], "cursor": ""}],
+           lambda: starkbank.invoicepullrequest.log.page(limit=5)[0])
+
+    # payment is polymorphic; transfer and boleto-payment are the two types
+    # this build's goldens exercise - see paymentrequest.h.
+    payment_request_transfer = starkbank.PaymentRequest(
+        center_id="5656565656565656", payment=transfer, tags=["urgent"])
+    record("paymentrequest.create", [{"requests": [PAYMENT_REQUEST_TRANSFER]}],
+           lambda: starkbank.paymentrequest.create([payment_request_transfer]))
+    payment_request_boleto_payment = starkbank.PaymentRequest(
+        center_id="5656565656565656", payment=boleto_payment, tags=["urgent"])
+    record("paymentrequest.create.boletopayment",
+           [{"requests": [PAYMENT_REQUEST_BOLETO_PAYMENT]}],
+           lambda: starkbank.paymentrequest.create([payment_request_boleto_payment]))
+    record("paymentrequest.query", [{"requests": [PAYMENT_REQUEST_TRANSFER,
+                                                  PAYMENT_REQUEST_BOLETO_PAYMENT],
+                                     "cursor": ""}],
+           lambda: list(starkbank.paymentrequest.query(center_id="5656565656565656", limit=5)))
+    record("paymentrequest.page", [{"requests": [PAYMENT_REQUEST_TRANSFER,
+                                                 PAYMENT_REQUEST_BOLETO_PAYMENT],
+                                    "cursor": ""}],
+           lambda: starkbank.paymentrequest.page(center_id="5656565656565656", limit=5)[0])
+
     document = {
         "cases": CASES,
         "responses": {
@@ -1744,6 +1968,23 @@ def main():
             "cardMethods": {"methods": [CARD_METHOD], "cursor": ""},
             "merchantCategories": {"categories": [MERCHANT_CATEGORY], "cursor": ""},
             "merchantCountries": {"countries": [MERCHANT_COUNTRY], "cursor": ""},
+            "boletoHolmes": {"holmes": BOLETO_HOLMES},
+            "boletoHolmesList": {"holmes": [BOLETO_HOLMES], "cursor": ""},
+            "boletoHolmesLog": {"log": BOLETO_HOLMES_LOG},
+            "dynamicBrcode": {"brcode": DYNAMIC_BRCODE},
+            "dynamicBrcodes": {"brcodes": [DYNAMIC_BRCODE], "cursor": ""},
+            "invoicePullSubscription": {"subscription": INVOICE_PULL_SUBSCRIPTION},
+            "invoicePullSubscriptions": {"subscriptions": [INVOICE_PULL_SUBSCRIPTION],
+                                         "cursor": ""},
+            "invoicePullSubscriptionLog": {"log": INVOICE_PULL_SUBSCRIPTION_LOG},
+            "invoicePullRequest": {"request": INVOICE_PULL_REQUEST},
+            "invoicePullRequests": {"requests": [INVOICE_PULL_REQUEST], "cursor": ""},
+            "invoicePullRequestLog": {"log": INVOICE_PULL_REQUEST_LOG},
+            "paymentRequest": {"request": PAYMENT_REQUEST_TRANSFER},
+            "paymentRequestTransfer": {"requests": [PAYMENT_REQUEST_TRANSFER]},
+            "paymentRequestBoletoPayment": {"requests": [PAYMENT_REQUEST_BOLETO_PAYMENT]},
+            "paymentRequests": {"requests": [PAYMENT_REQUEST_TRANSFER,
+                                             PAYMENT_REQUEST_BOLETO_PAYMENT], "cursor": ""},
         },
     }
     with open(OUT, "w") as handle:

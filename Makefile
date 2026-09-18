@@ -106,6 +106,8 @@ RESOURCE_SOURCES = \
 	starkbank/balance/balance.c \
 	starkbank/boleto/boleto.c \
 	starkbank/boleto/log.c \
+	starkbank/boletoholmes/boletoholmes.c \
+	starkbank/boletoholmes/log.c \
 	starkbank/boletopayment/boletopayment.c \
 	starkbank/boletopayment/log.c \
 	starkbank/brcodepayment/brcodepayment.c \
@@ -129,6 +131,8 @@ RESOURCE_SOURCES = \
 	starkbank/deposit/deposit.c \
 	starkbank/deposit/log.c \
 	starkbank/dictkey/dictkey.c \
+	starkbank/dynamicbrcode/dynamicbrcode.c \
+	starkbank/dynamicbrcode/rule.c \
 	starkbank/event/attempt.c \
 	starkbank/event/event.c \
 	starkbank/institution/institution.c \
@@ -136,6 +140,10 @@ RESOURCE_SOURCES = \
 	starkbank/invoice/log.c \
 	starkbank/invoice/payment.c \
 	starkbank/invoice/rule.c \
+	starkbank/invoicepullrequest/invoicepullrequest.c \
+	starkbank/invoicepullrequest/log.c \
+	starkbank/invoicepullsubscription/invoicepullsubscription.c \
+	starkbank/invoicepullsubscription/log.c \
 	starkbank/merchantcard/log.c \
 	starkbank/merchantcard/merchantcard.c \
 	starkbank/merchantcategory/merchantcategory.c \
@@ -153,6 +161,7 @@ RESOURCE_SOURCES = \
 	starkbank/paymentpreview/paymentpreview.c \
 	starkbank/paymentpreview/taxpreview.c \
 	starkbank/paymentpreview/utilitypreview.c \
+	starkbank/paymentrequest/paymentrequest.c \
 	starkbank/split/split.c \
 	starkbank/taxpayment/log.c \
 	starkbank/taxpayment/taxpayment.c \

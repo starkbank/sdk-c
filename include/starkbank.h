@@ -3287,6 +3287,412 @@ STARKBANK_API int STARKBANK_CALL starkbank_merchant_country_params_new(starkbank
 STARKBANK_API int STARKBANK_CALL starkbank_merchant_country_query(const starkbank_client *client,
     const starkbank_entity *params, int limit, starkbank_iter **out);
 
+/* =========================================================================
+ *                         InvoicePullSubscription
+ * =========================================================================
+ *
+ * Fields (wire keys; * = required on create). No update verb, so nothing
+ * here is patchable.
+ *
+ *   start* DATE_OR_DATETIME
+ *   interval* pullMode* type* STRING           pullRetryLimit* NUMBER
+ *   amount amountMinLimit AMOUNT
+ *   displayDescription due externalId referenceCode end name taxId STRING
+ *   data OBJECT                                tags LIST_STRING
+ *   status bacenId brcode id STRING (ro)       created updated DATETIME (ro)
+ *
+ * Query keys: limit, after, before, status, invoiceIds, externalIds, tags, ids.
+ *
+ * due and end are STRING rather than DATE_OR_DATETIME: see
+ * starkbank/invoicepullsubscription/invoicepullsubscription.h for why
+ * sdk-python's own conditional-expression coercion is invisible to
+ * tools/drift.py's checker and this table follows the real wire behaviour
+ * rather than manufacturing a type-safe reading the checker cannot verify.
+ * amount and amountMinLimit are each individually optional even though the
+ * API requires at least one of the two - a cross-field rule no per-field
+ * flag can express.
+ */
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_START               "start"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_INTERVAL            "interval"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_PULL_MODE           "pullMode"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_PULL_RETRY_LIMIT    "pullRetryLimit"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_TYPE                "type"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_AMOUNT              "amount"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_AMOUNT_MIN_LIMIT    "amountMinLimit"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_DISPLAY_DESCRIPTION "displayDescription"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_DUE                 "due"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_EXTERNAL_ID         "externalId"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_REFERENCE_CODE      "referenceCode"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_END                 "end"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_DATA                "data"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_NAME                "name"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_TAX_ID              "taxId"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_TAGS                "tags"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_STATUS              "status"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_BACEN_ID            "bacenId"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_BRCODE              "brcode"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_ID                  "id"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_CREATED             "created"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_UPDATED             "updated"
+
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_INTERVAL_WEEK      "week"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_INTERVAL_MONTH     "month"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_INTERVAL_QUARTER   "quarter"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_INTERVAL_SEMESTER  "semester"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_INTERVAL_YEAR      "year"
+
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_PULL_MODE_MANUAL     "manual"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_PULL_MODE_AUTOMATIC  "automatic"
+
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_TYPE_PUSH                  "push"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_TYPE_QRCODE                "qrcode"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_TYPE_QRCODE_AND_PAYMENT    "qrcodeAndPayment"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_TYPE_PAYMENT_AND_OR_QRCODE "paymentAndOrQrcode"
+
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_STATUS_ACTIVE    "active"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_STATUS_CANCELED  "canceled"
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_subscription_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_subscription_params_new(
+    starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_subscription_create(
+    const starkbank_client *client, const starkbank_list *subscriptions,
+    starkbank_list **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_subscription_get(
+    const starkbank_client *client, const char *id, starkbank_entity **out,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_subscription_query(
+    const starkbank_client *client, const starkbank_entity *params, int limit,
+    starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_subscription_page(
+    const starkbank_client *client, const starkbank_entity *params, starkbank_list **out,
+    char **out_cursor, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_subscription_delete(
+    const starkbank_client *client, const char *id, starkbank_entity **out,
+    starkbank_errors **errors);
+/* sdk-python names this cancel(); the subscription must be "active" for the
+   API to accept it. See the section header for why the C symbol still says
+   delete. */
+
+/* ---------------------------------------------- InvoicePullSubscriptionLog */
+/*
+ * Resource "InvoicePullSubscriptionLog"; endpoint
+ * "invoice-pull-subscription/log", derived at run time.
+ * Fields: id type STRING (ro), errors LIST_OBJECT (ro),
+ *         subscription RESOURCE("InvoicePullSubscription") (ro),
+ *         created DATETIME (ro).
+ * Query keys: limit, after, before, types, subscriptionIds.
+ *
+ * errors is a list of {code, message} objects, not strings - see
+ * invoicepullsubscription.h. There is no invoicepullsubscription.Log pdf.
+ */
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_LOG_ID           "id"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_LOG_CREATED      "created"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_LOG_TYPE         "type"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_LOG_ERRORS       "errors"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_LOG_SUBSCRIPTION "subscription"
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_subscription_log_params_new(
+    starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_subscription_log_get(
+    const starkbank_client *client, const char *id, starkbank_entity **out,
+    starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_subscription_log_query(
+    const starkbank_client *client, const starkbank_entity *params, int limit,
+    starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_subscription_log_page(
+    const starkbank_client *client, const starkbank_entity *params, starkbank_list **out,
+    char **out_cursor, starkbank_errors **errors);
+
+/* =========================================================================
+ *                            InvoicePullRequest
+ * =========================================================================
+ *
+ * Fields (wire keys; * = required on create). No update verb.
+ *
+ *   subscriptionId* invoiceId* STRING          due* DATE_OR_DATETIME
+ *   attemptType externalId displayDescription STRING
+ *   tags LIST_STRING
+ *   status installmentId id STRING (ro)        created updated DATETIME (ro)
+ *
+ * Query keys: limit, after, before, status, invoiceIds, subscriptionIds, externalIds, tags, ids.
+ *
+ * due is DATE_OR_DATETIME here, unlike InvoicePullSubscription's due/end: see
+ * invoicepullrequest.h - sdk-python's coercion here is a direct call with no
+ * conditional guard, so the checker sees it plainly.
+ */
+#define STARKBANK_INVOICE_PULL_REQUEST_SUBSCRIPTION_ID       "subscriptionId"
+#define STARKBANK_INVOICE_PULL_REQUEST_INVOICE_ID            "invoiceId"
+#define STARKBANK_INVOICE_PULL_REQUEST_DUE                   "due"
+#define STARKBANK_INVOICE_PULL_REQUEST_ATTEMPT_TYPE          "attemptType"
+#define STARKBANK_INVOICE_PULL_REQUEST_TAGS                  "tags"
+#define STARKBANK_INVOICE_PULL_REQUEST_EXTERNAL_ID           "externalId"
+#define STARKBANK_INVOICE_PULL_REQUEST_DISPLAY_DESCRIPTION   "displayDescription"
+#define STARKBANK_INVOICE_PULL_REQUEST_STATUS                "status"
+#define STARKBANK_INVOICE_PULL_REQUEST_INSTALLMENT_ID        "installmentId"
+#define STARKBANK_INVOICE_PULL_REQUEST_ID                    "id"
+#define STARKBANK_INVOICE_PULL_REQUEST_CREATED               "created"
+#define STARKBANK_INVOICE_PULL_REQUEST_UPDATED               "updated"
+
+#define STARKBANK_INVOICE_PULL_REQUEST_ATTEMPT_TYPE_DEFAULT  "default"
+#define STARKBANK_INVOICE_PULL_REQUEST_ATTEMPT_TYPE_RETRY    "retry"
+
+#define STARKBANK_INVOICE_PULL_REQUEST_STATUS_PENDING    "pending"
+#define STARKBANK_INVOICE_PULL_REQUEST_STATUS_SCHEDULED  "scheduled"
+#define STARKBANK_INVOICE_PULL_REQUEST_STATUS_SUCCESS    "success"
+#define STARKBANK_INVOICE_PULL_REQUEST_STATUS_FAILED     "failed"
+#define STARKBANK_INVOICE_PULL_REQUEST_STATUS_CANCELED   "canceled"
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_request_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_request_params_new(
+    starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_request_create(
+    const starkbank_client *client, const starkbank_list *requests,
+    starkbank_list **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_request_get(
+    const starkbank_client *client, const char *id, starkbank_entity **out,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_request_query(
+    const starkbank_client *client, const starkbank_entity *params, int limit,
+    starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_request_page(
+    const starkbank_client *client, const starkbank_entity *params, starkbank_list **out,
+    char **out_cursor, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_request_delete(
+    const starkbank_client *client, const char *id, starkbank_entity **out,
+    starkbank_errors **errors);
+/* sdk-python names this cancel(); see InvoicePullSubscription's section
+   header for why the C symbol still says delete. */
+
+/* -------------------------------------------------- InvoicePullRequestLog */
+/*
+ * Resource "InvoicePullRequestLog"; endpoint "invoice-pull-request/log",
+ * derived at run time.
+ * Fields: id type STRING (ro), errors LIST_OBJECT (ro),
+ *         request RESOURCE("InvoicePullRequest") (ro), created DATETIME (ro).
+ * Query keys: limit, after, before, types, requestIds.
+ *
+ * errors is a list of {code, message} objects, not strings - as
+ * InvoicePullSubscriptionLog. There is no invoicepullrequest.Log pdf.
+ */
+#define STARKBANK_INVOICE_PULL_REQUEST_LOG_ID       "id"
+#define STARKBANK_INVOICE_PULL_REQUEST_LOG_CREATED  "created"
+#define STARKBANK_INVOICE_PULL_REQUEST_LOG_TYPE     "type"
+#define STARKBANK_INVOICE_PULL_REQUEST_LOG_ERRORS   "errors"
+#define STARKBANK_INVOICE_PULL_REQUEST_LOG_REQUEST  "request"
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_request_log_params_new(
+    starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_request_log_get(
+    const starkbank_client *client, const char *id, starkbank_entity **out,
+    starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_request_log_query(
+    const starkbank_client *client, const starkbank_entity *params, int limit,
+    starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_request_log_page(
+    const starkbank_client *client, const starkbank_entity *params, starkbank_list **out,
+    char **out_cursor, starkbank_errors **errors);
+
+/* =========================================================================
+ *                               BoletoHolmes
+ * =========================================================================
+ *
+ * Fields (wire keys; * = required on create). No update verb.
+ *
+ *   boletoId* STRING
+ *   tags LIST_STRING
+ *   status result id STRING (ro)               created updated DATETIME (ro)
+ *
+ * Query keys: limit, after, before, tags, ids, status, boletoId.
+ *
+ * sdk-python's page() takes only cursor and limit; see boletoholmes.h for why
+ * the table still carries the full filter set the docs and query() agree on.
+ */
+#define STARKBANK_BOLETO_HOLMES_BOLETO_ID  "boletoId"
+#define STARKBANK_BOLETO_HOLMES_TAGS       "tags"
+#define STARKBANK_BOLETO_HOLMES_STATUS     "status"
+#define STARKBANK_BOLETO_HOLMES_RESULT     "result"
+#define STARKBANK_BOLETO_HOLMES_ID         "id"
+#define STARKBANK_BOLETO_HOLMES_CREATED    "created"
+#define STARKBANK_BOLETO_HOLMES_UPDATED    "updated"
+
+#define STARKBANK_BOLETO_HOLMES_STATUS_SOLVING  "solving"
+#define STARKBANK_BOLETO_HOLMES_STATUS_SOLVED   "solved"
+
+#define STARKBANK_BOLETO_HOLMES_RESULT_PAID       "paid"
+#define STARKBANK_BOLETO_HOLMES_RESULT_CANCELLED  "cancelled"
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_holmes_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_holmes_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_holmes_create(const starkbank_client *client,
+    const starkbank_list *holmes, starkbank_list **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_holmes_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_holmes_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_holmes_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+/* -------------------------------------------------------- BoletoHolmesLog */
+/*
+ * Resource "BoletoHolmesLog"; endpoint "boleto-holmes/log", derived at run
+ * time.
+ * Fields: id type STRING (ro), holmes RESOURCE("BoletoHolmes") (ro),
+ *         created updated DATETIME (ro).
+ * Query keys: limit, after, before, types, holmesIds.
+ *
+ * No errors field and no pdf verb: sdk-python's boletoholmes.Log has
+ * neither - see boletoholmes.h.
+ */
+#define STARKBANK_BOLETO_HOLMES_LOG_ID       "id"
+#define STARKBANK_BOLETO_HOLMES_LOG_CREATED  "created"
+#define STARKBANK_BOLETO_HOLMES_LOG_UPDATED  "updated"
+#define STARKBANK_BOLETO_HOLMES_LOG_TYPE     "type"
+#define STARKBANK_BOLETO_HOLMES_LOG_HOLMES   "holmes"
+
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_holmes_log_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_holmes_log_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_holmes_log_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_boleto_holmes_log_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+/* =========================================================================
+ *                               DynamicBrcode
+ * =========================================================================
+ *
+ * Fields (wire keys; * = required on create). No update verb.
+ *
+ *   amount* AMOUNT                             expiration SECONDS
+ *   tags LIST_STRING                           displayDescription STRING
+ *   rules LIST_RESOURCE("DynamicBrcode.Rule")
+ *   id uuid pictureUrl STRING (ro)             updated created DATETIME (ro)
+ *
+ * Query keys: limit, after, before, tags, uuids.
+ *
+ * starkbank_dynamic_brcode_get reaches GET /v2/dynamic-brcode/:uuid, not
+ * ":id" - see dynamicbrcode.h for why this is an accepted endpoint.changed
+ * entry rather than a real divergence.
+ */
+#define STARKBANK_DYNAMIC_BRCODE_AMOUNT               "amount"
+#define STARKBANK_DYNAMIC_BRCODE_EXPIRATION           "expiration"
+#define STARKBANK_DYNAMIC_BRCODE_TAGS                 "tags"
+#define STARKBANK_DYNAMIC_BRCODE_DISPLAY_DESCRIPTION  "displayDescription"
+#define STARKBANK_DYNAMIC_BRCODE_RULES                "rules"
+#define STARKBANK_DYNAMIC_BRCODE_ID                   "id"
+#define STARKBANK_DYNAMIC_BRCODE_UUID                 "uuid"
+#define STARKBANK_DYNAMIC_BRCODE_PICTURE_URL          "pictureUrl"
+#define STARKBANK_DYNAMIC_BRCODE_UPDATED              "updated"
+#define STARKBANK_DYNAMIC_BRCODE_CREATED              "created"
+
+STARKBANK_API int STARKBANK_CALL starkbank_dynamic_brcode_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_dynamic_brcode_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_dynamic_brcode_create(const starkbank_client *client,
+    const starkbank_list *brcodes, starkbank_list **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_dynamic_brcode_get(const starkbank_client *client,
+    const char *uuid, starkbank_entity **out, starkbank_errors **errors);
+/* uuid, not id - see the section header. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_dynamic_brcode_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_dynamic_brcode_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+/* ------------------------------------------------------- DynamicBrcode.Rule */
+/* Modifies a DynamicBrcode's behaviour; passed in the "rules" list at create.
+ * Fields: key* STRING, value* LIST_STRING.
+ * ex: key "allowedTaxIds", value ["012.345.678-90", "45.059.493/0001-73"]. */
+#define STARKBANK_DYNAMIC_BRCODE_RULE_KEY    "key"
+#define STARKBANK_DYNAMIC_BRCODE_RULE_VALUE  "value"
+
+STARKBANK_API int STARKBANK_CALL starkbank_dynamic_brcode_rule_new(starkbank_entity **out);
+/* Free it, or append it to a DynamicBrcode's "rules", which takes ownership. */
+
+/* =========================================================================
+ *                               PaymentRequest
+ * =========================================================================
+ *
+ * Fields (wire keys; * = required on create). No get() and no update verb -
+ * sdk-python's paymentrequest module has neither.
+ *
+ *   centerId* STRING                           payment* RESOURCE
+ *   type due STRING                            tags LIST_STRING
+ *   id description status STRING (ro)          amount AMOUNT (ro)
+ *   actions LIST_OBJECT (ro)                   updated created DATETIME (ro)
+ *
+ * Query keys: centerId, limit, after, before, sort, status, type, tags, ids.
+ *
+ * payment is polymorphic on the sibling "type" field, into whichever of
+ * Transfer, Transaction, BoletoPayment, BrcodePayment, UtilityPayment,
+ * DarfPayment or TaxPayment "type" names - see paymentrequest.h, which also
+ * covers why due is STRING and why payment is written with
+ * starkbank_entity_set_json_raw rather than a dedicated setter.
+ * centerId is required on every query()/page() call, not only on create; see
+ * paymentrequest.h for why the table cannot enforce that itself.
+ */
+#define STARKBANK_PAYMENT_REQUEST_CENTER_ID    "centerId"
+#define STARKBANK_PAYMENT_REQUEST_PAYMENT      "payment"
+#define STARKBANK_PAYMENT_REQUEST_TYPE         "type"
+#define STARKBANK_PAYMENT_REQUEST_DUE          "due"
+#define STARKBANK_PAYMENT_REQUEST_TAGS         "tags"
+#define STARKBANK_PAYMENT_REQUEST_ID           "id"
+#define STARKBANK_PAYMENT_REQUEST_AMOUNT       "amount"
+#define STARKBANK_PAYMENT_REQUEST_DESCRIPTION  "description"
+#define STARKBANK_PAYMENT_REQUEST_STATUS       "status"
+#define STARKBANK_PAYMENT_REQUEST_ACTIONS      "actions"
+#define STARKBANK_PAYMENT_REQUEST_UPDATED      "updated"
+#define STARKBANK_PAYMENT_REQUEST_CREATED      "created"
+
+#define STARKBANK_PAYMENT_REQUEST_TYPE_TRANSFER         "transfer"
+#define STARKBANK_PAYMENT_REQUEST_TYPE_TRANSACTION      "transaction"
+#define STARKBANK_PAYMENT_REQUEST_TYPE_BOLETO_PAYMENT   "boleto-payment"
+#define STARKBANK_PAYMENT_REQUEST_TYPE_BRCODE_PAYMENT   "brcode-payment"
+#define STARKBANK_PAYMENT_REQUEST_TYPE_UTILITY_PAYMENT  "utility-payment"
+#define STARKBANK_PAYMENT_REQUEST_TYPE_DARF_PAYMENT     "darf-payment"
+#define STARKBANK_PAYMENT_REQUEST_TYPE_TAX_PAYMENT      "tax-payment"
+
+#define STARKBANK_PAYMENT_REQUEST_STATUS_PENDING   "pending"
+#define STARKBANK_PAYMENT_REQUEST_STATUS_APPROVED  "approved"
+
+STARKBANK_API int STARKBANK_CALL starkbank_payment_request_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_payment_request_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_payment_request_create(const starkbank_client *client,
+    const starkbank_list *requests, starkbank_list **out, starkbank_errors **errors);
+/* Build the payment leg with its own family's _new, fill it in, dump it with
+   starkbank_entity_dump and embed the result with
+   starkbank_entity_set_json_raw(request, STARKBANK_PAYMENT_REQUEST_PAYMENT,
+   json) before appending request to the batch - see paymentrequest.h. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_payment_request_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+/* params must carry "centerId": build it with starkbank_payment_request_params_new. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_payment_request_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
 #ifdef __cplusplus
 }
 #endif
