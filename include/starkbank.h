@@ -3574,6 +3574,61 @@ STARKBANK_API int STARKBANK_CALL starkbank_boleto_holmes_log_page(const starkban
     const starkbank_entity *params, starkbank_list **out, char **out_cursor,
     starkbank_errors **errors);
 
+/* =========================================================================
+ *                               DynamicBrcode
+ * =========================================================================
+ *
+ * Fields (wire keys; * = required on create). No update verb.
+ *
+ *   amount* AMOUNT                             expiration SECONDS
+ *   tags LIST_STRING                           displayDescription STRING
+ *   rules LIST_RESOURCE("DynamicBrcode.Rule")
+ *   id uuid pictureUrl STRING (ro)             updated created DATETIME (ro)
+ *
+ * Query keys: limit, after, before, tags, uuids.
+ *
+ * starkbank_dynamic_brcode_get reaches GET /v2/dynamic-brcode/:uuid, not
+ * ":id" - see dynamicbrcode.h for why this is an accepted endpoint.changed
+ * entry rather than a real divergence.
+ */
+#define STARKBANK_DYNAMIC_BRCODE_AMOUNT               "amount"
+#define STARKBANK_DYNAMIC_BRCODE_EXPIRATION           "expiration"
+#define STARKBANK_DYNAMIC_BRCODE_TAGS                 "tags"
+#define STARKBANK_DYNAMIC_BRCODE_DISPLAY_DESCRIPTION  "displayDescription"
+#define STARKBANK_DYNAMIC_BRCODE_RULES                "rules"
+#define STARKBANK_DYNAMIC_BRCODE_ID                   "id"
+#define STARKBANK_DYNAMIC_BRCODE_UUID                 "uuid"
+#define STARKBANK_DYNAMIC_BRCODE_PICTURE_URL          "pictureUrl"
+#define STARKBANK_DYNAMIC_BRCODE_UPDATED              "updated"
+#define STARKBANK_DYNAMIC_BRCODE_CREATED              "created"
+
+STARKBANK_API int STARKBANK_CALL starkbank_dynamic_brcode_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_dynamic_brcode_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_dynamic_brcode_create(const starkbank_client *client,
+    const starkbank_list *brcodes, starkbank_list **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_dynamic_brcode_get(const starkbank_client *client,
+    const char *uuid, starkbank_entity **out, starkbank_errors **errors);
+/* uuid, not id - see the section header. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_dynamic_brcode_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_dynamic_brcode_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+/* ------------------------------------------------------- DynamicBrcode.Rule */
+/* Modifies a DynamicBrcode's behaviour; passed in the "rules" list at create.
+ * Fields: key* STRING, value* LIST_STRING.
+ * ex: key "allowedTaxIds", value ["012.345.678-90", "45.059.493/0001-73"]. */
+#define STARKBANK_DYNAMIC_BRCODE_RULE_KEY    "key"
+#define STARKBANK_DYNAMIC_BRCODE_RULE_VALUE  "value"
+
+STARKBANK_API int STARKBANK_CALL starkbank_dynamic_brcode_rule_new(starkbank_entity **out);
+/* Free it, or append it to a DynamicBrcode's "rules", which takes ownership. */
+
 #ifdef __cplusplus
 }
 #endif

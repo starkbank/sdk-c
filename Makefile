@@ -131,6 +131,8 @@ RESOURCE_SOURCES = \
 	starkbank/deposit/deposit.c \
 	starkbank/deposit/log.c \
 	starkbank/dictkey/dictkey.c \
+	starkbank/dynamicbrcode/dynamicbrcode.c \
+	starkbank/dynamicbrcode/rule.c \
 	starkbank/event/attempt.c \
 	starkbank/event/event.c \
 	starkbank/institution/institution.c \

@@ -315,6 +315,11 @@
       "key": "verb.gone:InvoicePullRequest:delete",
       "owner": "eduardo.santos@starkbank.com",
       "reason": "The other half of verb.new:InvoicePullRequest:cancel."
+    },
+    {
+      "key": "endpoint.changed:DynamicBrcode:get",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "starkbank_dynamic_brcode_get reaches GET /v2/dynamic-brcode/:uuid; verbEndpoint() always names a GET_ID shape's path slot ':id'. The route and method match; only the placeholder's name differs, exactly the gap endpoint.changed:MerchantSession:purchase already documents for this same docs pair - that entry names GET /v2/dynamic-brcode/:uuid outright as one half of the evidence that ':uuid' and ':id' are the same kind of slot spelled two ways across the docs."
     }
   ]
 }

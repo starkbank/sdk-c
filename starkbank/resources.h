@@ -42,6 +42,8 @@
     R(deposit)                 \
     R(deposit_log)             \
     R(dict_key)                \
+    R(dynamic_brcode)          \
+    R(dynamic_brcode_rule)     \
     R(event)                   \
     R(event_attempt)           \
     R(institution)             \

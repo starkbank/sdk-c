@@ -388,6 +388,18 @@ const
   STARKBANK_DICT_KEY_TYPE_EMAIL = 'email';
   STARKBANK_DICT_KEY_TYPE_EVP = 'evp';
   STARKBANK_DICT_KEY_TYPE_PHONE = 'phone';
+  STARKBANK_DYNAMIC_BRCODE_AMOUNT = 'amount';
+  STARKBANK_DYNAMIC_BRCODE_CREATED = 'created';
+  STARKBANK_DYNAMIC_BRCODE_DISPLAY_DESCRIPTION = 'displayDescription';
+  STARKBANK_DYNAMIC_BRCODE_EXPIRATION = 'expiration';
+  STARKBANK_DYNAMIC_BRCODE_ID = 'id';
+  STARKBANK_DYNAMIC_BRCODE_PICTURE_URL = 'pictureUrl';
+  STARKBANK_DYNAMIC_BRCODE_RULES = 'rules';
+  STARKBANK_DYNAMIC_BRCODE_RULE_KEY = 'key';
+  STARKBANK_DYNAMIC_BRCODE_RULE_VALUE = 'value';
+  STARKBANK_DYNAMIC_BRCODE_TAGS = 'tags';
+  STARKBANK_DYNAMIC_BRCODE_UPDATED = 'updated';
+  STARKBANK_DYNAMIC_BRCODE_UUID = 'uuid';
   STARKBANK_ENVIRONMENT_PRODUCTION = 0;
   STARKBANK_ENVIRONMENT_SANDBOX = 1;
   STARKBANK_ERROR_ABI = -106;
@@ -1173,6 +1185,20 @@ function starkbank_dict_key_page(client: Pstarkbank_client; params: Pstarkbank_e
 function starkbank_dict_key_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_dict_key_params_new';
 
 function starkbank_dict_key_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_dict_key_query';
+
+function starkbank_dynamic_brcode_create(client: Pstarkbank_client; brcodes: Pstarkbank_list; &out: PPstarkbank_list; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_dynamic_brcode_create';
+
+function starkbank_dynamic_brcode_get(client: Pstarkbank_client; uuid: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_dynamic_brcode_get';
+
+function starkbank_dynamic_brcode_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_dynamic_brcode_new';
+
+function starkbank_dynamic_brcode_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_dynamic_brcode_page';
+
+function starkbank_dynamic_brcode_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_dynamic_brcode_params_new';
+
+function starkbank_dynamic_brcode_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_dynamic_brcode_query';
+
+function starkbank_dynamic_brcode_rule_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_dynamic_brcode_rule_new';
 
 function starkbank_entity_amount(entity: Pstarkbank_entity; field: PAnsiChar; &out: PDouble): Integer; cdecl; external StarkbankLib name 'starkbank_entity_amount';
 

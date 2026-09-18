@@ -383,6 +383,18 @@ namespace StarkBank
         public const string StarkbankDictKeyTypeEmail = "email";
         public const string StarkbankDictKeyTypeEvp = "evp";
         public const string StarkbankDictKeyTypePhone = "phone";
+        public const string StarkbankDynamicBrcodeAmount = "amount";
+        public const string StarkbankDynamicBrcodeCreated = "created";
+        public const string StarkbankDynamicBrcodeDisplayDescription = "displayDescription";
+        public const string StarkbankDynamicBrcodeExpiration = "expiration";
+        public const string StarkbankDynamicBrcodeId = "id";
+        public const string StarkbankDynamicBrcodePictureUrl = "pictureUrl";
+        public const string StarkbankDynamicBrcodeRules = "rules";
+        public const string StarkbankDynamicBrcodeRuleKey = "key";
+        public const string StarkbankDynamicBrcodeRuleValue = "value";
+        public const string StarkbankDynamicBrcodeTags = "tags";
+        public const string StarkbankDynamicBrcodeUpdated = "updated";
+        public const string StarkbankDynamicBrcodeUuid = "uuid";
         public const int StarkbankEnvironmentProduction = 0;
         public const int StarkbankEnvironmentSandbox = 1;
         public const int StarkbankErrorAbi = -106;
@@ -1286,6 +1298,27 @@ namespace StarkBank
 
         [DllImport(Library, EntryPoint = "starkbank_dict_key_query", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankDictKeyQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_dynamic_brcode_create", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankDynamicBrcodeCreate(IntPtr client, IntPtr brcodes, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_dynamic_brcode_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankDynamicBrcodeGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string uuid, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_dynamic_brcode_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankDynamicBrcodeNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_dynamic_brcode_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankDynamicBrcodePage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_dynamic_brcode_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankDynamicBrcodeParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_dynamic_brcode_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankDynamicBrcodeQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_dynamic_brcode_rule_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankDynamicBrcodeRuleNew(out IntPtr @out);
 
         [DllImport(Library, EntryPoint = "starkbank_entity_amount", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankEntityAmount(IntPtr entity, [MarshalAs(UnmanagedType.LPStr)] string field, out double @out);
