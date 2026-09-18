@@ -12,6 +12,7 @@
 #define STARKBANK_RESOURCES_H
 
 #define STARKBANK_RESOURCES(R) \
+    R(allowed_installment)     \
     R(balance)                 \
     R(boleto)                  \
     R(boleto_log)              \
@@ -22,6 +23,7 @@
     R(brcode_payment_log)      \
     R(brcode_payment_rule)     \
     R(brcode_preview)          \
+    R(card_method)             \
     R(corporate_balance)       \
     R(corporate_card)          \
     R(corporate_card_log)      \
@@ -45,8 +47,19 @@
     R(invoice_log)             \
     R(invoice_payment)         \
     R(invoice_rule)            \
+    R(merchant_card)           \
+    R(merchant_card_log)       \
+    R(merchant_category)       \
+    R(merchant_country)        \
+    R(merchant_installment)    \
+    R(merchant_installment_log) \
+    R(merchant_purchase)       \
+    R(merchant_purchase_log)   \
+    R(merchant_session)        \
+    R(merchant_session_log)    \
     R(payment_preview)         \
     R(permission)              \
+    R(purchase)                \
     R(split)                   \
     R(tax_payment)             \
     R(tax_payment_log)         \

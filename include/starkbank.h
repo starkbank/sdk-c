@@ -2737,6 +2737,556 @@ STARKBANK_API int STARKBANK_CALL starkbank_workspace_update(const starkbank_clie
    addition to the JSON body - sdk-python's workspace.update does the same,
    and this mirrors it wire-for-wire. */
 
+
+/* =========================================================================
+ *                              MerchantSession
+ * =========================================================================
+ *
+ * purchase(uuid, purchase) needed one small addition to the engine:
+ * STARKBANK_VERB_POST_SUB_RESOURCE, a POST counterpart to
+ * STARKBANK_VERB_SUB_RESOURCE (Invoice.payment's GET) built on core-c's own
+ * starkcore_rest_post_sub_resource, which was already exposed and unused by
+ * this SDK. See starkbankVerbCreateSubResource's comment in starkc/verb.c
+ * for the full reasoning and why neither existing sub-path shape fit.
+ *
+ * Fields (wire keys; * = required on create). MerchantSession has no
+ * update(), so there is no PATCH bit anywhere in this table.
+ *
+ *   allowedFundingTypes* LIST_STRING
+ *   allowedInstallments* LIST_RESOURCE("MerchantSession.AllowedInstallment")
+ *   expiration* NUMBER
+ *   allowedIps LIST_STRING          challengeMode STRING
+ *   tags LIST_STRING
+ *   id uuid holderId softDescriptor status STRING (ro)
+ *   created updated DATETIME (ro)
+ *
+ * Query keys: limit, status, tags, ids, after, before, holderId.
+ *
+ * holderId rides in the query key list even though the docs' GET
+ * /v2/merchant-session parameter list omits it: sdk-python's query()/page()
+ * both take holder_id, and python is normative for the verb surface - see
+ * tests/reference/known-drift.json's query.gone:MerchantSession:holderId.
+ *
+ * expiration is NUMBER, not SECONDS: sdk-python's __init__ does
+ * "self.expiration = expiration" with no check_timedelta call, unlike
+ * Invoice.expiration, so tools/drift.py's type.conflict check (normative on
+ * python's actual coercion, not its "integer or datetime.timedelta"
+ * docstring prose) is a hard stop here - the table follows python's real
+ * behaviour rather than the naive per-field mirror.
+ */
+
+#define STARKBANK_MERCHANT_SESSION_ALLOWED_FUNDING_TYPES  "allowedFundingTypes"
+#define STARKBANK_MERCHANT_SESSION_ALLOWED_INSTALLMENTS   "allowedInstallments"
+#define STARKBANK_MERCHANT_SESSION_EXPIRATION             "expiration"
+#define STARKBANK_MERCHANT_SESSION_ALLOWED_IPS            "allowedIps"
+#define STARKBANK_MERCHANT_SESSION_CHALLENGE_MODE         "challengeMode"
+#define STARKBANK_MERCHANT_SESSION_TAGS                   "tags"
+#define STARKBANK_MERCHANT_SESSION_ID                     "id"
+#define STARKBANK_MERCHANT_SESSION_UUID                   "uuid"
+#define STARKBANK_MERCHANT_SESSION_HOLDER_ID              "holderId"
+#define STARKBANK_MERCHANT_SESSION_SOFT_DESCRIPTOR        "softDescriptor"
+#define STARKBANK_MERCHANT_SESSION_STATUS                 "status"
+#define STARKBANK_MERCHANT_SESSION_CREATED                "created"
+#define STARKBANK_MERCHANT_SESSION_UPDATED                "updated"
+
+/* Funding types and challenge modes, from the docs' enums. */
+#define STARKBANK_MERCHANT_SESSION_FUNDING_TYPE_CREDIT     "credit"
+#define STARKBANK_MERCHANT_SESSION_FUNDING_TYPE_DEBIT      "debit"
+#define STARKBANK_MERCHANT_SESSION_CHALLENGE_MODE_ENABLED  "enabled"
+#define STARKBANK_MERCHANT_SESSION_CHALLENGE_MODE_DISABLED "disabled"
+
+/* Statuses: the docs list "active"/"expired"/"success"; sdk-python's own
+   docstring examples add "created" - both are kept since either is a real
+   observed value and these are plain #define conveniences, not a validated
+   enum (see include/starkbank.h's own note on why enums stay strings). */
+#define STARKBANK_MERCHANT_SESSION_STATUS_CREATED  "created"
+#define STARKBANK_MERCHANT_SESSION_STATUS_ACTIVE   "active"
+#define STARKBANK_MERCHANT_SESSION_STATUS_EXPIRED  "expired"
+#define STARKBANK_MERCHANT_SESSION_STATUS_SUCCESS  "success"
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_session_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_session_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_session_create(const starkbank_client *client,
+    const starkbank_entity *session, starkbank_entity **out, starkbank_errors **errors);
+/* post_single: session is the body itself, not wrapped in a list - the same
+   shape as starkbank_webhook_create. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_session_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_session_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_session_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_session_purchase(const starkbank_client *client,
+    const char *uuid, const starkbank_entity *purchase, starkbank_entity **out,
+    starkbank_errors **errors);
+/* rest.post_sub_resource: POST purchase to merchant-session/<uuid>/purchase.
+   purchase must be tagged "Purchase" (starkbank_purchase_new); the entity
+   that comes back is tagged "Purchase" too and carries an id. Borrows
+   purchase; free *out with starkbank_entity_free. */
+
+/* ---------------------------------------- MerchantSession.AllowedInstallment */
+/* SubResource (no id); embedded in MerchantSession.allowedInstallments.
+ * Registered qualified, not bare "AllowedInstallment": sdk-python's own
+ * module assigns _sub_resource, not _resource, and tools/drift.py's python
+ * reader qualifies every _sub_resource by its owning package's resource name
+ * regardless of whether the bare name collides with anything else - see
+ * merchantsession.h.
+ * Fields: totalAmount* AMOUNT, count* NUMBER.
+ */
+#define STARKBANK_ALLOWED_INSTALLMENT_TOTAL_AMOUNT  "totalAmount"
+#define STARKBANK_ALLOWED_INSTALLMENT_COUNT         "count"
+
+STARKBANK_API int STARKBANK_CALL starkbank_allowed_installment_new(starkbank_entity **out);
+
+/* ---------------------------------------------------------------- Purchase */
+/* Resource (has an id), reached only through
+ * starkbank_merchant_session_purchase - sdk-python's Purchase module exports
+ * no get/query/page of its own.
+ * Fields: amount* AMOUNT; cardExpiration* cardNumber* cardSecurityCode*
+ *         holderName* fundingType* STRING; holderEmail holderPhone holderId
+ *         STRING; installmentCount NUMBER; billingCountryCode billingCity
+ *         billingStateCode billingStreetLine1 billingStreetLine2
+ *         billingZipCode STRING; metadata OBJECT; softDescriptor STRING;
+ *         tags LIST_STRING; id cardEnding cardId challengeMode challengeUrl
+ *         currencyCode endToEndId network source status STRING (ro);
+ *         fee AMOUNT (ro); created updated DATETIME (ro).
+ */
+#define STARKBANK_PURCHASE_AMOUNT                "amount"
+#define STARKBANK_PURCHASE_CARD_EXPIRATION       "cardExpiration"
+#define STARKBANK_PURCHASE_CARD_NUMBER           "cardNumber"
+#define STARKBANK_PURCHASE_CARD_SECURITY_CODE    "cardSecurityCode"
+#define STARKBANK_PURCHASE_HOLDER_NAME           "holderName"
+#define STARKBANK_PURCHASE_FUNDING_TYPE          "fundingType"
+#define STARKBANK_PURCHASE_HOLDER_EMAIL          "holderEmail"
+#define STARKBANK_PURCHASE_HOLDER_PHONE          "holderPhone"
+#define STARKBANK_PURCHASE_HOLDER_ID             "holderId"
+#define STARKBANK_PURCHASE_INSTALLMENT_COUNT     "installmentCount"
+#define STARKBANK_PURCHASE_BILLING_COUNTRY_CODE  "billingCountryCode"
+#define STARKBANK_PURCHASE_BILLING_CITY          "billingCity"
+#define STARKBANK_PURCHASE_BILLING_STATE_CODE    "billingStateCode"
+#define STARKBANK_PURCHASE_BILLING_STREET_LINE_1 "billingStreetLine1"
+#define STARKBANK_PURCHASE_BILLING_STREET_LINE_2 "billingStreetLine2"
+#define STARKBANK_PURCHASE_BILLING_ZIP_CODE      "billingZipCode"
+#define STARKBANK_PURCHASE_METADATA              "metadata"
+#define STARKBANK_PURCHASE_SOFT_DESCRIPTOR       "softDescriptor"
+#define STARKBANK_PURCHASE_TAGS                  "tags"
+#define STARKBANK_PURCHASE_ID                    "id"
+#define STARKBANK_PURCHASE_CARD_ENDING           "cardEnding"
+#define STARKBANK_PURCHASE_CARD_ID               "cardId"
+#define STARKBANK_PURCHASE_CHALLENGE_MODE        "challengeMode"
+#define STARKBANK_PURCHASE_CHALLENGE_URL         "challengeUrl"
+#define STARKBANK_PURCHASE_CURRENCY_CODE         "currencyCode"
+#define STARKBANK_PURCHASE_END_TO_END_ID         "endToEndId"
+#define STARKBANK_PURCHASE_FEE                   "fee"
+#define STARKBANK_PURCHASE_NETWORK               "network"
+#define STARKBANK_PURCHASE_SOURCE                "source"
+#define STARKBANK_PURCHASE_STATUS                "status"
+#define STARKBANK_PURCHASE_CREATED               "created"
+#define STARKBANK_PURCHASE_UPDATED               "updated"
+
+STARKBANK_API int STARKBANK_CALL starkbank_purchase_new(starkbank_entity **out);
+/* Free it, or hand it to starkbank_merchant_session_purchase, which borrows
+   it and does not take ownership. */
+
+/* ------------------------------------------------------- MerchantSessionLog */
+/*
+ * Resource "MerchantSessionLog"; endpoint "merchant-session/log", derived at
+ * run time.
+ * Fields: id type STRING (ro), errors LIST_STRING (ro),
+ *         session RESOURCE("MerchantSession") (ro), created DATETIME (ro).
+ * Query keys: limit, after, before, types, sessionIds.
+ *
+ * errors is LIST_STRING here, unlike MerchantCardLog/MerchantInstallmentLog/
+ * MerchantPurchaseLog's LIST_OBJECT {code, message} pairs: this log is served
+ * by the acquirer's session/challenge service, a different backing service
+ * from the card ledger the other three share.
+ */
+#define STARKBANK_MERCHANT_SESSION_LOG_ID       "id"
+#define STARKBANK_MERCHANT_SESSION_LOG_CREATED  "created"
+#define STARKBANK_MERCHANT_SESSION_LOG_TYPE     "type"
+#define STARKBANK_MERCHANT_SESSION_LOG_ERRORS   "errors"
+#define STARKBANK_MERCHANT_SESSION_LOG_SESSION  "session"
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_session_log_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_session_log_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_session_log_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_session_log_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+/* =========================================================================
+ *                                MerchantCard
+ * =========================================================================
+ *
+ * Every field is RO: sdk-python's module has no create(); a card is stored
+ * once a MerchantSession Purchase or MerchantPurchase succeeds, never posted
+ * directly. get/query/page are the whole verb surface.
+ *
+ * Fields (wire keys; every field is return-only).
+ *
+ *   id ending fundingType holderName network status STRING (ro)
+ *   tags LIST_STRING (ro)
+ *   expiration DATE_OR_DATETIME (ro)
+ *   created updated DATETIME (ro)
+ *
+ * Query keys: limit, after, before, status, tags, ids.
+ */
+#define STARKBANK_MERCHANT_CARD_ID            "id"
+#define STARKBANK_MERCHANT_CARD_ENDING        "ending"
+#define STARKBANK_MERCHANT_CARD_FUNDING_TYPE  "fundingType"
+#define STARKBANK_MERCHANT_CARD_HOLDER_NAME   "holderName"
+#define STARKBANK_MERCHANT_CARD_NETWORK       "network"
+#define STARKBANK_MERCHANT_CARD_STATUS        "status"
+#define STARKBANK_MERCHANT_CARD_TAGS          "tags"
+#define STARKBANK_MERCHANT_CARD_EXPIRATION    "expiration"
+#define STARKBANK_MERCHANT_CARD_CREATED       "created"
+#define STARKBANK_MERCHANT_CARD_UPDATED       "updated"
+
+/* Statuses, from sdk-python's docstring examples. */
+#define STARKBANK_MERCHANT_CARD_STATUS_ACTIVE    "active"
+#define STARKBANK_MERCHANT_CARD_STATUS_EXPIRED   "expired"
+#define STARKBANK_MERCHANT_CARD_STATUS_CANCELED  "canceled"
+#define STARKBANK_MERCHANT_CARD_STATUS_BLOCKED   "blocked"
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_card_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_card_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_card_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_card_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+/* --------------------------------------------------------- MerchantCardLog */
+/*
+ * Resource "MerchantCardLog"; endpoint "merchant-card/log", derived at run
+ * time.
+ * Fields: id type STRING (ro), errors LIST_OBJECT (ro),
+ *         card RESOURCE("MerchantCard") (ro),
+ *         created updated DATETIME (ro).
+ * Query keys: limit, cardIds, after, before, types.
+ *
+ * errors is a real LIST_OBJECT of {code, message} pairs, the same shape
+ * CorporatePurchase.Log already established, unlike MerchantSessionLog's
+ * plain LIST_STRING - see MerchantSession's section above.
+ */
+#define STARKBANK_MERCHANT_CARD_LOG_ID       "id"
+#define STARKBANK_MERCHANT_CARD_LOG_CREATED  "created"
+#define STARKBANK_MERCHANT_CARD_LOG_UPDATED  "updated"
+#define STARKBANK_MERCHANT_CARD_LOG_TYPE     "type"
+#define STARKBANK_MERCHANT_CARD_LOG_ERRORS   "errors"
+#define STARKBANK_MERCHANT_CARD_LOG_CARD     "card"
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_card_log_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_card_log_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_card_log_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_card_log_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+/* =========================================================================
+ *                             MerchantInstallment
+ * =========================================================================
+ *
+ * Every field is RO: generated automatically when a MerchantPurchase is
+ * split, never posted. get/query/page are the whole verb surface.
+ *
+ * Fields (wire keys; every field is return-only).
+ *
+ *   id fundingType network purchaseId status STRING (ro)
+ *   amount fee AMOUNT (ro)
+ *   due DATE_OR_DATETIME (ro)
+ *   tags transactionIds LIST_STRING (ro)
+ *   created updated DATETIME (ro)
+ *
+ * Query keys: limit, after, before, status, tags, ids, purchaseIds.
+ *
+ * purchaseIds is real and documented on query()/page() but the docs' GET
+ * /v2/merchant-installment parameter list omits it - see
+ * tests/reference/known-drift.json's
+ * query.gone:MerchantInstallment:purchaseIds.
+ */
+#define STARKBANK_MERCHANT_INSTALLMENT_ID              "id"
+#define STARKBANK_MERCHANT_INSTALLMENT_AMOUNT          "amount"
+#define STARKBANK_MERCHANT_INSTALLMENT_DUE             "due"
+#define STARKBANK_MERCHANT_INSTALLMENT_FEE             "fee"
+#define STARKBANK_MERCHANT_INSTALLMENT_FUNDING_TYPE    "fundingType"
+#define STARKBANK_MERCHANT_INSTALLMENT_NETWORK         "network"
+#define STARKBANK_MERCHANT_INSTALLMENT_PURCHASE_ID     "purchaseId"
+#define STARKBANK_MERCHANT_INSTALLMENT_STATUS          "status"
+#define STARKBANK_MERCHANT_INSTALLMENT_TAGS            "tags"
+#define STARKBANK_MERCHANT_INSTALLMENT_TRANSACTION_IDS "transactionIds"
+#define STARKBANK_MERCHANT_INSTALLMENT_CREATED         "created"
+#define STARKBANK_MERCHANT_INSTALLMENT_UPDATED         "updated"
+
+/* Statuses, from sdk-python's docstring examples. */
+#define STARKBANK_MERCHANT_INSTALLMENT_STATUS_CREATED  "created"
+#define STARKBANK_MERCHANT_INSTALLMENT_STATUS_SUCCESS  "success"
+#define STARKBANK_MERCHANT_INSTALLMENT_STATUS_FAILED   "failed"
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_installment_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_installment_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_installment_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_installment_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+/* ------------------------------------------------------ MerchantInstallmentLog */
+/*
+ * Resource "MerchantInstallmentLog"; endpoint "merchant-installment/log",
+ * derived at run time.
+ * Fields: id type STRING (ro), errors LIST_OBJECT (ro),
+ *         installment RESOURCE("MerchantInstallment") (ro),
+ *         created updated DATETIME (ro).
+ * Query keys: limit, after, before, types, installmentIds.
+ */
+#define STARKBANK_MERCHANT_INSTALLMENT_LOG_ID          "id"
+#define STARKBANK_MERCHANT_INSTALLMENT_LOG_CREATED     "created"
+#define STARKBANK_MERCHANT_INSTALLMENT_LOG_UPDATED     "updated"
+#define STARKBANK_MERCHANT_INSTALLMENT_LOG_TYPE        "type"
+#define STARKBANK_MERCHANT_INSTALLMENT_LOG_ERRORS      "errors"
+#define STARKBANK_MERCHANT_INSTALLMENT_LOG_INSTALLMENT "installment"
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_installment_log_params_new(
+    starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_installment_log_get(
+    const starkbank_client *client, const char *id, starkbank_entity **out,
+    starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_installment_log_query(
+    const starkbank_client *client, const starkbank_entity *params, int limit,
+    starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_installment_log_page(
+    const starkbank_client *client, const starkbank_entity *params, starkbank_list **out,
+    char **out_cursor, starkbank_errors **errors);
+
+/* =========================================================================
+ *                              MerchantPurchase
+ * =========================================================================
+ *
+ * create() is post_single, the same shape as Webhook and Workspace.
+ * update(id, status, amount) sends exactly {"status": status, "amount":
+ * amount} - see sdk-python's docstring: "canceled" with amount=0 cancels an
+ * approved purchase, "reversed" with a lower amount partially or fully
+ * reverses a confirmed one.
+ *
+ * Fields (wire keys; * = required on create, + = also accepted in an update).
+ *
+ *   amount*+ AMOUNT
+ *   cardId* fundingType* STRING
+ *   installmentCount* NUMBER
+ *   cardExpiration cardNumber cardSecurityCode holderName holderEmail
+ *     holderPhone holderId billingCountryCode billingCity billingStateCode
+ *     billingStreetLine1 billingStreetLine2 billingZipCode softDescriptor
+ *     STRING
+ *   metadata OBJECT
+ *   tags LIST_STRING
+ *   id cardEnding challengeMode challengeUrl currencyCode endToEndId network
+ *     source STRING (ro)
+ *   fee AMOUNT (ro)
+ *   status+ STRING
+ *   created updated DATETIME (ro)
+ *
+ * Query keys: limit, after, before, status, tags, ids, holderId.
+ *
+ * holderId is real and documented on query()/page() but the docs' GET
+ * /v2/merchant-purchase parameter list omits it - see
+ * tests/reference/known-drift.json's query.gone:MerchantPurchase:holderId.
+ */
+#define STARKBANK_MERCHANT_PURCHASE_AMOUNT                "amount"
+#define STARKBANK_MERCHANT_PURCHASE_CARD_ID               "cardId"
+#define STARKBANK_MERCHANT_PURCHASE_FUNDING_TYPE          "fundingType"
+#define STARKBANK_MERCHANT_PURCHASE_INSTALLMENT_COUNT     "installmentCount"
+#define STARKBANK_MERCHANT_PURCHASE_CARD_EXPIRATION       "cardExpiration"
+#define STARKBANK_MERCHANT_PURCHASE_CARD_NUMBER           "cardNumber"
+#define STARKBANK_MERCHANT_PURCHASE_CARD_SECURITY_CODE    "cardSecurityCode"
+#define STARKBANK_MERCHANT_PURCHASE_HOLDER_NAME           "holderName"
+#define STARKBANK_MERCHANT_PURCHASE_HOLDER_EMAIL          "holderEmail"
+#define STARKBANK_MERCHANT_PURCHASE_HOLDER_PHONE          "holderPhone"
+#define STARKBANK_MERCHANT_PURCHASE_HOLDER_ID             "holderId"
+#define STARKBANK_MERCHANT_PURCHASE_BILLING_COUNTRY_CODE  "billingCountryCode"
+#define STARKBANK_MERCHANT_PURCHASE_BILLING_CITY          "billingCity"
+#define STARKBANK_MERCHANT_PURCHASE_BILLING_STATE_CODE    "billingStateCode"
+#define STARKBANK_MERCHANT_PURCHASE_BILLING_STREET_LINE_1 "billingStreetLine1"
+#define STARKBANK_MERCHANT_PURCHASE_BILLING_STREET_LINE_2 "billingStreetLine2"
+#define STARKBANK_MERCHANT_PURCHASE_BILLING_ZIP_CODE      "billingZipCode"
+#define STARKBANK_MERCHANT_PURCHASE_METADATA              "metadata"
+#define STARKBANK_MERCHANT_PURCHASE_SOFT_DESCRIPTOR       "softDescriptor"
+#define STARKBANK_MERCHANT_PURCHASE_TAGS                  "tags"
+#define STARKBANK_MERCHANT_PURCHASE_ID                    "id"
+#define STARKBANK_MERCHANT_PURCHASE_CARD_ENDING           "cardEnding"
+#define STARKBANK_MERCHANT_PURCHASE_CHALLENGE_MODE        "challengeMode"
+#define STARKBANK_MERCHANT_PURCHASE_CHALLENGE_URL         "challengeUrl"
+#define STARKBANK_MERCHANT_PURCHASE_CURRENCY_CODE         "currencyCode"
+#define STARKBANK_MERCHANT_PURCHASE_END_TO_END_ID         "endToEndId"
+#define STARKBANK_MERCHANT_PURCHASE_FEE                   "fee"
+#define STARKBANK_MERCHANT_PURCHASE_NETWORK               "network"
+#define STARKBANK_MERCHANT_PURCHASE_SOURCE                "source"
+#define STARKBANK_MERCHANT_PURCHASE_STATUS                "status"
+#define STARKBANK_MERCHANT_PURCHASE_CREATED               "created"
+#define STARKBANK_MERCHANT_PURCHASE_UPDATED               "updated"
+
+/* Statuses, from sdk-python's docstrings (class + update()). */
+#define STARKBANK_MERCHANT_PURCHASE_STATUS_APPROVED   "approved"
+#define STARKBANK_MERCHANT_PURCHASE_STATUS_CONFIRMED  "confirmed"
+#define STARKBANK_MERCHANT_PURCHASE_STATUS_CANCELED   "canceled"
+#define STARKBANK_MERCHANT_PURCHASE_STATUS_REVERSED   "reversed"
+#define STARKBANK_MERCHANT_PURCHASE_STATUS_VOIDED     "voided"
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_purchase_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_purchase_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_purchase_create(const starkbank_client *client,
+    const starkbank_entity *purchase, starkbank_entity **out, starkbank_errors **errors);
+/* post_single: purchase is the body itself, not wrapped in a list. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_purchase_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_purchase_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_purchase_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_purchase_update(const starkbank_client *client,
+    const char *id, const starkbank_entity *patch, starkbank_entity **out,
+    starkbank_errors **errors);
+/* Every key in patch must carry STARKBANK_FLAG_PATCH: status, amount. */
+
+/* ----------------------------------------------------- MerchantPurchaseLog */
+/*
+ * Resource "MerchantPurchaseLog"; endpoint "merchant-purchase/log", derived
+ * at run time.
+ * Fields: id type STRING (ro), errors LIST_OBJECT (ro),
+ *         purchase RESOURCE("MerchantPurchase") (ro), created DATETIME (ro).
+ * Query keys: limit, after, before, types, purchaseIds.
+ *
+ * No updated field: unlike MerchantCardLog and MerchantInstallmentLog,
+ * sdk-python's merchantpurchase.Log.__init__ has no updated parameter.
+ */
+#define STARKBANK_MERCHANT_PURCHASE_LOG_ID        "id"
+#define STARKBANK_MERCHANT_PURCHASE_LOG_CREATED   "created"
+#define STARKBANK_MERCHANT_PURCHASE_LOG_TYPE      "type"
+#define STARKBANK_MERCHANT_PURCHASE_LOG_ERRORS    "errors"
+#define STARKBANK_MERCHANT_PURCHASE_LOG_PURCHASE  "purchase"
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_purchase_log_params_new(
+    starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_purchase_log_get(
+    const starkbank_client *client, const char *id, starkbank_entity **out,
+    starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_purchase_log_query(
+    const starkbank_client *client, const starkbank_entity *params, int limit,
+    starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_purchase_log_page(
+    const starkbank_client *client, const starkbank_entity *params, starkbank_list **out,
+    char **out_cursor, starkbank_errors **errors);
+
+/* =========================================================================
+ *                                 CardMethod
+ * =========================================================================
+ *
+ * A query-only lookup used to build CorporateRule.methods filters, e.g.
+ * [{"code": "chip"}]. sdk-python's module has one function, query(search=
+ * None, user=None) - no limit keyword, no page() - and the docs' GET
+ * /v2/card-method parameter list agrees (just "search"), so this table's
+ * query key list carries no "limit" and needs no known-drift entry: neither
+ * side has one to disagree about.
+ *
+ * Fields (wire keys; * = required on create, though nothing in this SDK
+ * posts one - see below).
+ *
+ *   code* STRING
+ *   name number STRING (ro)
+ *
+ * Query keys: search.
+ *
+ * No starkbank_card_method_new: CorporateRule.methods is not promoted from
+ * LIST_OBJECT to LIST_RESOURCE("CardMethod") in this build, so nothing needs
+ * to build one - see corporaterule.h and CorporateRule's own section.
+ */
+#define STARKBANK_CARD_METHOD_CODE    "code"
+#define STARKBANK_CARD_METHOD_NAME    "name"
+#define STARKBANK_CARD_METHOD_NUMBER  "number"
+
+/* Codes, from sdk-python's docstring. */
+#define STARKBANK_CARD_METHOD_CODE_CHIP        "chip"
+#define STARKBANK_CARD_METHOD_CODE_TOKEN       "token"
+#define STARKBANK_CARD_METHOD_CODE_SERVER      "server"
+#define STARKBANK_CARD_METHOD_CODE_MANUAL      "manual"
+#define STARKBANK_CARD_METHOD_CODE_MAGSTRIPE   "magstripe"
+#define STARKBANK_CARD_METHOD_CODE_CONTACTLESS "contactless"
+
+STARKBANK_API int STARKBANK_CALL starkbank_card_method_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_card_method_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+/* =========================================================================
+ *                              MerchantCategory
+ * =========================================================================
+ *
+ * A query-only lookup used to build CorporateRule.categories filters, e.g.
+ * [{"code": "fastFoodRestaurants"}]. Same shape as CardMethod above - no
+ * limit, no page().
+ *
+ * Fields (wire keys; a caller sets exactly one of code/type, never both).
+ *
+ *   code type STRING
+ *   name number STRING (ro)
+ *
+ * Query keys: search.
+ *
+ * code and type are both CREATE and neither is REQUIRED: sdk-python's
+ * docstring files them under "## Parameters (conditionally required)", which
+ * drift.py's checkFlags treats as creatable-but-not-required, the same
+ * bucket as plain "optional".
+ */
+#define STARKBANK_MERCHANT_CATEGORY_CODE    "code"
+#define STARKBANK_MERCHANT_CATEGORY_TYPE    "type"
+#define STARKBANK_MERCHANT_CATEGORY_NAME    "name"
+#define STARKBANK_MERCHANT_CATEGORY_NUMBER  "number"
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_category_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_category_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+/* =========================================================================
+ *                               MerchantCountry
+ * =========================================================================
+ *
+ * A query-only lookup used to build CorporateRule.countries filters, e.g.
+ * [{"code": "BRA"}]. Same shape as CardMethod above - no limit, no page().
+ *
+ * Fields (wire keys; * = required on create, though nothing in this SDK
+ * posts one).
+ *
+ *   code* STRING
+ *   name number shortCode STRING (ro)
+ *
+ * Query keys: search.
+ */
+#define STARKBANK_MERCHANT_COUNTRY_CODE        "code"
+#define STARKBANK_MERCHANT_COUNTRY_NAME        "name"
+#define STARKBANK_MERCHANT_COUNTRY_NUMBER      "number"
+#define STARKBANK_MERCHANT_COUNTRY_SHORT_CODE  "shortCode"
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_country_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_country_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
 #ifdef __cplusplus
 }
 #endif

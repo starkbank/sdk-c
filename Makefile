@@ -110,6 +110,7 @@ RESOURCE_SOURCES = \
 	starkbank/brcodepayment/brcodepayment.c \
 	starkbank/brcodepayment/log.c \
 	starkbank/brcodepayment/rule.c \
+	starkbank/cardmethod/cardmethod.c \
 	starkbank/corporatebalance/corporatebalance.c \
 	starkbank/corporatecard/corporatecard.c \
 	starkbank/corporatecard/log.c \
@@ -134,6 +135,18 @@ RESOURCE_SOURCES = \
 	starkbank/invoice/log.c \
 	starkbank/invoice/payment.c \
 	starkbank/invoice/rule.c \
+	starkbank/merchantcard/log.c \
+	starkbank/merchantcard/merchantcard.c \
+	starkbank/merchantcategory/merchantcategory.c \
+	starkbank/merchantcountry/merchantcountry.c \
+	starkbank/merchantinstallment/log.c \
+	starkbank/merchantinstallment/merchantinstallment.c \
+	starkbank/merchantpurchase/log.c \
+	starkbank/merchantpurchase/merchantpurchase.c \
+	starkbank/merchantsession/allowedinstallment.c \
+	starkbank/merchantsession/log.c \
+	starkbank/merchantsession/merchantsession.c \
+	starkbank/merchantsession/purchase.c \
 	starkbank/paymentpreview/boletopreview.c \
 	starkbank/paymentpreview/brcodepreview.c \
 	starkbank/paymentpreview/paymentpreview.c \

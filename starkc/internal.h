@@ -226,5 +226,21 @@ int starkbankVerbContentQuery(const starkbank_client *client, const starkbankRes
 int starkbankVerbSubResource(const starkbank_client *client, const starkbankResource *resource,
                              const char *id, const char *subResourceName, const char *tagName,
                              starkbank_entity **out, starkbank_errors **errors);
+/*
+ * MerchantSession.purchase's shape: rest.post_sub_resource, POST to
+ * endpoint(resource) + "/" + id + "/" + endpoint(subResourceName), body the
+ * given entity, unwrapped by the SUB resource's own singular name rather
+ * than the owning resource's - core-c's starkcore_rest_post_sub_resource is
+ * this exactly, unlike starkbankVerbCreateSub (CorporateCard's shape, a
+ * literal path segment and no id) and starkbankVerbSubResource (this one's
+ * GET counterpart, Invoice.payment). tagName is looked up in the registry to
+ * validate the entity being sent and to tag the one that comes back, the
+ * same permissive-if-unregistered rule starkbankVerbSubResource uses.
+ */
+int starkbankVerbCreateSubResource(const starkbank_client *client,
+                                   const starkbankResource *resource, const char *id,
+                                   const char *subResourceName, const char *tagName,
+                                   const starkbank_entity *entity, starkbank_entity **out,
+                                   starkbank_errors **errors);
 
 #endif /* STARKBANK_INTERNAL_H */

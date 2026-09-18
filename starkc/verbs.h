@@ -192,4 +192,22 @@
                                         subResourceName, tagName, out, errors);          \
     }
 
+/*
+ * rest.post_sub_resource: POST an entity to endpoint(ident)/id/endpoint(sub),
+ * unwrapped by the sub resource's own name rather than ident's -
+ * MerchantSession.purchase's shape, see starkbankVerbCreateSubResource's
+ * comment in verb.c for how this differs from both POST_SINGLE_SUB (a
+ * literal subPath, no id) and SUB_RESOURCE above (the GET, not POST, of a
+ * nested resource).
+ */
+#define STARKBANK_VERB_POST_SUB_RESOURCE(ident, verb, subResourceName, tagName)          \
+    STARKBANK_API int STARKBANK_CALL starkbank_##ident##_##verb(                         \
+        const starkbank_client *client, const char *id, const starkbank_entity *entity,  \
+        starkbank_entity **out, starkbank_errors **errors)                               \
+    {                                                                                    \
+        return starkbankVerbCreateSubResource(client, &starkbankTable_##ident, id,       \
+                                              subResourceName, tagName, entity,          \
+                                              out, errors);                              \
+    }
+
 #endif /* STARKBANK_VERBS_H */

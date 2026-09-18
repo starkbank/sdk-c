@@ -872,6 +872,161 @@ CORPORATE_WITHDRAWAL = {
     "created": "2026-09-16T12:00:00+00:00",
 }
 
+MERCHANT_SESSION = {
+    "id": "6234161654976512",
+    "uuid": "901e71f2447c43c886f58366a5432c4b",
+    "allowedFundingTypes": ["credit", "debit"],
+    "allowedInstallments": [{"totalAmount": 100, "count": 1},
+                            {"totalAmount": 51, "count": 2}],
+    "allowedIps": [],
+    "challengeMode": "enabled",
+    "expiration": 3600,
+    "holderId": "",
+    "softDescriptor": "",
+    "status": "created",
+    "tags": ["labs"],
+    "created": "2026-09-16T12:00:00+00:00",
+    "updated": "2026-09-16T12:00:00+00:00",
+}
+
+MERCHANT_SESSION_LOG = {
+    "id": "6357482625564672",
+    "created": "2026-09-16T12:00:00+00:00",
+    "type": "created",
+    "errors": ["expiredSession"],
+    "session": MERCHANT_SESSION,
+}
+
+SESSION_PURCHASE = {
+    "id": "6234161654976513",
+    "amount": 1000,
+    "cardExpiration": "2032-12",
+    "cardNumber": "",
+    "cardSecurityCode": "",
+    "holderName": "Tony Stark",
+    "fundingType": "credit",
+    "holderEmail": "tony@starkbank.com",
+    "holderPhone": "11999998888",
+    "holderId": "",
+    "installmentCount": 1,
+    "billingCountryCode": "BRA",
+    "billingCity": "Sao Paulo",
+    "billingStateCode": "SP",
+    "billingStreetLine1": "Av. Paulista, 200",
+    "billingStreetLine2": "",
+    "billingZipCode": "01311-200",
+    "metadata": {"userAgent": "python-requests", "timezoneOffset": 180,
+                "userIp": "191.9.0.0", "language": "pt-BR"},
+    "cardEnding": "1234",
+    "cardId": "5629632759480320",
+    "challengeMode": "enabled",
+    "challengeUrl": "https://sandbox.starkbank.com/challenge/abc",
+    "currencyCode": "BRL",
+    "endToEndId": "E79457883202101262140HHX553UPqeq",
+    "fee": 0,
+    "network": "mastercard",
+    "source": "merchant-session/901e71f2447c43c886f58366a5432c4b",
+    "softDescriptor": "starkbank",
+    "status": "approved",
+    "tags": [],
+    "created": "2026-09-16T12:00:00+00:00",
+    "updated": "2026-09-16T12:00:00+00:00",
+}
+
+MERCHANT_CARD = {
+    "id": "5629632759480320",
+    "ending": "1234",
+    "fundingType": "credit",
+    "holderName": "Tony Stark",
+    "network": "mastercard",
+    "status": "active",
+    "tags": ["labs"],
+    "expiration": "2032-12-01T00:00:00+00:00",
+    "created": "2026-09-16T12:00:00+00:00",
+    "updated": "2026-09-17T12:00:00+00:00",
+}
+
+MERCHANT_CARD_LOG = {
+    "id": "5629632759480321",
+    "created": "2026-09-16T12:00:00+00:00",
+    "updated": "2026-09-17T12:00:00+00:00",
+    "type": "created",
+    "errors": [{"code": "invalidCvv", "message": "CVV is invalid"}],
+    "card": MERCHANT_CARD,
+}
+
+MERCHANT_INSTALLMENT = {
+    "id": "5629632759480322",
+    "amount": 5000,
+    "due": "2026-10-28T00:00:00+00:00",
+    "fee": 100,
+    "fundingType": "credit",
+    "network": "mastercard",
+    "purchaseId": "5629632759480323",
+    "status": "created",
+    "tags": ["labs"],
+    "transactionIds": [],
+    "created": "2026-09-16T12:00:00+00:00",
+    "updated": "2026-09-17T12:00:00+00:00",
+}
+
+MERCHANT_INSTALLMENT_LOG = {
+    "id": "5629632759480324",
+    "created": "2026-09-16T12:00:00+00:00",
+    "updated": "2026-09-17T12:00:00+00:00",
+    "type": "created",
+    "errors": [{"code": "insufficientFunds", "message": "Insufficient funds"}],
+    "installment": MERCHANT_INSTALLMENT,
+}
+
+MERCHANT_PURCHASE = {
+    "id": "5629632759480323",
+    "amount": 10000,
+    "cardId": "5629632759480320",
+    "fundingType": "credit",
+    "installmentCount": 1,
+    "cardExpiration": "",
+    "cardNumber": "",
+    "cardSecurityCode": "",
+    "holderName": "",
+    "holderEmail": "",
+    "holderPhone": "",
+    "holderId": "",
+    "billingCountryCode": "",
+    "billingCity": "",
+    "billingStateCode": "",
+    "billingStreetLine1": "",
+    "billingStreetLine2": "",
+    "billingZipCode": "",
+    "metadata": {},
+    "cardEnding": "1234",
+    "softDescriptor": "starkbank",
+    "challengeMode": "enabled",
+    "challengeUrl": "",
+    "currencyCode": "BRL",
+    "endToEndId": "",
+    "fee": 200,
+    "network": "mastercard",
+    "source": "merchant-session/901e71f2447c43c886f58366a5432c4b",
+    "status": "approved",
+    "tags": ["labs"],
+    "created": "2026-09-16T12:00:00+00:00",
+    "updated": "2026-09-17T12:00:00+00:00",
+}
+
+MERCHANT_PURCHASE_LOG = {
+    "id": "5629632759480325",
+    "created": "2026-09-16T12:00:00+00:00",
+    "type": "approved",
+    "errors": [{"code": "invalidCvv", "message": "CVV is invalid"}],
+    "purchase": MERCHANT_PURCHASE,
+}
+
+CARD_METHOD = {"code": "chip", "name": "Chip", "number": "05"}
+MERCHANT_CATEGORY = {"code": "fastFoodRestaurants", "type": "food",
+                     "name": "Fast food restaurants", "number": "5814"}
+MERCHANT_COUNTRY = {"code": "BRA", "name": "Brazil", "number": "076", "shortCode": "BR"}
+
 PDF = b"%PDF-1.4 fake"
 PNG = b"\x89PNG\r\n\x1a\n fake"
 
@@ -1390,6 +1545,124 @@ def main():
                                          "cursor": ""}],
            lambda: starkbank.corporatewithdrawal.page(limit=5)[0])
 
+    session = starkbank.MerchantSession(
+        allowed_funding_types=["credit", "debit"],
+        allowed_installments=[
+            starkbank.merchantsession.AllowedInstallment(total_amount=100, count=1),
+            starkbank.merchantsession.AllowedInstallment(total_amount=51, count=2),
+        ],
+        expiration=3600,
+        tags=["labs"],
+    )
+    record("merchantsession.create", [{"session": MERCHANT_SESSION}],
+           lambda: starkbank.merchantsession.create(session))
+    record("merchantsession.get", [{"session": MERCHANT_SESSION}],
+           lambda: starkbank.merchantsession.get("6234161654976512"))
+    record("merchantsession.query", [{"sessions": [MERCHANT_SESSION], "cursor": ""}],
+           lambda: list(starkbank.merchantsession.query(
+               limit=5, status="created", tags=["labs"],
+               holder_id="5729405850615808")))
+    record("merchantsession.page", [{"sessions": [MERCHANT_SESSION], "cursor": ""}],
+           lambda: starkbank.merchantsession.page(limit=5)[0])
+    session_purchase = starkbank.merchantsession.Purchase(
+        amount=1000,
+        card_expiration="2032-12",
+        card_number="5579433276352001",
+        card_security_code="123",
+        holder_name="Tony Stark",
+        funding_type="credit",
+        holder_email="tony@starkbank.com",
+        holder_phone="11999998888",
+        installment_count=1,
+        billing_country_code="BRA",
+        billing_city="Sao Paulo",
+        billing_state_code="SP",
+        billing_street_line_1="Av. Paulista, 200",
+        billing_zip_code="01311-200",
+        metadata={"userAgent": "python-requests", "timezoneOffset": 180,
+                  "userIp": "191.9.0.0", "language": "pt-BR"},
+    )
+    record("merchantsession.purchase", [{"purchase": SESSION_PURCHASE}],
+           lambda: starkbank.merchantsession.purchase(
+               "901e71f2447c43c886f58366a5432c4b", session_purchase))
+    record("merchantsession.log.get", [{"log": MERCHANT_SESSION_LOG}],
+           lambda: starkbank.merchantsession.log.get("6357482625564672"))
+    record("merchantsession.log.query", [{"logs": [MERCHANT_SESSION_LOG], "cursor": ""}],
+           lambda: list(starkbank.merchantsession.log.query(
+               limit=5, types=["created"], session_ids=["6234161654976512"])))
+    record("merchantsession.log.page", [{"logs": [MERCHANT_SESSION_LOG], "cursor": ""}],
+           lambda: starkbank.merchantsession.log.page(limit=5)[0])
+
+    record("merchantcard.get", [{"card": MERCHANT_CARD}],
+           lambda: starkbank.merchantcard.get("5629632759480320"))
+    record("merchantcard.query", [{"cards": [MERCHANT_CARD], "cursor": ""}],
+           lambda: list(starkbank.merchantcard.query(limit=5, status="active",
+                                                      tags=["labs"])))
+    record("merchantcard.page", [{"cards": [MERCHANT_CARD], "cursor": ""}],
+           lambda: starkbank.merchantcard.page(limit=5)[0])
+    record("merchantcard.log.get", [{"log": MERCHANT_CARD_LOG}],
+           lambda: starkbank.merchantcard.log.get("5629632759480321"))
+    record("merchantcard.log.query", [{"logs": [MERCHANT_CARD_LOG], "cursor": ""}],
+           lambda: list(starkbank.merchantcard.log.query(
+               limit=5, card_ids=["5629632759480320"], types=["created"])))
+    record("merchantcard.log.page", [{"logs": [MERCHANT_CARD_LOG], "cursor": ""}],
+           lambda: starkbank.merchantcard.log.page(limit=5)[0])
+
+    record("merchantinstallment.get", [{"installment": MERCHANT_INSTALLMENT}],
+           lambda: starkbank.merchantinstallment.get("5629632759480322"))
+    record("merchantinstallment.query", [{"installments": [MERCHANT_INSTALLMENT],
+                                          "cursor": ""}],
+           lambda: list(starkbank.merchantinstallment.query(
+               limit=5, status="created", tags=["labs"],
+               purchase_ids=["5629632759480323"])))
+    record("merchantinstallment.page", [{"installments": [MERCHANT_INSTALLMENT],
+                                         "cursor": ""}],
+           lambda: starkbank.merchantinstallment.page(limit=5)[0])
+    record("merchantinstallment.log.get", [{"log": MERCHANT_INSTALLMENT_LOG}],
+           lambda: starkbank.merchantinstallment.log.get("5629632759480324"))
+    record("merchantinstallment.log.query", [{"logs": [MERCHANT_INSTALLMENT_LOG],
+                                              "cursor": ""}],
+           lambda: list(starkbank.merchantinstallment.log.query(
+               limit=5, types=["created"], installment_ids=["5629632759480322"])))
+    record("merchantinstallment.log.page", [{"logs": [MERCHANT_INSTALLMENT_LOG],
+                                             "cursor": ""}],
+           lambda: starkbank.merchantinstallment.log.page(limit=5)[0])
+
+    purchase2 = starkbank.MerchantPurchase(
+        amount=10000,
+        card_id="5629632759480320",
+        funding_type="credit",
+        installment_count=1,
+        tags=["labs"],
+    )
+    record("merchantpurchase.create", [{"purchase": MERCHANT_PURCHASE}],
+           lambda: starkbank.merchantpurchase.create(purchase2))
+    record("merchantpurchase.get", [{"purchase": MERCHANT_PURCHASE}],
+           lambda: starkbank.merchantpurchase.get("5629632759480323"))
+    record("merchantpurchase.query", [{"purchases": [MERCHANT_PURCHASE], "cursor": ""}],
+           lambda: list(starkbank.merchantpurchase.query(
+               limit=5, status="approved", tags=["labs"],
+               holder_id="5729405850615808")))
+    record("merchantpurchase.page", [{"purchases": [MERCHANT_PURCHASE], "cursor": ""}],
+           lambda: starkbank.merchantpurchase.page(limit=5)[0])
+    record("merchantpurchase.update", [{"purchase": MERCHANT_PURCHASE}],
+           lambda: starkbank.merchantpurchase.update("5629632759480323",
+                                                      status="canceled", amount=0))
+    record("merchantpurchase.log.get", [{"log": MERCHANT_PURCHASE_LOG}],
+           lambda: starkbank.merchantpurchase.log.get("5629632759480325"))
+    record("merchantpurchase.log.query", [{"logs": [MERCHANT_PURCHASE_LOG], "cursor": ""}],
+           lambda: list(starkbank.merchantpurchase.log.query(
+               limit=5, types=["approved"], purchase_ids=["5629632759480323"])))
+    record("merchantpurchase.log.page", [{"logs": [MERCHANT_PURCHASE_LOG], "cursor": ""}],
+           lambda: starkbank.merchantpurchase.log.page(limit=5)[0])
+
+    record("cardmethod.query", [{"methods": [CARD_METHOD], "cursor": ""}],
+           lambda: list(starkbank.cardmethod.query(search="chip")))
+    record("merchantcategory.query", [{"categories": [MERCHANT_CATEGORY], "cursor": ""}],
+           lambda: list(starkbank.merchantcategory.query(search="food")))
+    record("merchantcountry.query", [{"countries": [MERCHANT_COUNTRY], "cursor": ""}],
+           lambda: list(starkbank.merchantcountry.query(search="brazil")))
+
     document = {
         "cases": CASES,
         "responses": {
@@ -1455,6 +1728,22 @@ def main():
             "corporateTransactions": {"transactions": [CORPORATE_TRANSACTION], "cursor": ""},
             "corporateWithdrawal": {"withdrawal": CORPORATE_WITHDRAWAL},
             "corporateWithdrawals": {"withdrawals": [CORPORATE_WITHDRAWAL], "cursor": ""},
+            "merchantSession": {"session": MERCHANT_SESSION},
+            "merchantSessions": {"sessions": [MERCHANT_SESSION], "cursor": ""},
+            "merchantSessionLog": {"log": MERCHANT_SESSION_LOG},
+            "sessionPurchase": {"purchase": SESSION_PURCHASE},
+            "merchantCard": {"card": MERCHANT_CARD},
+            "merchantCards": {"cards": [MERCHANT_CARD], "cursor": ""},
+            "merchantCardLog": {"log": MERCHANT_CARD_LOG},
+            "merchantInstallment": {"installment": MERCHANT_INSTALLMENT},
+            "merchantInstallments": {"installments": [MERCHANT_INSTALLMENT], "cursor": ""},
+            "merchantInstallmentLog": {"log": MERCHANT_INSTALLMENT_LOG},
+            "merchantPurchase": {"purchase": MERCHANT_PURCHASE},
+            "merchantPurchases": {"purchases": [MERCHANT_PURCHASE], "cursor": ""},
+            "merchantPurchaseLog": {"log": MERCHANT_PURCHASE_LOG},
+            "cardMethods": {"methods": [CARD_METHOD], "cursor": ""},
+            "merchantCategories": {"categories": [MERCHANT_CATEGORY], "cursor": ""},
+            "merchantCountries": {"countries": [MERCHANT_COUNTRY], "cursor": ""},
         },
     }
     with open(OUT, "w") as handle:

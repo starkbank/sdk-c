@@ -42,6 +42,7 @@ an FFI generator and MSVC can all read it. `make check-header` proves that.
 
 | resource | verbs | notes |
 |---|---|---|
+| CardMethod | query | query-only lookup for `CorporateRule.methods`; no `limit` keyword and no `page`, matching python's `query(search=None)` exactly |
 | CorporateBalance | get | no id, no filters: the degenerate shape, again |
 | CorporateCard | create get query page update delete | `create` posts to `corporate-card/token` via `STARKBANK_VERB_POST_SINGLE_SUB`. + `corporatecard.Log` (get query page). `pin` is PATCH-only with no matching field: python's `update()` sends it but never stores it |
 | CorporateHolder | create get query page update delete | + `corporateholder.Log` (get query page), `CorporateHolder.Permission` (bare sub-resource), `CorporateRule` |
@@ -50,6 +51,12 @@ an FFI generator and MSVC can all read it. `make check-header` proves that.
 | CorporateRule | (none) | bare sub-resource embedded in `CorporateHolder.rules` and `CorporateCard.rules`, the same shape as `Split` |
 | CorporateTransaction | get query page | a read-only ledger entry; no create, update or delete anywhere in python |
 | CorporateWithdrawal | create get query page | `create` is `post_single`, the same shape as `CorporateInvoice` |
+| MerchantCard | get query page | every field is RO: stored once a MerchantSession Purchase or MerchantPurchase succeeds, never posted. + `merchantcard.Log` (get query page), whose `errors` is a real LIST_OBJECT |
+| MerchantCategory | query | query-only lookup for `CorporateRule.categories`; no `limit` keyword and no `page` |
+| MerchantCountry | query | query-only lookup for `CorporateRule.countries`; no `limit` keyword and no `page` |
+| MerchantInstallment | get query page | every field is RO: generated automatically when a MerchantPurchase is split. + `merchantinstallment.Log` (get query page), whose `errors` is a real LIST_OBJECT |
+| MerchantPurchase | create get query page update | `create` is `post_single`. `update` sends only `status`/`amount`, to cancel an approved purchase or reverse a confirmed one. + `merchantpurchase.Log` (get query page), whose `errors` is a real LIST_OBJECT |
+| MerchantSession | create get query page purchase | `create` is `post_single`. `purchase` is new: `STARKBANK_VERB_POST_SUB_RESOURCE`, built on `starkcore_rest_post_sub_resource`, POSTs a `Purchase` to `merchant-session/<uuid>/purchase` and returns it with an id. + `MerchantSession.AllowedInstallment`, `Purchase`, `merchantsession.Log` (get query page), whose `errors` is LIST_STRING, unlike the other merchant logs |
 | DarfPayment | create get delete query page pdf | + `darfpayment.Log` (get query page). Fully structured: no conditionally-required line/barCode pair, and no `type` attribute |
 | Invoice | create get query page update pdf qrcode payment | + `invoice.Log` (get query page pdf), `Invoice.Rule`, `Invoice.Payment`, `Split` |
 | TaxPayment | create get delete query page pdf | + `taxpayment.Log` (get query page). `line`/`barCode` are the conditionally-required pair; `scheduled` is a plain DATE |
@@ -70,7 +77,8 @@ an FFI generator and MSVC can all read it. `make check-header` proves that.
 
 Those six between them use every `starkcore_rest_*` shape the bank SDK needs:
 `post_multi`, `post_single`, `get_id`, `get_page`, the stream, `patch_id`,
-`delete_id`, `get_content` and `get_sub_resource`. The remaining bank
+`delete_id`, `get_content` and `get_sub_resource` - joined later by
+`post_sub_resource` for `MerchantSession.purchase`. The remaining bank
 resources are tables on top of exactly this engine.
 
 Two fields in the surface are polymorphic, and neither costs a line of C. A
