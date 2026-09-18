@@ -627,6 +627,81 @@ DARF_PAYMENT_LOG = {
     "payment": DARF_PAYMENT,
 }
 
+DEPOSIT = {
+    "id": "5768139429316608",
+    "name": "Cosmic Cupcakes",
+    "taxId": "20.018.183/0001-80",
+    "bankCode": "20018183",
+    "branchCode": "1357-9",
+    "accountNumber": "876543-2",
+    "accountType": "checking",
+    "amount": 1234,
+    "type": "pix",
+    "status": "created",
+    "tags": ["reconciliationId", "txId"],
+    "fee": 50,
+    "transactionIds": ["19827356981273"],
+    "created": "2026-09-16T12:00:00+00:00",
+    "updated": "2026-09-17T12:00:00+00:00",
+}
+
+DEPOSIT_LOG = {
+    "id": "6341320293482499",
+    "created": "2026-09-16T12:00:00+00:00",
+    "type": "credited",
+    "errors": [],
+    "deposit": DEPOSIT,
+}
+
+# tax_id is the masked shape the API returns for a key you do not own -
+# checks.py:33's MASKED case, not an encoding failure.
+DICT_KEY = {
+    "id": "tony@starkbank.com",
+    "type": "email",
+    "name": "Tony Stark",
+    "taxId": "***.345.678-**",
+    "ownerType": "naturalPerson",
+    "bankName": "Stark Bank",
+    "ispb": "20018183",
+    "branchCode": "ZW5jcnlwdGVkLWJyYW5jaC1jb2Rl",
+    "accountNumber": "ZW5jcnlwdGVkLWFjY291bnQtbnVtYmVy",
+    "accountType": "checking",
+    "status": "registered",
+}
+
+INSTITUTION = {
+    "displayName": "Stark Bank",
+    "name": "Stark Bank S.A.",
+    "spiCode": "20018183",
+    "strCode": "123",
+}
+
+TRANSACTION = {
+    "id": "7656565656565656",
+    "amount": 1234,
+    "description": "funds redistribution",
+    "externalId": "transaction ABC 2026-09-17",
+    "receiverId": "5656565656565656",
+    "senderId": "5656565656565655",
+    "tags": ["abc", "test"],
+    "fee": 200,
+    "balance": 100000000,
+    "source": "transfer/92873912873",
+    "created": "2026-09-16T12:00:00+00:00",
+}
+
+WORKSPACE = {
+    "id": "6284441752174592",
+    "username": "starkbankworkspace",
+    "name": "Stark Bank Workspace",
+    "allowedTaxIds": ["012.345.678-90", "20.018.183/0001-80"],
+    "status": "active",
+    "organizationId": "5656565656565656",
+    "pictureUrl": ("https://storage.googleapis.com/api-ms-workspace-sbx.appspot.com/"
+                   "pictures/workspace/6284441752174592.png?20230208220551"),
+    "created": "2026-09-16T12:00:00+00:00",
+}
+
 PDF = b"%PDF-1.4 fake"
 PNG = b"\x89PNG\r\n\x1a\n fake"
 
@@ -970,6 +1045,73 @@ def main():
     record("darfpayment.log.page", [{"logs": [DARF_PAYMENT_LOG], "cursor": ""}],
            lambda: starkbank.darfpayment.log.page(limit=5)[0])
 
+    record("deposit.get", [{"deposit": DEPOSIT}],
+           lambda: starkbank.deposit.get("5768139429316608"))
+    record("deposit.query", [{"deposits": [DEPOSIT], "cursor": ""}],
+           lambda: list(starkbank.deposit.query(limit=5, status="created",
+                                                tags=["reconciliationId", "txId"])))
+    record("deposit.page", [{"deposits": [DEPOSIT], "cursor": ""}],
+           lambda: starkbank.deposit.page(limit=5)[0])
+    # amount=0: a full reversal, and the case that proves the engine tells a
+    # legal zero apart from an absent key at every layer, not only Invoice's.
+    record("deposit.update", [{"deposit": DEPOSIT}],
+           lambda: starkbank.deposit.update("5768139429316608", amount=0))
+    record("deposit.log.get", [{"log": DEPOSIT_LOG}],
+           lambda: starkbank.deposit.log.get("6341320293482499"))
+    record("deposit.log.query", [{"logs": [DEPOSIT_LOG], "cursor": ""}],
+           lambda: list(starkbank.deposit.log.query(limit=5, types=["credited"],
+                                                     deposit_ids=["5768139429316608"])))
+    record("deposit.log.page", [{"logs": [DEPOSIT_LOG], "cursor": ""}],
+           lambda: starkbank.deposit.log.page(limit=5)[0])
+    record("deposit.log.pdf", [PDF],
+           lambda: None if starkbank.deposit.log.pdf("6341320293482499") else None)
+
+    record("dictkey.get", [{"key": DICT_KEY}],
+           lambda: starkbank.dictkey.get("tony@starkbank.com"))
+    record("dictkey.query", [{"keys": [DICT_KEY], "cursor": ""}],
+           lambda: list(starkbank.dictkey.query(limit=5, type="email", status="registered")))
+    record("dictkey.page", [{"keys": [DICT_KEY], "cursor": ""}],
+           lambda: starkbank.dictkey.page(limit=5)[0])
+
+    # institution.query is rest.get_page(...)[0]: one page, cursor discarded,
+    # no looping - the golden proves the request python actually sends, and
+    # only the request: python's own return value carries no cursor to check.
+    record("institution.query", [{"institutions": [INSTITUTION], "cursor": "c1"}],
+           lambda: starkbank.institution.query(limit=5, search="stark",
+                                               spi_codes=["20018183"]))
+
+    record("transaction.get", [{"transaction": TRANSACTION}],
+           lambda: starkbank.transaction.get("7656565656565656"))
+    record("transaction.query", [{"transactions": [TRANSACTION], "cursor": ""}],
+           lambda: list(starkbank.transaction.query(limit=5, tags=["abc", "test"],
+                                                     external_ids=["transaction ABC 2026-09-17"])))
+    record("transaction.page", [{"transactions": [TRANSACTION], "cursor": ""}],
+           lambda: starkbank.transaction.page(limit=5)[0])
+
+    # post_single, like webhook.create: the Workspace itself is the body, not
+    # wrapped in a list.
+    record("workspace.create", [{"workspace": WORKSPACE}],
+           lambda: starkbank.workspace.create(
+               username="starkbankworkspace", name="Stark Bank Workspace",
+               allowed_tax_ids=["012.345.678-90", "20.018.183/0001-80"]))
+    record("workspace.get", [{"workspace": WORKSPACE}],
+           lambda: starkbank.workspace.get("6284441752174592"))
+    record("workspace.query", [{"workspaces": [WORKSPACE], "cursor": ""}],
+           lambda: list(starkbank.workspace.query(limit=5, username="starkbankworkspace")))
+    record("workspace.page", [{"workspaces": [WORKSPACE], "cursor": ""}],
+           lambda: starkbank.workspace.page(limit=5)[0])
+    # picture is base64-encoded into one data-uri string by python itself;
+    # the golden's bodyRaw is the evidence sdk-c's caller must reproduce byte
+    # for byte when it builds that same string. username and name are also
+    # patched here so the golden's query/queryRaw prove core-python's
+    # patch_id(**query) echo: they land both in the body and in the URL as
+    # ?name=...&username=... - status and picture do not.
+    record("workspace.update", [{"workspace": WORKSPACE}],
+           lambda: starkbank.workspace.update(
+               "6284441752174592", username="starkbankworkspace",
+               name="Stark Bank Workspace", status="active",
+               picture=b"\x89PNG\r\n\x1a\n fake", picture_type="image/png"))
+
     document = {
         "cases": CASES,
         "responses": {
@@ -1008,6 +1150,17 @@ def main():
             "darfPayment": {"payment": DARF_PAYMENT},
             "darfPayments": {"payments": [DARF_PAYMENT], "cursor": ""},
             "darfPaymentLog": {"log": DARF_PAYMENT_LOG},
+            "deposit": {"deposit": DEPOSIT},
+            "deposits": {"deposits": [DEPOSIT], "cursor": ""},
+            "depositLog": {"log": DEPOSIT_LOG},
+            "depositLogs": {"logs": [DEPOSIT_LOG], "cursor": ""},
+            "key": {"key": DICT_KEY},
+            "keys": {"keys": [DICT_KEY], "cursor": ""},
+            "institutions": {"institutions": [INSTITUTION], "cursor": ""},
+            "transaction": {"transaction": TRANSACTION},
+            "transactions": {"transactions": [TRANSACTION], "cursor": ""},
+            "workspace": {"workspace": WORKSPACE},
+            "workspaces": {"workspaces": [WORKSPACE], "cursor": ""},
         },
     }
     with open(OUT, "w") as handle:

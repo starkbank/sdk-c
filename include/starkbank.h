@@ -1826,6 +1826,305 @@ STARKBANK_API int STARKBANK_CALL starkbank_darf_payment_log_page(const starkbank
     const starkbank_entity *params, starkbank_list **out, char **out_cursor,
     starkbank_errors **errors);
 
+/* =========================================================================
+ *                                 Deposit
+ * =========================================================================
+ *
+ * Deposit models passive cash-in received from an external transfer.
+ * sdk-python's Deposit has no create() at all - every field is return-only -
+ * and the only mutation the API exposes is reversal: rest.patch_id with a
+ * single "amount" key, full or partial, where amount=0 fully reverses the
+ * deposit. There is therefore no NEW and no create verb here, only
+ * PARAMS (the query and patch bag), GET_ID, QUERY, PAGE and PATCH_ID.
+ *
+ * Fields (wire keys; + = patchable). Every field but amount is return-only.
+ *
+ *   amount+ AMOUNT
+ *   id name taxId bankCode branchCode accountNumber accountType type status STRING (ro)
+ *   fee AMOUNT (ro)
+ *   tags transactionIds LIST_STRING (ro)
+ *   created updated DATETIME (ro)
+ *
+ * Query keys: limit, after, before, status, sort, tags, ids.
+ *
+ * amount carries PATCH and neither CREATE nor REQUIRED: REQUIRED means
+ * "required on create" and this resource has no create to be required for.
+ * sdk-python's own update(id, amount=None, user=None) defaults amount to
+ * None despite the docstring's prose calling it required - the same
+ * update()-is-not-create asymmetry Invoice.status and BrcodePayment.status
+ * already carry. A caller who omits it gets the API's own error.
+ */
+#define STARKBANK_DEPOSIT_ID                "id"
+#define STARKBANK_DEPOSIT_NAME              "name"
+#define STARKBANK_DEPOSIT_TAX_ID            "taxId"
+#define STARKBANK_DEPOSIT_BANK_CODE         "bankCode"
+#define STARKBANK_DEPOSIT_BRANCH_CODE       "branchCode"
+#define STARKBANK_DEPOSIT_ACCOUNT_NUMBER    "accountNumber"
+#define STARKBANK_DEPOSIT_ACCOUNT_TYPE      "accountType"
+#define STARKBANK_DEPOSIT_AMOUNT            "amount"
+#define STARKBANK_DEPOSIT_TYPE              "type"
+#define STARKBANK_DEPOSIT_STATUS            "status"
+#define STARKBANK_DEPOSIT_TAGS              "tags"
+#define STARKBANK_DEPOSIT_FEE               "fee"
+#define STARKBANK_DEPOSIT_TRANSACTION_IDS   "transactionIds"
+#define STARKBANK_DEPOSIT_CREATED           "created"
+#define STARKBANK_DEPOSIT_UPDATED           "updated"
+
+#define STARKBANK_DEPOSIT_STATUS_CREATED   "created"
+#define STARKBANK_DEPOSIT_STATUS_VOID      "void"
+
+STARKBANK_API int STARKBANK_CALL starkbank_deposit_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_deposit_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_deposit_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_deposit_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_deposit_update(const starkbank_client *client,
+    const char *id, const starkbank_entity *patch, starkbank_entity **out,
+    starkbank_errors **errors);
+/* amount is the only patchable key: pass 0 to fully reverse, or a smaller
+   amount to partially reverse. */
+
+/* ------------------------------------------------------------- deposit.Log */
+/*
+ * Resource "DepositLog"; endpoint "deposit/log", derived at run time.
+ * Fields: id STRING (ro), created DATETIME (ro), type STRING (ro),
+ *         errors LIST_STRING (ro), deposit RESOURCE("Deposit") (ro).
+ * Query keys: limit, after, before, types, depositIds.
+ *
+ * Unlike transfer.Log, boleto.Log, boletopayment.Log and brcodepayment.Log,
+ * deposit.Log has a pdf verb: the reversed deposit's receipt.
+ */
+#define STARKBANK_DEPOSIT_LOG_ID        "id"
+#define STARKBANK_DEPOSIT_LOG_CREATED   "created"
+#define STARKBANK_DEPOSIT_LOG_TYPE      "type"
+#define STARKBANK_DEPOSIT_LOG_ERRORS    "errors"
+#define STARKBANK_DEPOSIT_LOG_DEPOSIT   "deposit"
+
+STARKBANK_API int STARKBANK_CALL starkbank_deposit_log_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_deposit_log_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_deposit_log_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_deposit_log_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_deposit_log_pdf(const starkbank_client *client,
+    const char *id, unsigned char **out, size_t *out_len, starkbank_errors **errors);
+
+/* =========================================================================
+ *                                 DictKey
+ * =========================================================================
+ *
+ * Query/get only: sdk-python's DictKey has no create() (an EVP key is
+ * created automatically for every new Workspace) and no update(); every
+ * attribute is return-only. id is the PIX key itself (an email, a tax id, a
+ * phone number, or a DICT-issued EVP uuid).
+ *
+ * Fields (all return-only): id type name taxId ownerType bankName ispb
+ *   branchCode accountNumber accountType status STRING (ro).
+ *
+ * Query keys: limit, type, after, before, ids, status.
+ */
+#define STARKBANK_DICT_KEY_ID               "id"
+#define STARKBANK_DICT_KEY_TYPE             "type"
+#define STARKBANK_DICT_KEY_NAME             "name"
+#define STARKBANK_DICT_KEY_TAX_ID           "taxId"
+#define STARKBANK_DICT_KEY_OWNER_TYPE       "ownerType"
+#define STARKBANK_DICT_KEY_BANK_NAME        "bankName"
+#define STARKBANK_DICT_KEY_ISPB             "ispb"
+#define STARKBANK_DICT_KEY_BRANCH_CODE      "branchCode"
+#define STARKBANK_DICT_KEY_ACCOUNT_NUMBER   "accountNumber"
+#define STARKBANK_DICT_KEY_ACCOUNT_TYPE     "accountType"
+#define STARKBANK_DICT_KEY_STATUS           "status"
+
+#define STARKBANK_DICT_KEY_TYPE_CPF    "cpf"
+#define STARKBANK_DICT_KEY_TYPE_CNPJ   "cnpj"
+#define STARKBANK_DICT_KEY_TYPE_PHONE  "phone"
+#define STARKBANK_DICT_KEY_TYPE_EMAIL  "email"
+#define STARKBANK_DICT_KEY_TYPE_EVP    "evp"
+
+#define STARKBANK_DICT_KEY_STATUS_CREATED     "created"
+#define STARKBANK_DICT_KEY_STATUS_REGISTERED  "registered"
+#define STARKBANK_DICT_KEY_STATUS_CANCELED    "canceled"
+#define STARKBANK_DICT_KEY_STATUS_FAILED      "failed"
+
+STARKBANK_API int STARKBANK_CALL starkbank_dict_key_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_dict_key_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+/* id is the PIX key. This looks up keys you do not own, so it can validate a
+   key before a Transfer to it - but avoid looking up keys without following
+   up with a transfer: Bacen blocks accounts that make too many standalone
+   lookups in a short time, invalid-key lookups included. The returned
+   encrypted branchCode/accountNumber can be passed straight into a Transfer
+   without decrypting them. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_dict_key_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_dict_key_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+/* =========================================================================
+ *                                Institution
+ * =========================================================================
+ *
+ * sdk-python models Institution as a SubResource, not a Resource: there is no
+ * id field, and the module's only function is query(), which is itself
+ * `rest.get_page(...)[0]` - one page call, cursor thrown away, no looping.
+ * That is the PAGE shape wearing a different name, so sdk-c exposes
+ * starkbank_institution_page directly rather than inventing an iterator
+ * python's own code never builds. Pass NULL for out_cursor to match python's
+ * query() exactly.
+ *
+ * Fields (all return-only): displayName name spiCode strCode STRING (ro).
+ * Query keys: limit, search, spiCodes, strCodes.
+ */
+#define STARKBANK_INSTITUTION_DISPLAY_NAME  "displayName"
+#define STARKBANK_INSTITUTION_NAME          "name"
+#define STARKBANK_INSTITUTION_SPI_CODE      "spiCode"
+#define STARKBANK_INSTITUTION_STR_CODE      "strCode"
+
+STARKBANK_API int STARKBANK_CALL starkbank_institution_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_institution_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+/* =========================================================================
+ *                                Transaction
+ * =========================================================================
+ *
+ * sdk-python's create() is deprecated since v2.31.0 and unconditionally
+ * raises StarkError("deprecated") - it is not a working create, it is a
+ * tombstone. Transactions now arise only as a side effect of other
+ * operations (a Transfer, a paid charge...), so this table has no NEW and no
+ * create verb: adding one would let a C caller do, over the wire, exactly
+ * what sdk-python refuses to do at all.
+ *
+ * Fields (all return-only): amount fee balance AMOUNT (ro)
+ *   description externalId receiverId senderId source id STRING (ro)
+ *   tags LIST_STRING (ro)
+ *   created DATETIME (ro)
+ *
+ * Query keys: limit, after, before, tags, externalIds, ids.
+ */
+#define STARKBANK_TRANSACTION_AMOUNT        "amount"
+#define STARKBANK_TRANSACTION_DESCRIPTION   "description"
+#define STARKBANK_TRANSACTION_EXTERNAL_ID   "externalId"
+#define STARKBANK_TRANSACTION_RECEIVER_ID   "receiverId"
+#define STARKBANK_TRANSACTION_SENDER_ID     "senderId"
+#define STARKBANK_TRANSACTION_TAGS          "tags"
+#define STARKBANK_TRANSACTION_ID            "id"
+#define STARKBANK_TRANSACTION_FEE           "fee"
+#define STARKBANK_TRANSACTION_CREATED       "created"
+#define STARKBANK_TRANSACTION_SOURCE        "source"
+#define STARKBANK_TRANSACTION_BALANCE       "balance"
+
+STARKBANK_API int STARKBANK_CALL starkbank_transaction_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_transaction_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_transaction_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_transaction_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+/* =========================================================================
+ *                                Workspace
+ * =========================================================================
+ *
+ * create is post_single, like Webhook: sdk-python builds one Workspace
+ * locally from username/name/allowedTaxIds and posts it as the body itself,
+ * not wrapped in a list.
+ *
+ * Fields (wire keys; * = required on create, + = also patchable).
+ *
+ *   username*+ name*+ STRING      allowedTaxIds+ LIST_STRING
+ *   id organizationId pictureUrl STRING (ro)   created DATETIME (ro)
+ *   status+ picture+ STRING
+ *
+ * Query keys: limit, username, ids.
+ *
+ * picture carries PATCH alone, neither RO nor CREATE nor REQUIRED: it never
+ * appears on a returned Workspace (sdk-python's Workspace class has no
+ * picture attribute at all - only update() takes one), so it is the one
+ * field in this table that is genuinely write-only despite not being marked
+ * (ro) in the block above; the "* = required, + = patchable" legend has no
+ * symbol for that shape and this note is it.
+ *
+ * picture is the one field with judgement in it. sdk-python's update() takes
+ * picture as raw bytes and pictureType as a separate parameter, then builds
+ * exactly one wire value itself:
+ *     payload["picture"] = "data:{picture_type};base64,{base64(picture)}"
+ * pictureType never reaches the wire as its own key - it is only ever
+ * encoded into the "picture" string - so there is exactly one wire field to
+ * table, and its wire representation is already a plain string. No new
+ * engine verb shape is needed: the existing generic starkbank_entity_set_string
+ * covers it completely. A caller sends a picture by base64-encoding the bytes
+ * themselves and calling
+ *     starkbank_entity_set_string(patch, STARKBANK_WORKSPACE_PICTURE,
+ *         "data:image/png;base64,...")
+ * - a plain const char *, the smallest possible shape, the same preference
+ * STARKBANK_VERB_CONTENT_QUERY's own comment argues for boleto.pdf's two
+ * string keys.
+ */
+#define STARKBANK_WORKSPACE_USERNAME          "username"
+#define STARKBANK_WORKSPACE_NAME              "name"
+#define STARKBANK_WORKSPACE_ALLOWED_TAX_IDS   "allowedTaxIds"
+#define STARKBANK_WORKSPACE_ID                "id"
+#define STARKBANK_WORKSPACE_STATUS            "status"
+#define STARKBANK_WORKSPACE_ORGANIZATION_ID   "organizationId"
+#define STARKBANK_WORKSPACE_PICTURE_URL       "pictureUrl"
+#define STARKBANK_WORKSPACE_CREATED           "created"
+#define STARKBANK_WORKSPACE_PICTURE           "picture"
+
+#define STARKBANK_WORKSPACE_STATUS_ACTIVE  "active"
+#define STARKBANK_WORKSPACE_STATUS_CLOSED  "closed"
+#define STARKBANK_WORKSPACE_STATUS_FROZEN  "frozen"
+#define STARKBANK_WORKSPACE_STATUS_BLOCKED "blocked"
+
+STARKBANK_API int STARKBANK_CALL starkbank_workspace_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_workspace_params_new(starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_workspace_create(const starkbank_client *client,
+    const starkbank_entity *workspace, starkbank_entity **out, starkbank_errors **errors);
+/* post_single: workspace is the body itself, not wrapped in a list - same
+   shape as starkbank_webhook_create. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_workspace_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_workspace_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+/* If no filters are set and the user is an Organization, every Workspace the
+   Organization owns is returned - unchanged from sdk-python. */
+
+STARKBANK_API int STARKBANK_CALL starkbank_workspace_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_workspace_update(const starkbank_client *client,
+    const char *id, const starkbank_entity *patch, starkbank_entity **out,
+    starkbank_errors **errors);
+/* username, name, allowedTaxIds, status and picture are each independently
+   patchable; send only the keys that are changing.
+   Unlike every other patchable resource in this SDK, patching username or
+   name also sends it as a URL query parameter (?username=...&name=...) in
+   addition to the JSON body - sdk-python's workspace.update does the same,
+   and this mirrors it wire-for-wire. */
+
 #ifdef __cplusplus
 }
 #endif

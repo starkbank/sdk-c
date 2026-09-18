@@ -24,8 +24,12 @@
     R(brcode_preview)          \
     R(darf_payment)            \
     R(darf_payment_log)        \
+    R(deposit)                 \
+    R(deposit_log)             \
+    R(dict_key)                \
     R(event)                   \
     R(event_attempt)           \
+    R(institution)             \
     R(invoice)                 \
     R(invoice_log)             \
     R(invoice_payment)         \
@@ -35,12 +39,14 @@
     R(tax_payment)             \
     R(tax_payment_log)         \
     R(tax_preview)             \
+    R(transaction)             \
     R(transfer)                \
     R(transfer_log)            \
     R(transfer_rule)           \
     R(utility_payment)         \
     R(utility_payment_log)     \
     R(utility_preview)         \
-    R(webhook)
+    R(webhook)                 \
+    R(workspace)
 
 #endif /* STARKBANK_RESOURCES_H */

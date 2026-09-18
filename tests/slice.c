@@ -482,13 +482,14 @@ static void testRegistry(void)
     static const char *const expected[] = {
         "Balance", "Boleto", "BoletoLog", "BoletoPayment", "BoletoPaymentLog",
         "BrcodePayment", "BrcodePaymentLog", "BrcodePayment.Rule",
-        "DarfPayment", "DarfPaymentLog", "Event", "EventAttempt",
-        "Invoice", "InvoiceLog", "Invoice.Payment", "Invoice.Rule",
-        "PaymentPreview", "PaymentPreview.BoletoPreview",
-        "PaymentPreview.BrcodePreview", "PaymentPreview.TaxPreview",
-        "PaymentPreview.UtilityPreview", "Split", "TaxPayment",
-        "TaxPaymentLog", "Transfer", "TransferLog", "Transfer.Rule",
-        "UtilityPayment", "UtilityPaymentLog", "Webhook"
+        "DarfPayment", "DarfPaymentLog", "Deposit", "DepositLog", "DictKey",
+        "Event", "EventAttempt", "Institution", "Invoice", "InvoiceLog",
+        "Invoice.Payment", "Invoice.Rule", "PaymentPreview",
+        "PaymentPreview.BoletoPreview", "PaymentPreview.BrcodePreview",
+        "PaymentPreview.TaxPreview", "PaymentPreview.UtilityPreview",
+        "Split", "TaxPayment", "TaxPaymentLog", "Transaction", "Transfer",
+        "TransferLog", "Transfer.Rule", "UtilityPayment", "UtilityPaymentLog",
+        "Webhook", "Workspace"
     };
     char label[160];
     size_t index;
@@ -1807,6 +1808,218 @@ static void testDarfPaymentLog(void)
     starkbank_client_free(client);
 }
 
+/* =============================================================== Deposit */
+
+static void testDeposit(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *deposit = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_list *page = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    double amount = -1.0;
+
+    startGroup("Deposit - no create, reversal is the only write");
+    client = newClient(&fake);
+    replies(&fake, responseBody("deposit"), NULL);
+    check("get hydrates a Deposit",
+          starkbank_deposit_get(client, "5768139429316608", &deposit, NULL) == STARKBANK_OK,
+          NULL);
+    checkRequests("deposit.get", &fake);
+    checkHydration("deposit.get", 0, deposit);
+    starkbank_entity_free(deposit);
+    deposit = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("deposits"), NULL);
+    starkbank_deposit_params_new(&params);
+    starkbank_entity_set_string(params, STARKBANK_DEPOSIT_STATUS, "created");
+    starkbank_entity_append_string(params, STARKBANK_DEPOSIT_TAGS, "reconciliationId");
+    starkbank_entity_append_string(params, STARKBANK_DEPOSIT_TAGS, "txId");
+    starkbank_deposit_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("deposit.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("deposits"), NULL);
+    starkbank_deposit_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_deposit_page(client, params, &page, NULL, NULL);
+    checkRequests("deposit.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+
+    /* amount=0 fully reverses. This is the same absent-vs-zero distinction
+       Invoice.amount forces, proven again on a resource that reaches it only
+       through PATCH rather than a create. */
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("deposit"), NULL);
+    starkbank_deposit_params_new(&params);
+    starkbank_entity_set_amount(params, STARKBANK_DEPOSIT_AMOUNT, 0);
+    check("update sends the legal zero amount, not an absent key",
+          starkbank_deposit_update(client, "5768139429316608", params, &deposit, NULL)
+              == STARKBANK_OK, NULL);
+    checkRequests("deposit.update", &fake);
+    check("amount reads back as the real 1234, from the fixed canned reply",
+          starkbank_entity_amount(deposit, STARKBANK_DEPOSIT_AMOUNT, &amount) == STARKBANK_OK
+          && amount == 1234.0, NULL);
+    starkbank_entity_free(deposit);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+static void testDepositLog(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *log = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_list *page = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *nested = NULL;
+    unsigned char *blob = NULL;
+    size_t blobLength = 0;
+
+    startGroup("deposit.Log");
+    client = newClient(&fake);
+    replies(&fake, responseBody("depositLog"), NULL);
+    starkbank_deposit_log_get(client, "6341320293482499", &log, NULL);
+    checkRequests("deposit.log.get", &fake);
+    checkHydration("deposit.log.get", 0, log);
+    check("the nested deposit is tagged",
+          starkbank_entity_entity(log, STARKBANK_DEPOSIT_LOG_DEPOSIT, &nested) == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested), "Deposit"), NULL);
+    starkbank_entity_free(log);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("depositLogs"), NULL);
+    starkbank_deposit_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_append_string(params, "types", "credited");
+    starkbank_entity_append_string(params, "depositIds", "5768139429316608");
+    starkbank_deposit_log_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        check("query hydrates the log it iterates over",
+              equalStrings(starkbank_entity_resource(item), "DepositLog"), NULL);
+    }
+    checkRequests("deposit.log.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("depositLogs"), NULL);
+    starkbank_deposit_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    check("page returns the log list",
+          starkbank_deposit_log_page(client, params, &page, NULL, NULL) == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(starkbank_list_at(page, 0)), "DepositLog"),
+          NULL);
+    checkRequests("deposit.log.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+
+    /* deposit.Log has a pdf verb - the reversed deposit's receipt - unlike
+       transfer.Log, boleto.Log, boletopayment.Log and brcodepayment.Log. */
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "%PDF-1.4 fake", NULL);
+    starkbank_deposit_log_pdf(client, "6341320293482499", &blob, &blobLength, NULL);
+    checkRequests("deposit.log.pdf", &fake);
+    starkbank_free(blob);
+    starkbank_client_free(client);
+}
+
+/* ================================================================ DictKey */
+
+static void testDictKey(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *key = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_list *page = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const char *text = NULL;
+
+    startGroup("DictKey");
+    client = newClient(&fake);
+    replies(&fake, responseBody("key"), NULL);
+    check("get takes the PIX key itself as id",
+          starkbank_dict_key_get(client, "tony@starkbank.com", &key, NULL) == STARKBANK_OK,
+          NULL);
+    checkRequests("dictkey.get", &fake);
+    checkHydration("dictkey.get", 0, key);
+    check("a masked taxId is still the string the API sent, not an error",
+          starkbank_entity_string(key, STARKBANK_DICT_KEY_TAX_ID, &text) == STARKBANK_OK
+          && equalStrings(text, "***.345.678-**"), NULL);
+    starkbank_entity_free(key);
+    key = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("keys"), NULL);
+    starkbank_dict_key_params_new(&params);
+    starkbank_entity_set_string(params, "type", "email");
+    starkbank_entity_set_string(params, "status", "registered");
+    starkbank_dict_key_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("dictkey.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("keys"), NULL);
+    starkbank_dict_key_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_dict_key_page(client, params, &page, NULL, NULL);
+    checkRequests("dictkey.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+/* ============================================================ Institution */
+
+static void testInstitution(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *params = NULL;
+    starkbank_list *page = NULL;
+
+    startGroup("Institution - python's query() is page()[0], nothing else");
+    client = newClient(&fake);
+    replies(&fake, responseBody("institutions"), NULL);
+    starkbank_institution_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_set_string(params, "search", "stark");
+    starkbank_entity_append_string(params, "spiCodes", "20018183");
+    check("page is python's query() under its own name: one call, no cursor needed",
+          starkbank_institution_page(client, params, &page, NULL, NULL) == STARKBANK_OK
+          && starkbank_list_count(page) == 1, NULL);
+    checkRequests("institution.query", &fake);
+    checkHydration("institution.query", 0, starkbank_list_at(page, 0));
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
 /* ============================================================ TaxPayment */
 
 static void testTaxPayment(void)
@@ -1951,6 +2164,54 @@ static void testTaxPaymentLog(void)
     starkbank_entity_set_number(params, "limit", 5);
     starkbank_tax_payment_log_page(client, params, &page, NULL, NULL);
     checkRequests("taxpayment.log.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+/* =========================================================== Transaction */
+
+static void testTransaction(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *transaction = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_list *page = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+
+    startGroup("Transaction - create() is deprecated in python, so there is none here");
+    client = newClient(&fake);
+    replies(&fake, responseBody("transaction"), NULL);
+    starkbank_transaction_get(client, "7656565656565656", &transaction, NULL);
+    checkRequests("transaction.get", &fake);
+    checkHydration("transaction.get", 0, transaction);
+    starkbank_entity_free(transaction);
+    transaction = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("transactions"), NULL);
+    starkbank_transaction_params_new(&params);
+    starkbank_entity_append_string(params, "tags", "abc");
+    starkbank_entity_append_string(params, "tags", "test");
+    starkbank_entity_append_string(params, "externalIds", "transaction ABC 2026-09-17");
+    starkbank_transaction_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("transaction.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("transactions"), NULL);
+    starkbank_transaction_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_transaction_page(client, params, &page, NULL, NULL);
+    checkRequests("transaction.page", &fake);
     starkbank_list_free(page);
     starkbank_entity_free(params);
     starkbank_client_free(client);
@@ -2103,6 +2364,103 @@ static void testUtilityPaymentLog(void)
     starkbank_utility_payment_log_page(client, params, &page, NULL, NULL);
     checkRequests("utilitypayment.log.page", &fake);
     starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+/* ============================================================= Workspace */
+
+static void testWorkspace(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *workspace = NULL;
+    starkbank_entity *created = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_list *page = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+
+    startGroup("Workspace, post_single like Webhook");
+    client = newClient(&fake);
+    replies(&fake, responseBody("workspace"), NULL);
+    starkbank_workspace_new(&workspace);
+    starkbank_entity_set_string(workspace, STARKBANK_WORKSPACE_USERNAME, "starkbankworkspace");
+    starkbank_entity_set_string(workspace, STARKBANK_WORKSPACE_NAME, "Stark Bank Workspace");
+    starkbank_entity_append_string(workspace, STARKBANK_WORKSPACE_ALLOWED_TAX_IDS,
+                                   "012.345.678-90");
+    starkbank_entity_append_string(workspace, STARKBANK_WORKSPACE_ALLOWED_TAX_IDS,
+                                   "20.018.183/0001-80");
+    check("create takes one entity and returns one entity",
+          starkbank_workspace_create(client, workspace, &created, NULL) == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(created), "Workspace"), NULL);
+    checkRequests("workspace.create", &fake);
+    checkHydration("workspace.create", 0, created);
+    starkbank_entity_free(workspace);
+    workspace = NULL;
+    starkbank_entity_free(created);
+    created = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("workspace"), NULL);
+    starkbank_workspace_get(client, "6284441752174592", &workspace, NULL);
+    checkRequests("workspace.get", &fake);
+    checkHydration("workspace.get", 0, workspace);
+    starkbank_entity_free(workspace);
+    workspace = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("workspaces"), NULL);
+    starkbank_workspace_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_set_string(params, "username", "starkbankworkspace");
+    starkbank_workspace_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("workspace.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("workspaces"), NULL);
+    starkbank_workspace_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_workspace_page(client, params, &page, NULL, NULL);
+    checkRequests("workspace.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+
+    /* picture is sent as one wire string: sdk-python base64-encodes the bytes
+       itself and prefixes a data URI. sdk-c adds no new engine shape - the
+       caller builds the identical string and hands it to the existing
+       generic string setter.
+       username and name are patched here too, unlike every other patchable
+       resource: sdk-python's workspace.update also echoes them as URL query
+       parameters, and this is the case that proves it - see
+       STARKBANK_VERB_PATCH_ID_ECHO and workspaceEchoQuery in workspace.c. */
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("workspace"), NULL);
+    starkbank_workspace_params_new(&params);
+    starkbank_entity_set_string(params, STARKBANK_WORKSPACE_USERNAME, "starkbankworkspace");
+    starkbank_entity_set_string(params, STARKBANK_WORKSPACE_NAME, "Stark Bank Workspace");
+    starkbank_entity_set_string(params, STARKBANK_WORKSPACE_STATUS,
+                                STARKBANK_WORKSPACE_STATUS_ACTIVE);
+    starkbank_entity_set_string(params, STARKBANK_WORKSPACE_PICTURE,
+                                "data:image/png;base64,iVBORw0KGgogZmFrZQ==");
+    check("update patches username, name, status and the picture data URI together",
+          starkbank_workspace_update(client, "6284441752174592", params, &workspace, NULL)
+              == STARKBANK_OK, NULL);
+    check("username and name were also echoed into the query string",
+          strstr(fake.url[0], "?") != NULL
+          && strstr(fake.url[0], "username=starkbankworkspace") != NULL
+          && strstr(fake.url[0], "name=Stark") != NULL, fake.url[0]);
+    checkRequests("workspace.update", &fake);
+    starkbank_entity_free(workspace);
     starkbank_entity_free(params);
     starkbank_client_free(client);
 }
@@ -2545,10 +2903,16 @@ int main(void)
     testBalance();
     testDarfPayment();
     testDarfPaymentLog();
+    testDeposit();
+    testDepositLog();
+    testDictKey();
+    testInstitution();
     testTaxPayment();
     testTaxPaymentLog();
+    testTransaction();
     testUtilityPayment();
     testUtilityPaymentLog();
+    testWorkspace();
     testNegatives();
     testErrorsAndAbi();
 

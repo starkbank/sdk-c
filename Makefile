@@ -112,8 +112,12 @@ RESOURCE_SOURCES = \
 	starkbank/brcodepayment/rule.c \
 	starkbank/darfpayment/darfpayment.c \
 	starkbank/darfpayment/log.c \
+	starkbank/deposit/deposit.c \
+	starkbank/deposit/log.c \
+	starkbank/dictkey/dictkey.c \
 	starkbank/event/attempt.c \
 	starkbank/event/event.c \
+	starkbank/institution/institution.c \
 	starkbank/invoice/invoice.c \
 	starkbank/invoice/log.c \
 	starkbank/invoice/payment.c \
@@ -126,12 +130,14 @@ RESOURCE_SOURCES = \
 	starkbank/split/split.c \
 	starkbank/taxpayment/log.c \
 	starkbank/taxpayment/taxpayment.c \
+	starkbank/transaction/transaction.c \
 	starkbank/transfer/log.c \
 	starkbank/transfer/rule.c \
 	starkbank/transfer/transfer.c \
 	starkbank/utilitypayment/log.c \
 	starkbank/utilitypayment/utilitypayment.c \
-	starkbank/webhook/webhook.c
+	starkbank/webhook/webhook.c \
+	starkbank/workspace/workspace.c
 
 # The judgement methods. A symbol declared in the public header that no macro
 # expands must have exactly one definition here, and check-handwritten proves
