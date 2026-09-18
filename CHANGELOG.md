@@ -42,6 +42,65 @@ name-keyed accessors.
   rather than a new setter, the same choice `MerchantSession`'s
   `Purchase.metadata` already made for a single CREATE-writable object field.
   `due` is STRING for the same reason as InvoicePullSubscription's `due`/`end`
+### Added
+- `STARKBANK_VERB_PUT_MULTI`: `rest.put_multi`, structurally identical to
+  `POST_MULTI` (the same `{plural: [...]}` envelope, the same REQUIRED
+  pre-flight, list in and list out) but for the HTTP verb, built on core-c's
+  `starkcore_rest_put_multi` - already exposed and unused by this SDK until
+  now, so no core-c change was needed, the same precedent
+  `STARKBANK_VERB_POST_SUB_RESOURCE` set for `MerchantSession.purchase`
+- VerifiedAccount (+ Log): `create`/`get`/`query`/`page` plus `delete`, which
+  keeps sdk-c's uniform `starkbank_verified_account_delete` spelling for
+  python's `cancel()` - the same choice already made for CorporateHolder.
+  `verifiedaccount.Log.errors` is a real `LIST_OBJECT`, despite sdk-python's
+  own docstring calling the field a list of strings: app-docs'
+  `verified-account.js` sample shows `"errors": [{"code": "keyNotFound",
+  "message": "The key is not registered"}]` on the wire, and the
+  api-v2-ms-transfer service that backs this resource confirms it in code -
+  `models/verifiedAccountLog.py`'s `errorDescriptions` (lines 37-42) builds
+  exactly that `{code, message}` shape, and python's own `__init__` does no
+  coercion either way to contradict it
+- VerifiedTransfer: `create` only, sdk-python's module exports no
+  `get`/`query`/`page` at all. `rules` reuses the existing `Transfer.Rule`
+  table rather than a local one - sdk-python's own module imports
+  `transfer.rule.Rule` directly and hydrates through its `_sub_resource`
+- SplitReceiver (+ Log): the bank account a `Split.receiverId` names. The
+  query key list is sdk-python's `query()` forwarded set, since `QUERY` and
+  `PAGE` share one table and `page()` is only a narrower subset of it; this
+  disagrees with the docs' `GET /v2/split-receiver` parameter list in five
+  places (a `receiverIds` filter no SplitReceiver field or python keyword
+  names, a `taxIds`/`taxId` plural/singular mismatch, and `sort`/
+  `transactionIds` the docs omit), each recorded in `known-drift.json`.
+  `splitreceiver.Log.errors` is `LIST_STRING`: the api-v2-ms-split service
+  never emits the key
+- SplitProfile (+ Log): the first consumer of `STARKBANK_VERB_PUT_MULTI` -
+  sdk-python's only write verb is `put(splitProfile)`, with no create and no
+  delete. `delay` and `interval` are REQUIRED despite the class docstring
+  filing them under "optional": `__init__` takes both positionally with no
+  default, so the docstring's wording is the bug, recorded as two
+  `flag.conflict` entries resolved to "table". `delay` is `NUMBER`, not
+  `SECONDS`, the same reasoning as `MerchantSession.expiration`. The query key
+  list is `limit`, `after`, `before`, `ids`, `receiverIds`, `status`, `tags`:
+  `receiverIds` is a real keyword `page()` forwards to `rest.get_page`, even
+  though the docs' `GET /v2/split-profile` parameter list omits it, recorded
+  as `query.gone:SplitProfile:receiverIds` in `known-drift.json`
+- Split (+ Log): `get`/`query`/`page` now arrive alongside the fields Invoice
+  already hydrated out of its `splits` list. The query key list - `limit`,
+  `after`, `before`, `ids`, `receiverIds`, `status`, `tags` - is sdk-python's
+  `query()`/`page()` forwarded set, byte for byte the docs' `GET /v2/split`
+  parameter list too, so no `known-drift.json` entry is needed; the three
+  `verb.new:Split:get/query/page` exemptions that used to hide the gap are
+  removed. `split.Log`'s own `get`/`query`/`page` over `split/log` stays
+  reachable independently, as before. `errors` on both Logs is `LIST_STRING` -
+  the api-v2-ms-split service never emits the key, unlike VerifiedAccount's
+  api-v2-ms-transfer
+
+### Fixed
+- `starkbankVerbCreate` and `starkbankVerbPutMulti` (`starkc/verb.c`) now free
+  the dehydrated `item` when `starkcore_json_append(payload, item)` fails:
+  `payload` never took ownership on a failed append, so `item` leaked on that
+  path in both functions - `PutMulti` was copied from `Create` and carried
+  the same bug forward
 
 ## [0.1.0] - 2026-09-18
 ### Added

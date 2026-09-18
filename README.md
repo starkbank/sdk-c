@@ -48,7 +48,7 @@ an FFI generator and MSVC can all read it. `make check-header` proves that.
 | CorporateHolder | create get query page update delete | + `corporateholder.Log` (get query page), `CorporateHolder.Permission` (bare sub-resource), `CorporateRule` |
 | CorporateInvoice | create query page | `create` is `post_single`, the Webhook shape; no `get` - python has none |
 | CorporatePurchase | get query page parse response | every field is RO: a network authorizes a purchase, nobody posts one. + `corporatepurchase.Log` (get query page), whose `errors` is a real LIST_OBJECT. `parse`/`response` are hand-written, no network call in `response` |
-| CorporateRule | (none) | bare sub-resource embedded in `CorporateHolder.rules` and `CorporateCard.rules`, the same shape as `Split` |
+| CorporateRule | (none) | bare sub-resource embedded in `CorporateHolder.rules` and `CorporateCard.rules`, the shape `Split` had before its own get/query/page arrived |
 | CorporateTransaction | get query page | a read-only ledger entry; no create, update or delete anywhere in python |
 | CorporateWithdrawal | create get query page | `create` is `post_single`, the same shape as `CorporateInvoice` |
 | MerchantCard | get query page | every field is RO: stored once a MerchantSession Purchase or MerchantPurchase succeeds, never posted. + `merchantcard.Log` (get query page), whose `errors` is a real LIST_OBJECT |
@@ -79,12 +79,19 @@ an FFI generator and MSVC can all read it. `make check-header` proves that.
 | InvoicePullRequest | create get query page delete | sdk-python spells `delete` `cancel()`. + `invoicepullrequest.Log` (get query page), whose `errors` is a real LIST_OBJECT despite the docstring saying "list of strings" |
 | InvoicePullSubscription | create get query page delete | as InvoicePullRequest. + `invoicepullsubscription.Log` (get query page), same LIST_OBJECT `errors` |
 | PaymentRequest | create query page | no `get`: sdk-python has none. `payment` is polymorphic on `type`, into `Transfer`, `Transaction`, `BoletoPayment`, `BrcodePayment`, `UtilityPayment`, `DarfPayment` or `TaxPayment` - the same plain top-level tags those families already register. `payment` is written with `starkbank_entity_set_json_raw`, the same escape hatch `MerchantSession`'s `Purchase.metadata` uses, rather than a dedicated setter |
+| Split | get query page | query keys limit/after/before/ids/receiverIds/status/tags are sdk-python's `query()`/`page()` forwarded set, byte for byte the docs' `GET /v2/split` parameter list too. + `split.Log` (get query page), whose `errors` is LIST_STRING: the api-v2-ms-split service never emits the key |
+| SplitProfile | put get query page | `put` is the new `STARKBANK_VERB_PUT_MULTI`, built on `starkcore_rest_put_multi`, PUTs `{profiles: [...]}` to `split-profile` and returns the list. `delay`/`interval` are REQUIRED despite sdk-python's docstring filing them as optional - `__init__` takes both positionally with no default. The query keys add `receiverIds`, which sdk-python's `page()` forwards even though the docs' parameter list omits it. + `splitprofile.Log` (get query page), whose `errors` is LIST_STRING |
+| SplitReceiver | create get query page | the bank account a `Split.receiverId` names. + `splitreceiver.Log` (get query page), whose `errors` is LIST_STRING |
+| VerifiedAccount | create get query page delete | `delete` keeps sdk-c's uniform `*_delete` spelling for python's `cancel()`. + `verifiedaccount.Log` (get query page), whose `errors` is a real LIST_OBJECT despite sdk-python's own docstring calling it a list of strings - app-docs' verified-account.js sample shows `{"code": "keyNotFound", "message": "The key is not registered"}` on the wire, and the api-v2-ms-transfer service's `models/verifiedAccountLog.py` (lines 37-42) builds exactly that `{code, message}` shape in code |
+| VerifiedTransfer | create | create only: sdk-python has no `get`/`query`/`page`. `rules` reuses `Transfer.Rule` rather than a local table |
 
-Those six between them use every `starkcore_rest_*` shape the bank SDK needs:
+The table's resources between them use every `starkcore_rest_*` shape the
+bank SDK needs, including `put_multi`:
 `post_multi`, `post_single`, `get_id`, `get_page`, the stream, `patch_id`,
 `delete_id`, `get_content` and `get_sub_resource` - joined later by
-`post_sub_resource` for `MerchantSession.purchase`. The remaining bank
-resources are tables on top of exactly this engine.
+`post_sub_resource` for `MerchantSession.purchase` and `put_multi` for
+`SplitProfile.put`. The remaining bank resources are tables on top of exactly
+this engine.
 
 Three fields in the surface are polymorphic - Event.log, PaymentPreview.payment
 and PaymentRequest.payment - and none of them costs a line of C. A resource
