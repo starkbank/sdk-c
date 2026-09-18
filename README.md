@@ -86,8 +86,9 @@ Those six between them use every `starkcore_rest_*` shape the bank SDK needs:
 `post_sub_resource` for `MerchantSession.purchase`. The remaining bank
 resources are tables on top of exactly this engine.
 
-Two fields in the surface are polymorphic, and neither costs a line of C. A
-resource declares the map beside its field table -
+Three fields in the surface are polymorphic - Event.log, PaymentPreview.payment
+and PaymentRequest.payment - and none of them costs a line of C. A resource
+declares the map beside its field table -
 
 ```c
 #define STARKBANK_PAYMENT_PREVIEW_VARIANTS(V)             \

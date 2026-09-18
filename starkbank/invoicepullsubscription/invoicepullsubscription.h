@@ -19,8 +19,9 @@
  * own docstring says "list of strings": invoicepullsubscription.Log.__init__
  * does `self.errors = errors` with no coercion at all, so python merely
  * forwards whatever the api-v2-ms-invoice-pull backend sends, and that
- * service answers with {code, message} objects - the same shape
- * CorporatePurchase.Log's errors already carries. The docstring is stale
+ * service answers with {code, message} objects - the same docstring-says-
+ * strings-but-sends-objects-uncoerced gap MerchantCard.Log, MerchantInstallment.Log
+ * and MerchantPurchase.Log's errors already carry. The docstring is stale
  * prose describing an earlier wire shape; the table follows the service.
  *
  * amount and amountMinLimit are each individually optional in sdk-python's

@@ -23,7 +23,8 @@ name-keyed accessors.
   conditional-expression coercion is invisible to `tools/drift.py`'s ast
   reader. `Log.errors` is LIST_OBJECT, not the docstring's "list of strings":
   the api-v2-ms-invoice-pull service answers with `{code, message}` objects,
-  the same shape CorporatePurchase.Log already carries
+  the same docstring-says-strings-but-sends-objects-uncoerced gap
+  MerchantCard/MerchantInstallment/MerchantPurchase.Log's errors already carry
 - InvoicePullRequest (+ Log): same `cancel`-as-`delete` spelling and the same
   LIST_OBJECT `Log.errors`; `due` is DATE_OR_DATETIME here, a direct
   `check_datetime_or_date` call with no exemption needed
