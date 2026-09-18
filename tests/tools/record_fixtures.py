@@ -164,6 +164,7 @@ install()
 
 import starkbank                                             # noqa: E402
 from starkcore.utils.api import api_json                     # noqa: E402
+from starkcore.error import Error                             # noqa: E402
 
 
 def canonical(value):
@@ -223,6 +224,15 @@ def _stringify(value):
         return value.strftime("%Y-%m-%dT%H:%M:%S+00:00")
     if isinstance(value, date):
         return value.strftime("%Y-%m-%d")
+    if isinstance(value, Error):
+        # corporatepurchase.Log.errors: sdk-python's _parse_errors turns each
+        # {"code","message"} dict into a starkcore.error.Error (a StarkError
+        # subclass, not a SubResource), so cast_json_to_api_format's generic
+        # SubResource branch never fires and api_json hands back the raw
+        # Error object instead of a plain dict - this is that dict, recovered
+        # for comparison purposes only; sdk-python itself never round-trips
+        # this field back through json.dumps.
+        return {"code": value.code, "message": value.message}
     raise TypeError(repr(value))
 
 
@@ -702,6 +712,166 @@ WORKSPACE = {
     "created": "2026-09-16T12:00:00+00:00",
 }
 
+PERMISSION = {
+    "ownerId": "5656565656565656",
+    "ownerType": "project",
+    "ownerEmail": "tony@starkbank.com",
+    "ownerName": "Tony Stark",
+    "ownerPictureUrl": "https://storage.googleapis.com/api-ms-workspace-sbx.appspot.com/pictures/1",
+    "ownerStatus": "active",
+    "created": "2026-09-16T12:00:00+00:00",
+}
+
+CORPORATE_RULE = {
+    "id": "5714626427174912",
+    "name": "Travel",
+    "amount": 200000,
+    "interval": "day",
+    "schedule": None,
+    "currencyCode": "BRL",
+    "purposes": ["purchase"],
+    "categories": [],
+    "countries": [],
+    "methods": [],
+    "counterAmount": 1000,
+    "currencySymbol": "R$",
+    "currencyName": "Brazilian Real",
+}
+
+CORPORATE_HOLDER = {
+    "id": "5729405850615808",
+    "name": "Tony Stark",
+    "centerId": "5656565656565656",
+    "permissions": [PERMISSION],
+    "rules": [CORPORATE_RULE],
+    "tags": ["iron", "man"],
+    "status": "active",
+    "updated": "2026-09-17T12:00:00+00:00",
+    "created": "2026-09-16T12:00:00+00:00",
+}
+
+CORPORATE_HOLDER_LOG = {
+    "id": "6341320293482499",
+    "created": "2026-09-16T12:00:00+00:00",
+    "type": "created",
+    "holder": CORPORATE_HOLDER,
+}
+
+CORPORATE_BALANCE = {
+    "id": "5992663269507072",
+    "amount": 100000,
+    "limit": 0,
+    "maxLimit": 100000,
+    "currency": "BRL",
+    "updated": "2026-09-17T12:00:00+00:00",
+}
+
+CORPORATE_CARD = {
+    "id": "5859665293850624",
+    "holderId": "5729405850615808",
+    "holderName": "Tony Stark",
+    "displayName": "TONY STARK",
+    "rules": [CORPORATE_RULE],
+    "tags": ["travel"],
+    "streetLine1": "Av. Paulista, 200",
+    "streetLine2": "Apto. 123",
+    "district": "Bela Vista",
+    "city": "Sao Paulo",
+    "stateCode": "SP",
+    "zipCode": "01311-200",
+    "type": "virtual",
+    "status": "active",
+    "number": "123",
+    "securityCode": "123",
+    "expiration": "2030-01-01T00:00:00+00:00",
+    "updated": "2026-09-17T12:00:00+00:00",
+    "created": "2026-09-16T12:00:00+00:00",
+}
+
+CORPORATE_CARD_LOG = {
+    "id": "6341320293482500",
+    "created": "2026-09-16T12:00:00+00:00",
+    "type": "created",
+    "card": CORPORATE_CARD,
+}
+
+CORPORATE_PURCHASE = {
+    "id": "5992663269507073",
+    "holderId": "5729405850615808",
+    "holderName": "Tony Stark",
+    "centerId": "5656565656565656",
+    "cardId": "5859665293850624",
+    "cardEnding": "1234",
+    "description": "Swords",
+    "amount": 10000,
+    "tax": 0,
+    "issuerAmount": 10000,
+    "issuerCurrencyCode": "BRL",
+    "issuerCurrencySymbol": "R$",
+    "merchantAmount": 10000,
+    "merchantCurrencyCode": "BRL",
+    "merchantCurrencySymbol": "R$",
+    "merchantCategoryCode": "fastFoodRestaurants",
+    "merchantCategoryType": "food",
+    "merchantCountryCode": "BRA",
+    "merchantName": "Iron Bank S.A.",
+    "merchantDisplayName": "Iron Bank",
+    "merchantDisplayUrl": "https://starkbank.com",
+    "merchantFee": 0,
+    "methodCode": "chip",
+    "tags": ["war"],
+    "corporateTransactionIds": ["corporate-purchase/5992663269507073"],
+    "status": "approved",
+    "updated": "2026-09-17T12:00:00+00:00",
+    "created": "2026-09-16T12:00:00+00:00",
+}
+
+CORPORATE_PURCHASE_LOG = {
+    "id": "6341320293482501",
+    "created": "2026-09-16T12:00:00+00:00",
+    "type": "approved",
+    "errors": [{"code": "invalidPin", "message": "PIN is invalid"}],
+    "description": "Approved",
+    "corporateTransactionId": "corporate-purchase/5992663269507073",
+    "purchase": CORPORATE_PURCHASE,
+}
+
+CORPORATE_INVOICE = {
+    "id": "5155165527080963",
+    "amount": 100000,
+    "taxId": "20.018.183/0001-80",
+    "name": "Iron Bank S.A.",
+    "tags": ["load"],
+    "brcode": "00020101021226800014br.gov.bcb.pix2571brcode-h",
+    "due": "2026-10-28T17:59:26+00:00",
+    "link": "https://my-workspace.sandbox.starkbank.com/invoicelink/abc",
+    "status": "created",
+    "corporateTransactionId": "",
+    "updated": "2026-09-17T12:00:00+00:00",
+    "created": "2026-09-16T12:00:00+00:00",
+}
+
+CORPORATE_TRANSACTION = {
+    "id": "5155165527080964",
+    "amount": 100000,
+    "balance": 200000,
+    "description": "Buying food",
+    "source": "corporate-purchase/5992663269507073",
+    "tags": ["tony", "stark"],
+    "created": "2026-09-16T12:00:00+00:00",
+}
+
+CORPORATE_WITHDRAWAL = {
+    "id": "5155165527080965",
+    "amount": 100000,
+    "externalId": "12345",
+    "tags": ["cash"],
+    "transactionId": "transaction/5155165527080965",
+    "corporateTransactionId": "corporate-withdrawal/5155165527080965",
+    "updated": "2026-09-17T12:00:00+00:00",
+    "created": "2026-09-16T12:00:00+00:00",
+}
+
 PDF = b"%PDF-1.4 fake"
 PNG = b"\x89PNG\r\n\x1a\n fake"
 
@@ -1112,6 +1282,114 @@ def main():
                name="Stark Bank Workspace", status="active",
                picture=b"\x89PNG\r\n\x1a\n fake", picture_type="image/png"))
 
+    holder = starkbank.CorporateHolder(
+        name="Tony Stark",
+        center_id="5656565656565656",
+        tags=["iron", "man"],
+    )
+    record("corporateholder.create", [{"holders": [CORPORATE_HOLDER]}],
+           lambda: starkbank.corporateholder.create([holder]))
+    record("corporateholder.get", [{"holder": CORPORATE_HOLDER}],
+           lambda: starkbank.corporateholder.get("5729405850615808"))
+    record("corporateholder.query", [{"holders": [CORPORATE_HOLDER], "cursor": ""}],
+           lambda: list(starkbank.corporateholder.query(limit=5, status="active",
+                                                         tags=["iron"])))
+    record("corporateholder.page", [{"holders": [CORPORATE_HOLDER], "cursor": ""}],
+           lambda: starkbank.corporateholder.page(limit=5)[0])
+    record("corporateholder.update", [{"holder": CORPORATE_HOLDER}],
+           lambda: starkbank.corporateholder.update("5729405850615808", status="blocked",
+                                                     tags=["iron"]))
+    record("corporateholder.delete", [{"holder": CORPORATE_HOLDER}],
+           lambda: starkbank.corporateholder.cancel("5729405850615808"))
+    record("corporateholder.log.get", [{"log": CORPORATE_HOLDER_LOG}],
+           lambda: starkbank.corporateholder.log.get("6341320293482499"))
+    record("corporateholder.log.query", [{"logs": [CORPORATE_HOLDER_LOG], "cursor": ""}],
+           lambda: list(starkbank.corporateholder.log.query(
+               limit=5, types=["created"], holder_ids=["5729405850615808"])))
+    record("corporateholder.log.page", [{"logs": [CORPORATE_HOLDER_LOG], "cursor": ""}],
+           lambda: starkbank.corporateholder.log.page(limit=5)[0])
+
+    record("corporatebalance.get", [{"balances": [CORPORATE_BALANCE], "cursor": ""}],
+           lambda: starkbank.corporatebalance.get())
+
+    card = starkbank.CorporateCard(holder_id="5729405850615808")
+    record("corporatecard.create", [{"card": CORPORATE_CARD}],
+           lambda: starkbank.corporatecard.create(card))
+    record("corporatecard.get", [{"card": CORPORATE_CARD}],
+           lambda: starkbank.corporatecard.get("5859665293850624"))
+    record("corporatecard.query", [{"cards": [CORPORATE_CARD], "cursor": ""}],
+           lambda: list(starkbank.corporatecard.query(limit=5, status="active",
+                                                       tags=["travel"])))
+    record("corporatecard.page", [{"cards": [CORPORATE_CARD], "cursor": ""}],
+           lambda: starkbank.corporatecard.page(limit=5)[0])
+    record("corporatecard.update", [{"card": CORPORATE_CARD}],
+           lambda: starkbank.corporatecard.update("5859665293850624", status="blocked",
+                                                   tags=["travel"]))
+    record("corporatecard.delete", [{"card": CORPORATE_CARD}],
+           lambda: starkbank.corporatecard.cancel("5859665293850624"))
+    record("corporatecard.log.get", [{"log": CORPORATE_CARD_LOG}],
+           lambda: starkbank.corporatecard.log.get("6341320293482500"))
+    record("corporatecard.log.query", [{"logs": [CORPORATE_CARD_LOG], "cursor": ""}],
+           lambda: list(starkbank.corporatecard.log.query(
+               limit=5, types=["created"], card_ids=["5859665293850624"])))
+    record("corporatecard.log.page", [{"logs": [CORPORATE_CARD_LOG], "cursor": ""}],
+           lambda: starkbank.corporatecard.log.page(limit=5)[0])
+
+    record("corporatepurchase.get", [{"purchase": CORPORATE_PURCHASE}],
+           lambda: starkbank.corporatepurchase.get("5992663269507073"))
+    record("corporatepurchase.query", [{"purchases": [CORPORATE_PURCHASE], "cursor": ""}],
+           lambda: list(starkbank.corporatepurchase.query(
+               limit=5, status="approved", holder_ids=["5729405850615808"])))
+    # starkbank.corporatepurchase.__init__ exports only query/get/parse/response;
+    # page() is defined in __corporatepurchase.py (drift.py's AST reader sees
+    # it, matching this table's PAGE verb) but is not re-exported at package
+    # level - reached here through the private module directly rather than
+    # through starkbank.corporatepurchase.page, which does not exist.
+    from starkbank.corporatepurchase import __corporatepurchase as _corporatepurchase
+    record("corporatepurchase.page", [{"purchases": [CORPORATE_PURCHASE], "cursor": ""}],
+           lambda: _corporatepurchase.page(limit=5)[0])
+    record("corporatepurchase.log.get", [{"log": CORPORATE_PURCHASE_LOG}],
+           lambda: starkbank.corporatepurchase.log.get("6341320293482501"))
+    record("corporatepurchase.log.query", [{"logs": [CORPORATE_PURCHASE_LOG], "cursor": ""}],
+           lambda: list(starkbank.corporatepurchase.log.query(
+               limit=5, types=["approved"], purchase_ids=["5992663269507073"])))
+    record("corporatepurchase.log.page", [{"logs": [CORPORATE_PURCHASE_LOG], "cursor": ""}],
+           lambda: starkbank.corporatepurchase.log.page(limit=5)[0])
+
+    invoice2 = starkbank.CorporateInvoice(amount=100000, tags=["load"])
+    record("corporateinvoice.create", [{"invoice": CORPORATE_INVOICE}],
+           lambda: starkbank.corporateinvoice.create(invoice2))
+    record("corporateinvoice.query", [{"invoices": [CORPORATE_INVOICE], "cursor": ""}],
+           lambda: list(starkbank.corporateinvoice.query(limit=5, status="created",
+                                                          tags=["load"])))
+    record("corporateinvoice.page", [{"invoices": [CORPORATE_INVOICE], "cursor": ""}],
+           lambda: starkbank.corporateinvoice.page(limit=5)[0])
+
+    record("corporatetransaction.get", [{"transaction": CORPORATE_TRANSACTION}],
+           lambda: starkbank.corporatetransaction.get("5155165527080964"))
+    record("corporatetransaction.query", [{"transactions": [CORPORATE_TRANSACTION],
+                                           "cursor": ""}],
+           lambda: list(starkbank.corporatetransaction.query(
+               limit=5, tags=["tony"], external_ids=["19827356981276"],
+               ids=["5155165527080964"], source="corporate-purchase/5992663269507073")))
+    record("corporatetransaction.page", [{"transactions": [CORPORATE_TRANSACTION],
+                                          "cursor": ""}],
+           lambda: starkbank.corporatetransaction.page(limit=5)[0])
+
+    withdrawal = starkbank.CorporateWithdrawal(amount=100000, external_id="12345",
+                                               tags=["cash"])
+    record("corporatewithdrawal.create", [{"withdrawal": CORPORATE_WITHDRAWAL}],
+           lambda: starkbank.corporatewithdrawal.create(withdrawal))
+    record("corporatewithdrawal.get", [{"withdrawal": CORPORATE_WITHDRAWAL}],
+           lambda: starkbank.corporatewithdrawal.get("5155165527080965"))
+    record("corporatewithdrawal.query", [{"withdrawals": [CORPORATE_WITHDRAWAL],
+                                          "cursor": ""}],
+           lambda: list(starkbank.corporatewithdrawal.query(
+               limit=5, tags=["cash"], external_ids=["12345"])))
+    record("corporatewithdrawal.page", [{"withdrawals": [CORPORATE_WITHDRAWAL],
+                                         "cursor": ""}],
+           lambda: starkbank.corporatewithdrawal.page(limit=5)[0])
+
     document = {
         "cases": CASES,
         "responses": {
@@ -1161,6 +1439,22 @@ def main():
             "transactions": {"transactions": [TRANSACTION], "cursor": ""},
             "workspace": {"workspace": WORKSPACE},
             "workspaces": {"workspaces": [WORKSPACE], "cursor": ""},
+            "corporateHolder": {"holder": CORPORATE_HOLDER},
+            "corporateHolders": {"holders": [CORPORATE_HOLDER], "cursor": ""},
+            "corporateHolderLog": {"log": CORPORATE_HOLDER_LOG},
+            "corporateBalances": {"balances": [CORPORATE_BALANCE], "cursor": ""},
+            "corporateCard": {"card": CORPORATE_CARD},
+            "corporateCards": {"cards": [CORPORATE_CARD], "cursor": ""},
+            "corporateCardLog": {"log": CORPORATE_CARD_LOG},
+            "corporatePurchase": {"purchase": CORPORATE_PURCHASE},
+            "corporatePurchases": {"purchases": [CORPORATE_PURCHASE], "cursor": ""},
+            "corporatePurchaseLog": {"log": CORPORATE_PURCHASE_LOG},
+            "corporateInvoice": {"invoice": CORPORATE_INVOICE},
+            "corporateInvoices": {"invoices": [CORPORATE_INVOICE], "cursor": ""},
+            "corporateTransaction": {"transaction": CORPORATE_TRANSACTION},
+            "corporateTransactions": {"transactions": [CORPORATE_TRANSACTION], "cursor": ""},
+            "corporateWithdrawal": {"withdrawal": CORPORATE_WITHDRAWAL},
+            "corporateWithdrawals": {"withdrawals": [CORPORATE_WITHDRAWAL], "cursor": ""},
         },
     }
     with open(OUT, "w") as handle:

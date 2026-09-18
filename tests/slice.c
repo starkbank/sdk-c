@@ -482,14 +482,18 @@ static void testRegistry(void)
     static const char *const expected[] = {
         "Balance", "Boleto", "BoletoLog", "BoletoPayment", "BoletoPaymentLog",
         "BrcodePayment", "BrcodePaymentLog", "BrcodePayment.Rule",
+        "CorporateBalance", "CorporateCard", "CorporateCardLog",
+        "CorporateHolder", "CorporateHolderLog", "CorporateInvoice",
+        "CorporatePurchase", "CorporatePurchaseLog", "CorporateRule",
+        "CorporateTransaction", "CorporateWithdrawal",
         "DarfPayment", "DarfPaymentLog", "Deposit", "DepositLog", "DictKey",
         "Event", "EventAttempt", "Institution", "Invoice", "InvoiceLog",
         "Invoice.Payment", "Invoice.Rule", "PaymentPreview",
         "PaymentPreview.BoletoPreview", "PaymentPreview.BrcodePreview",
         "PaymentPreview.TaxPreview", "PaymentPreview.UtilityPreview",
-        "Split", "TaxPayment", "TaxPaymentLog", "Transaction", "Transfer",
-        "TransferLog", "Transfer.Rule", "UtilityPayment", "UtilityPaymentLog",
-        "Webhook", "Workspace"
+        "Permission", "Split", "TaxPayment", "TaxPaymentLog", "Transaction",
+        "Transfer", "TransferLog", "Transfer.Rule", "UtilityPayment",
+        "UtilityPaymentLog", "Webhook", "Workspace"
     };
     char label[160];
     size_t index;
@@ -2862,6 +2866,704 @@ static void testErrorsAndAbi(void)
           starkcore_abi_version() == STARKCORE_ABI_VERSION, NULL);
 }
 
+/* ========================================================= CorporateHolder */
+
+static void testCorporateHolder(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_list *batch = NULL;
+    starkbank_list *created = NULL;
+    starkbank_list *page = NULL;
+    starkbank_entity *holder = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *rule = NULL;
+    const starkbank_entity *permission = NULL;
+    int size = 0;
+
+    startGroup("CorporateHolder");
+    client = newClient(&fake);
+    replies(&fake, responseBody("corporateHolders"), NULL);
+    starkbank_corporate_holder_new(&holder);
+    starkbank_entity_set_string(holder, STARKBANK_CORPORATE_HOLDER_NAME, "Tony Stark");
+    starkbank_entity_set_string(holder, STARKBANK_CORPORATE_HOLDER_CENTER_ID,
+                                "5656565656565656");
+    starkbank_entity_append_string(holder, STARKBANK_CORPORATE_HOLDER_TAGS, "iron");
+    starkbank_entity_append_string(holder, STARKBANK_CORPORATE_HOLDER_TAGS, "man");
+    starkbank_list_new(&batch);
+    starkbank_list_append(batch, holder);
+    check("create returns the created list",
+          starkbank_corporate_holder_create(client, batch, &created, NULL) == STARKBANK_OK
+          && starkbank_list_count(created) == 1, NULL);
+    checkRequests("corporateholder.create", &fake);
+    checkHydration("corporateholder.create", 0, starkbank_list_at(created, 0));
+    check("no unknown key: the table matches python field for field",
+          starkbank_entity_unknown_count(starkbank_list_at(created, 0)) == 0, NULL);
+    starkbank_list_free(batch);
+    starkbank_list_free(created);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("corporateHolder"), NULL);
+    starkbank_corporate_holder_get(client, "5729405850615808", &holder, NULL);
+    checkRequests("corporateholder.get", &fake);
+    checkHydration("corporateholder.get", 0, holder);
+    check("permissions is a LIST_RESOURCE tagged Permission",
+          starkbank_entity_list_size(holder, "permissions", &size) == STARKBANK_OK
+          && size == 1
+          && starkbank_entity_list_entity_at(holder, "permissions", 0, &permission)
+              == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(permission), "Permission"), NULL);
+    check("rules is a LIST_RESOURCE tagged CorporateRule",
+          starkbank_entity_list_size(holder, "rules", &size) == STARKBANK_OK && size == 1
+          && starkbank_entity_list_entity_at(holder, "rules", 0, &rule) == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(rule), "CorporateRule"), NULL);
+    starkbank_entity_free(holder);
+    holder = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"holders\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_corporate_holder_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_set_string(params, "status", "active");
+    starkbank_entity_append_string(params, "tags", "iron");
+    starkbank_corporate_holder_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("corporateholder.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"holders\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_corporate_holder_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_corporate_holder_page(client, params, &page, NULL, NULL);
+    checkRequests("corporateholder.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("corporateHolder"), NULL);
+    starkbank_corporate_holder_params_new(&params);
+    starkbank_entity_set_string(params, STARKBANK_CORPORATE_HOLDER_STATUS, "blocked");
+    starkbank_entity_append_string(params, STARKBANK_CORPORATE_HOLDER_TAGS, "iron");
+    check("update patches",
+          starkbank_corporate_holder_update(client, "5729405850615808", params, &holder, NULL)
+              == STARKBANK_OK, NULL);
+    checkRequests("corporateholder.update", &fake);
+    starkbank_entity_free(holder);
+    holder = NULL;
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("corporateHolder"), NULL);
+    check("delete keeps sdk-c's uniform *_delete spelling for python's cancel()",
+          starkbank_corporate_holder_delete(client, "5729405850615808", &holder, NULL)
+              == STARKBANK_OK, NULL);
+    checkRequests("corporateholder.delete", &fake);
+    starkbank_entity_free(holder);
+    starkbank_client_free(client);
+}
+
+static void testCorporateHolderLog(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *log = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *nested = NULL;
+    starkbank_list *page = NULL;
+
+    startGroup("corporateholder.Log");
+    client = newClient(&fake);
+    replies(&fake, responseBody("corporateHolderLog"), NULL);
+    starkbank_corporate_holder_log_get(client, "6341320293482499", &log, NULL);
+    checkRequests("corporateholder.log.get", &fake);
+    checkHydration("corporateholder.log.get", 0, log);
+    check("the nested holder is tagged",
+          starkbank_entity_entity(log, STARKBANK_CORPORATE_HOLDER_LOG_HOLDER, &nested)
+              == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested), "CorporateHolder"), NULL);
+    starkbank_entity_free(log);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_corporate_holder_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_append_string(params, "types", "created");
+    starkbank_entity_append_string(params, "holderIds", "5729405850615808");
+    starkbank_corporate_holder_log_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("corporateholder.log.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_corporate_holder_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_corporate_holder_log_page(client, params, &page, NULL, NULL);
+    checkRequests("corporateholder.log.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+/* ========================================================= CorporateBalance */
+
+static void testCorporateBalance(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *balance = NULL;
+
+    startGroup("CorporateBalance - the degenerate no-id shape, again");
+    client = newClient(&fake);
+    replies(&fake, responseBody("corporateBalances"), NULL);
+    check("get takes the head of the listing endpoint",
+          starkbank_corporate_balance_get(client, &balance, NULL) == STARKBANK_OK, NULL);
+    checkRequests("corporatebalance.get", &fake);
+    checkHydration("corporatebalance.get", 0, balance);
+    starkbank_entity_free(balance);
+    starkbank_client_free(client);
+}
+
+/* ============================================================ CorporateCard */
+
+static void testCorporateCard(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *card = NULL;
+    starkbank_entity *created = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_list *page = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *rule = NULL;
+    int size = 0;
+
+    startGroup("CorporateCard - create posts to corporate-card/token");
+    client = newClient(&fake);
+    replies(&fake, responseBody("corporateCard"), NULL);
+    starkbank_corporate_card_new(&card);
+    starkbank_entity_set_string(card, STARKBANK_CORPORATE_CARD_HOLDER_ID,
+                                "5729405850615808");
+    check("create posts one card and returns it",
+          starkbank_corporate_card_create(client, card, &created, NULL) == STARKBANK_OK, NULL);
+    checkRequests("corporatecard.create", &fake);
+    checkHydration("corporatecard.create", 0, created);
+    check("no unknown key: the table matches python field for field",
+          starkbank_entity_unknown_count(created) == 0, NULL);
+    starkbank_entity_free(card);
+    starkbank_entity_free(created);
+    card = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("corporateCard"), NULL);
+    starkbank_corporate_card_get(client, "5859665293850624", &card, NULL);
+    checkRequests("corporatecard.get", &fake);
+    checkHydration("corporatecard.get", 0, card);
+    check("rules is a LIST_RESOURCE tagged CorporateRule",
+          starkbank_entity_list_size(card, "rules", &size) == STARKBANK_OK && size == 1
+          && starkbank_entity_list_entity_at(card, "rules", 0, &rule) == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(rule), "CorporateRule"), NULL);
+    starkbank_entity_free(card);
+    card = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"cards\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_corporate_card_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_set_string(params, "status", "active");
+    starkbank_entity_append_string(params, "tags", "travel");
+    starkbank_corporate_card_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("corporatecard.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"cards\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_corporate_card_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_corporate_card_page(client, params, &page, NULL, NULL);
+    checkRequests("corporatecard.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("corporateCard"), NULL);
+    starkbank_corporate_card_params_new(&params);
+    starkbank_entity_set_string(params, STARKBANK_CORPORATE_CARD_STATUS, "blocked");
+    starkbank_entity_append_string(params, STARKBANK_CORPORATE_CARD_TAGS, "travel");
+    check("update patches",
+          starkbank_corporate_card_update(client, "5859665293850624", params, &card, NULL)
+              == STARKBANK_OK, NULL);
+    checkRequests("corporatecard.update", &fake);
+    starkbank_entity_free(card);
+    card = NULL;
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("corporateCard"), NULL);
+    check("delete keeps sdk-c's uniform *_delete spelling for python's cancel()",
+          starkbank_corporate_card_delete(client, "5859665293850624", &card, NULL)
+              == STARKBANK_OK, NULL);
+    checkRequests("corporatecard.delete", &fake);
+    starkbank_entity_free(card);
+    starkbank_client_free(client);
+}
+
+static void testCorporateCardLog(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *log = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *nested = NULL;
+    starkbank_list *page = NULL;
+
+    startGroup("corporatecard.Log");
+    client = newClient(&fake);
+    replies(&fake, responseBody("corporateCardLog"), NULL);
+    starkbank_corporate_card_log_get(client, "6341320293482500", &log, NULL);
+    checkRequests("corporatecard.log.get", &fake);
+    checkHydration("corporatecard.log.get", 0, log);
+    check("the nested card is tagged",
+          starkbank_entity_entity(log, STARKBANK_CORPORATE_CARD_LOG_CARD, &nested)
+              == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested), "CorporateCard"), NULL);
+    starkbank_entity_free(log);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_corporate_card_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_append_string(params, "types", "created");
+    starkbank_entity_append_string(params, "cardIds", "5859665293850624");
+    starkbank_corporate_card_log_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("corporatecard.log.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_corporate_card_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_corporate_card_log_page(client, params, &page, NULL, NULL);
+    checkRequests("corporatecard.log.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+/* ======================================================== CorporatePurchase */
+
+static void testCorporatePurchase(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *purchase = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_list *page = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+
+    startGroup("CorporatePurchase - every field is RO, authorized by the network");
+    client = newClient(&fake);
+    replies(&fake, responseBody("corporatePurchase"), NULL);
+    starkbank_corporate_purchase_get(client, "5992663269507073", &purchase, NULL);
+    checkRequests("corporatepurchase.get", &fake);
+    checkHydration("corporatepurchase.get", 0, purchase);
+    check("no unknown key: the table matches python field for field",
+          starkbank_entity_unknown_count(purchase) == 0, NULL);
+    starkbank_entity_free(purchase);
+    purchase = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"purchases\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_corporate_purchase_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_set_string(params, "status", "approved");
+    starkbank_entity_append_string(params, "holderIds", "5729405850615808");
+    starkbank_corporate_purchase_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("corporatepurchase.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"purchases\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_corporate_purchase_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    /* Reached even though sdk-python's own __init__ never exports page() at
+       package level - see record_fixtures.py's corporatepurchase.page case. */
+    starkbank_corporate_purchase_page(client, params, &page, NULL, NULL);
+    checkRequests("corporatepurchase.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+static void testCorporatePurchaseLog(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *log = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *nested = NULL;
+    starkbank_list *page = NULL;
+    int size = 0;
+
+    startGroup("corporatepurchase.Log");
+    client = newClient(&fake);
+    replies(&fake, responseBody("corporatePurchaseLog"), NULL);
+    starkbank_corporate_purchase_log_get(client, "6341320293482501", &log, NULL);
+    checkRequests("corporatepurchase.log.get", &fake);
+    checkHydration("corporatepurchase.log.get", 0, log);
+    check("the nested purchase is tagged",
+          starkbank_entity_entity(log, STARKBANK_CORPORATE_PURCHASE_LOG_PURCHASE, &nested)
+              == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested), "CorporatePurchase"), NULL);
+    check("errors is a real LIST_OBJECT here, unlike CorporateCardLog/CorporateHolderLog",
+          starkbank_entity_list_size(log, STARKBANK_CORPORATE_PURCHASE_LOG_ERRORS, &size)
+              == STARKBANK_OK
+          && size == 1, NULL);
+    starkbank_entity_free(log);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_corporate_purchase_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_append_string(params, "types", "approved");
+    starkbank_entity_append_string(params, "purchaseIds", "5992663269507073");
+    starkbank_corporate_purchase_log_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("corporatepurchase.log.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_corporate_purchase_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_corporate_purchase_log_page(client, params, &page, NULL, NULL);
+    checkRequests("corporatepurchase.log.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+/* CorporatePurchase.parse: same public-key round trip as event.parse, but the
+   verified body IS the CorporatePurchase - python's key="" - so there is no
+   envelope key to unwrap, unlike Event's {"event": {...}}. */
+static void testCorporatePurchaseParse(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *purchase = NULL;
+    starkcore_user *signer = NULL;
+    char *publicPem;
+    char *signature = NULL;
+    char keyReply[4096];
+    const char *body =
+        "{\"id\":\"5992663269507073\",\"holderId\":\"5729405850615808\","
+        "\"amount\":10000,\"cardId\":\"5859665293850624\"}";
+
+    startGroup("corporatepurchase.parse - no envelope key, unlike event.parse");
+    publicPem = readFile("publicKey.pem");
+    if (publicPem == NULL) {
+        check("publicKey.pem fixture", 0, NULL);
+        return;
+    }
+    starkcore_project_new("1", STARKCORE_ENVIRONMENT_SANDBOX, privatePem, &signer);
+    starkcore_auth_sign(signer, body, strlen(body), &signature);
+    starkcore_user_free(signer);
+
+    client = newClient(&fake);
+    buildKeyReply(keyReply, sizeof(keyReply), publicPem);
+    replies(&fake, keyReply, NULL);
+    check("a genuine signature verifies and the body hydrates directly, with no wrapper",
+          starkbank_corporate_purchase_parse(client, body, strlen(body), signature,
+                                             &purchase, NULL) == STARKBANK_OK
+          && purchase != NULL
+          && equalStrings(starkbank_entity_id(purchase), "5992663269507073")
+          && equalStrings(starkbank_entity_resource(purchase), "CorporatePurchase"), NULL);
+    starkbank_entity_free(purchase);
+    purchase = NULL;
+
+    check("a tampered body does not verify and hands back nothing",
+          starkbank_corporate_purchase_parse(client, "{\"id\":\"9\"}", strlen("{\"id\":\"9\"}"),
+                                             signature, &purchase, NULL)
+              == STARKCORE_ERROR_SIGNATURE
+          && purchase == NULL, NULL);
+    check("NULL arguments are rejected rather than dereferenced",
+          starkbank_corporate_purchase_parse(NULL, body, strlen(body), signature, &purchase,
+                                             NULL) == STARKCORE_ERROR_ARGUMENT
+          && starkbank_corporate_purchase_parse(client, body, strlen(body), signature, NULL,
+                                                NULL) == STARKCORE_ERROR_ARGUMENT, NULL);
+
+    starkcore_free(signature);
+    free(publicPem);
+    starkbank_client_free(client);
+}
+
+/* CorporatePurchase.response: no network call at all - a pure string builder
+   a caller's own webhook handler answers the authorization request with. */
+static void testCorporatePurchaseResponse(void)
+{
+    char *out = NULL;
+
+    startGroup("corporatepurchase.response - a pure string builder, no network call");
+    check("an approved status with an amount and tags builds {\"authorization\":{...}}",
+          starkbank_corporate_purchase_response("approved", 1, 1234.0, NULL, "tony,stark",
+                                                &out) == STARKBANK_OK
+          && out != NULL
+          && strstr(out, "\"status\":\"approved\"") != NULL
+          && strstr(out, "\"amount\":1234") != NULL
+          && strstr(out, "\"tags\":[\"tony\",\"stark\"]") != NULL
+          && strstr(out, "\"reason\"") == NULL, NULL);
+    starkbank_free(out);
+    out = NULL;
+
+    check("a denied status carries its reason and omits amount and tags entirely",
+          starkbank_corporate_purchase_response("denied", 0, 0.0, "insufficientBalance", NULL,
+                                                &out) == STARKBANK_OK
+          && out != NULL
+          && strstr(out, "\"status\":\"denied\"") != NULL
+          && strstr(out, "\"reason\":\"insufficientBalance\"") != NULL
+          && strstr(out, "\"amount\"") == NULL
+          && strstr(out, "\"tags\"") == NULL, NULL);
+    starkbank_free(out);
+    out = NULL;
+
+    check("has_amount 0 means omit, so a real zero amount stays distinguishable",
+          starkbank_corporate_purchase_response("approved", 1, 0.0, NULL, NULL, &out)
+              == STARKBANK_OK
+          && out != NULL && strstr(out, "\"amount\":0") != NULL, NULL);
+    starkbank_free(out);
+
+    check("a NULL out pointer is rejected rather than dereferenced",
+          starkbank_corporate_purchase_response("approved", 0, 0.0, NULL, NULL, NULL)
+              == STARKCORE_ERROR_ARGUMENT, NULL);
+}
+
+/* ========================================================= CorporateInvoice */
+
+static void testCorporateInvoice(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *invoice = NULL;
+    starkbank_entity *created = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_list *page = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+
+    startGroup("CorporateInvoice - post_single, the Webhook shape");
+    client = newClient(&fake);
+    replies(&fake, responseBody("corporateInvoice"), NULL);
+    starkbank_corporate_invoice_new(&invoice);
+    starkbank_entity_set_amount(invoice, STARKBANK_CORPORATE_INVOICE_AMOUNT, 100000);
+    starkbank_entity_append_string(invoice, STARKBANK_CORPORATE_INVOICE_TAGS, "load");
+    check("create posts one invoice and returns it",
+          starkbank_corporate_invoice_create(client, invoice, &created, NULL) == STARKBANK_OK,
+          NULL);
+    checkRequests("corporateinvoice.create", &fake);
+    checkHydration("corporateinvoice.create", 0, created);
+    check("no unknown key: the table matches python field for field",
+          starkbank_entity_unknown_count(created) == 0, NULL);
+    starkbank_entity_free(invoice);
+    starkbank_entity_free(created);
+    invoice = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"invoices\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_corporate_invoice_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_set_string(params, "status", "created");
+    starkbank_entity_append_string(params, "tags", "load");
+    starkbank_corporate_invoice_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("corporateinvoice.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"invoices\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_corporate_invoice_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_corporate_invoice_page(client, params, &page, NULL, NULL);
+    checkRequests("corporateinvoice.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+/* ===================================================== CorporateTransaction */
+
+static void testCorporateTransaction(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *transaction = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_list *page = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+
+    startGroup("CorporateTransaction - a read-only ledger entry");
+    client = newClient(&fake);
+    replies(&fake, responseBody("corporateTransaction"), NULL);
+    starkbank_corporate_transaction_get(client, "5155165527080964", &transaction, NULL);
+    checkRequests("corporatetransaction.get", &fake);
+    checkHydration("corporatetransaction.get", 0, transaction);
+    check("no unknown key: the table matches python field for field",
+          starkbank_entity_unknown_count(transaction) == 0, NULL);
+    starkbank_entity_free(transaction);
+    transaction = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"transactions\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_corporate_transaction_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_set_string(params, "source", "corporate-purchase/5992663269507073");
+    starkbank_entity_append_string(params, "tags", "tony");
+    starkbank_entity_append_string(params, "externalIds", "19827356981276");
+    starkbank_entity_append_string(params, "ids", "5155165527080964");
+    starkbank_corporate_transaction_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("corporatetransaction.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"transactions\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_corporate_transaction_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_corporate_transaction_page(client, params, &page, NULL, NULL);
+    checkRequests("corporatetransaction.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+/* ====================================================== CorporateWithdrawal */
+
+static void testCorporateWithdrawal(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *withdrawal = NULL;
+    starkbank_entity *created = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_list *page = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+
+    startGroup("CorporateWithdrawal - post_single, the same shape as CorporateInvoice");
+    client = newClient(&fake);
+    replies(&fake, responseBody("corporateWithdrawal"), NULL);
+    starkbank_corporate_withdrawal_new(&withdrawal);
+    starkbank_entity_set_amount(withdrawal, STARKBANK_CORPORATE_WITHDRAWAL_AMOUNT, 100000);
+    starkbank_entity_set_string(withdrawal, STARKBANK_CORPORATE_WITHDRAWAL_EXTERNAL_ID,
+                                "12345");
+    starkbank_entity_append_string(withdrawal, STARKBANK_CORPORATE_WITHDRAWAL_TAGS, "cash");
+    check("create posts one withdrawal and returns it",
+          starkbank_corporate_withdrawal_create(client, withdrawal, &created, NULL)
+              == STARKBANK_OK, NULL);
+    checkRequests("corporatewithdrawal.create", &fake);
+    checkHydration("corporatewithdrawal.create", 0, created);
+    check("no unknown key: the table matches python field for field",
+          starkbank_entity_unknown_count(created) == 0, NULL);
+    starkbank_entity_free(withdrawal);
+    starkbank_entity_free(created);
+    withdrawal = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("corporateWithdrawal"), NULL);
+    starkbank_corporate_withdrawal_get(client, "5155165527080965", &withdrawal, NULL);
+    checkRequests("corporatewithdrawal.get", &fake);
+    checkHydration("corporatewithdrawal.get", 0, withdrawal);
+    starkbank_entity_free(withdrawal);
+    withdrawal = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"withdrawals\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_corporate_withdrawal_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_append_string(params, "tags", "cash");
+    starkbank_entity_append_string(params, "externalIds", "12345");
+    starkbank_corporate_withdrawal_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("corporatewithdrawal.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"withdrawals\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_corporate_withdrawal_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_corporate_withdrawal_page(client, params, &page, NULL, NULL);
+    checkRequests("corporatewithdrawal.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
 /* ============================================================== driver */
 
 int main(void)
@@ -2913,6 +3615,18 @@ int main(void)
     testUtilityPayment();
     testUtilityPaymentLog();
     testWorkspace();
+    testCorporateHolder();
+    testCorporateHolderLog();
+    testCorporateBalance();
+    testCorporateCard();
+    testCorporateCardLog();
+    testCorporatePurchase();
+    testCorporatePurchaseLog();
+    testCorporatePurchaseParse();
+    testCorporatePurchaseResponse();
+    testCorporateInvoice();
+    testCorporateTransaction();
+    testCorporateWithdrawal();
     testNegatives();
     testErrorsAndAbi();
 
