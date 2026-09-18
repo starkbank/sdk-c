@@ -49,6 +49,8 @@ int main(void)
     starkbank_errors *errors = NULL;
     const char *id = NULL;
     int status;
+    starkbank_entity *payment = NULL;
+    char *paymentJson = NULL;
 
     client = connect();
     if (client == NULL) {
@@ -57,6 +59,18 @@ int main(void)
 
     starkbank_payment_request_new(&payment_request);
     starkbank_entity_set_string(payment_request, "centerId", "example");
+    starkbank_transfer_new(&payment);
+    starkbank_entity_set_amount(payment, "amount", 400000);
+    starkbank_entity_set_string(payment, "name", "Arya Stark");
+    starkbank_entity_set_string(payment, "taxId", "012.345.678-90");
+    starkbank_entity_set_string(payment, "bankCode", "20018183");
+    starkbank_entity_set_string(payment, "branchCode", "1357-9");
+    starkbank_entity_set_string(payment, "accountNumber", "876543-2");
+    starkbank_entity_dump(payment, &paymentJson, NULL);
+    starkbank_entity_set_json_raw(payment_request, "payment", paymentJson);
+    starkbank_free(paymentJson);
+    starkbank_entity_free(payment);
+    starkbank_entity_set_string(payment_request, "type", "transfer");
     starkbank_list_new(&batch);
     starkbank_list_append(batch, payment_request);        /* the list owns it from here */
 

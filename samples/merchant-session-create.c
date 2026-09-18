@@ -47,6 +47,7 @@ int main(void)
     starkbank_entity *created = NULL;
     starkbank_errors *errors = NULL;
     int status;
+    starkbank_entity *allowedInstallmentsItem = NULL;
 
     client = connect();
     if (client == NULL) {
@@ -55,6 +56,10 @@ int main(void)
 
     starkbank_merchant_session_new(&merchant_session);
     starkbank_entity_append_string(merchant_session, "allowedFundingTypes", "war");
+    starkbank_allowed_installment_new(&allowedInstallmentsItem);
+    starkbank_entity_set_amount(allowedInstallmentsItem, "totalAmount", 400000);
+    starkbank_entity_set_number(allowedInstallmentsItem, "count", 5);
+    starkbank_entity_append_entity(merchant_session, "allowedInstallments", allowedInstallmentsItem);
     starkbank_entity_set_number(merchant_session, "expiration", 5);
     status = starkbank_merchant_session_create(client, merchant_session, &created, &errors);
     starkbank_entity_free(merchant_session);       /* post_single borrows it, unlike a list */
