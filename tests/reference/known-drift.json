@@ -255,6 +255,11 @@
       "key": "query.gone:CorporateWithdrawal:externalIds",
       "owner": "eduardo.santos@starkbank.com",
       "reason": "sdk-python's corporatewithdrawal.query()/page() accept external_ids and the docs' GET /v2/corporate-withdrawal endpoint does not list it, the same shape as query.gone:CorporateTransaction:externalIds. python is normative for the verb surface."
+    },
+    {
+      "key": "query.gone:MerchantSession:holderId",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "sdk-python's merchantsession.query()/page() accept holder_id and the docs' GET /v2/merchant-session endpoint does not list it, the same shape as query.gone:CorporateHolderLog:ids. python is normative for the verb surface."
     }
   ]
 }

@@ -134,6 +134,10 @@ RESOURCE_SOURCES = \
 	starkbank/invoice/log.c \
 	starkbank/invoice/payment.c \
 	starkbank/invoice/rule.c \
+	starkbank/merchantsession/allowedinstallment.c \
+	starkbank/merchantsession/log.c \
+	starkbank/merchantsession/merchantsession.c \
+	starkbank/merchantsession/purchase.c \
 	starkbank/paymentpreview/boletopreview.c \
 	starkbank/paymentpreview/brcodepreview.c \
 	starkbank/paymentpreview/paymentpreview.c \

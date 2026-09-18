@@ -12,6 +12,7 @@
 #define STARKBANK_RESOURCES_H
 
 #define STARKBANK_RESOURCES(R) \
+    R(allowed_installment)     \
     R(balance)                 \
     R(boleto)                  \
     R(boleto_log)              \
@@ -45,8 +46,11 @@
     R(invoice_log)             \
     R(invoice_payment)         \
     R(invoice_rule)            \
+    R(merchant_session)        \
+    R(merchant_session_log)    \
     R(payment_preview)         \
     R(permission)              \
+    R(purchase)                \
     R(split)                   \
     R(tax_payment)             \
     R(tax_payment_log)         \

@@ -84,7 +84,7 @@ VERB_PYTHON_NAME = {
     "PATCH_ID_ECHO": "update",
     "DELETE_ID": "delete",
 }
-VERB_NAMED = ("CONTENT", "CONTENT_INT", "CONTENT_QUERY", "SUB_RESOURCE")
+VERB_NAMED = ("CONTENT", "CONTENT_INT", "CONTENT_QUERY", "SUB_RESOURCE", "POST_SUB_RESOURCE")
 VERB_LOCAL = ("NEW", "PARAMS")
 
 # The docs' prose tags are lossy by construction: they have no date-vs-datetime,
