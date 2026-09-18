@@ -391,6 +391,21 @@
         }
       ]
     },
+    "cardmethod.query": {
+      "hydrated": [
+        "{\"code\":\"chip\",\"name\":\"Chip\",\"number\":\"05\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "search=chip",
+          "queryRaw": "search=chip",
+          "url": "https://sandbox.api.starkbank.com/v2/card-method"
+        }
+      ]
+    },
     "corporatebalance.get": {
       "hydrated": "{\"amount\":100000,\"currency\":\"BRL\",\"id\":\"5992663269507072\",\"limit\":0,\"maxLimit\":100000,\"updated\":\"2026-09-17T12:00:00+00:00\"}",
       "requests": [
@@ -1489,6 +1504,432 @@
         }
       ]
     },
+    "merchantcard.get": {
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"ending\":\"1234\",\"expiration\":\"2032-12-01T00:00:00+00:00\",\"fundingType\":\"credit\",\"holderName\":\"Tony Stark\",\"id\":\"5629632759480320\",\"network\":\"mastercard\",\"status\":\"active\",\"tags\":[\"labs\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-card/5629632759480320"
+        }
+      ]
+    },
+    "merchantcard.log.get": {
+      "hydrated": "{\"card\":{\"created\":\"2026-09-16T12:00:00+00:00\",\"ending\":\"1234\",\"expiration\":\"2032-12-01T00:00:00+00:00\",\"fundingType\":\"credit\",\"holderName\":\"Tony Stark\",\"id\":\"5629632759480320\",\"network\":\"mastercard\",\"status\":\"active\",\"tags\":[\"labs\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[{\"code\":\"invalidCvv\",\"message\":\"CVV is invalid\"}],\"id\":\"5629632759480321\",\"type\":\"created\",\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-card/log/5629632759480321"
+        }
+      ]
+    },
+    "merchantcard.log.page": {
+      "hydrated": [
+        "{\"card\":{\"created\":\"2026-09-16T12:00:00+00:00\",\"ending\":\"1234\",\"expiration\":\"2032-12-01T00:00:00+00:00\",\"fundingType\":\"credit\",\"holderName\":\"Tony Stark\",\"id\":\"5629632759480320\",\"network\":\"mastercard\",\"status\":\"active\",\"tags\":[\"labs\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[{\"code\":\"invalidCvv\",\"message\":\"CVV is invalid\"}],\"id\":\"5629632759480321\",\"type\":\"created\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-card/log"
+        }
+      ]
+    },
+    "merchantcard.log.query": {
+      "hydrated": [
+        "{\"card\":{\"created\":\"2026-09-16T12:00:00+00:00\",\"ending\":\"1234\",\"expiration\":\"2032-12-01T00:00:00+00:00\",\"fundingType\":\"credit\",\"holderName\":\"Tony Stark\",\"id\":\"5629632759480320\",\"network\":\"mastercard\",\"status\":\"active\",\"tags\":[\"labs\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[{\"code\":\"invalidCvv\",\"message\":\"CVV is invalid\"}],\"id\":\"5629632759480321\",\"type\":\"created\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "cardIds=5629632759480320&limit=5&types=created",
+          "queryRaw": "limit=5&cardIds=5629632759480320&types=created",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-card/log"
+        }
+      ]
+    },
+    "merchantcard.page": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"ending\":\"1234\",\"expiration\":\"2032-12-01T00:00:00+00:00\",\"fundingType\":\"credit\",\"holderName\":\"Tony Stark\",\"id\":\"5629632759480320\",\"network\":\"mastercard\",\"status\":\"active\",\"tags\":[\"labs\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-card"
+        }
+      ]
+    },
+    "merchantcard.query": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"ending\":\"1234\",\"expiration\":\"2032-12-01T00:00:00+00:00\",\"fundingType\":\"credit\",\"holderName\":\"Tony Stark\",\"id\":\"5629632759480320\",\"network\":\"mastercard\",\"status\":\"active\",\"tags\":[\"labs\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&status=active&tags=labs",
+          "queryRaw": "limit=5&status=active&tags=labs",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-card"
+        }
+      ]
+    },
+    "merchantcategory.query": {
+      "hydrated": [
+        "{\"code\":\"fastFoodRestaurants\",\"name\":\"Fast food restaurants\",\"number\":\"5814\",\"type\":\"food\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "search=food",
+          "queryRaw": "search=food",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-category"
+        }
+      ]
+    },
+    "merchantcountry.query": {
+      "hydrated": [
+        "{\"code\":\"BRA\",\"name\":\"Brazil\",\"number\":\"076\",\"shortCode\":\"BR\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "search=brazil",
+          "queryRaw": "search=brazil",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-country"
+        }
+      ]
+    },
+    "merchantinstallment.get": {
+      "hydrated": "{\"amount\":5000,\"created\":\"2026-09-16T12:00:00+00:00\",\"due\":\"2026-10-28T00:00:00+00:00\",\"fee\":100,\"fundingType\":\"credit\",\"id\":\"5629632759480322\",\"network\":\"mastercard\",\"purchaseId\":\"5629632759480323\",\"status\":\"created\",\"tags\":[\"labs\"],\"transactionIds\":[],\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-installment/5629632759480322"
+        }
+      ]
+    },
+    "merchantinstallment.log.get": {
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"5629632759480324\",\"installment\":{\"amount\":5000,\"created\":\"2026-09-16T12:00:00+00:00\",\"due\":\"2026-10-28T00:00:00+00:00\",\"fee\":100,\"fundingType\":\"credit\",\"id\":\"5629632759480322\",\"network\":\"mastercard\",\"purchaseId\":\"5629632759480323\",\"status\":\"created\",\"tags\":[\"labs\"],\"transactionIds\":[],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"created\",\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-installment/log/5629632759480324"
+        }
+      ]
+    },
+    "merchantinstallment.log.page": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"5629632759480324\",\"installment\":{\"amount\":5000,\"created\":\"2026-09-16T12:00:00+00:00\",\"due\":\"2026-10-28T00:00:00+00:00\",\"fee\":100,\"fundingType\":\"credit\",\"id\":\"5629632759480322\",\"network\":\"mastercard\",\"purchaseId\":\"5629632759480323\",\"status\":\"created\",\"tags\":[\"labs\"],\"transactionIds\":[],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"created\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-installment/log"
+        }
+      ]
+    },
+    "merchantinstallment.log.query": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"5629632759480324\",\"installment\":{\"amount\":5000,\"created\":\"2026-09-16T12:00:00+00:00\",\"due\":\"2026-10-28T00:00:00+00:00\",\"fee\":100,\"fundingType\":\"credit\",\"id\":\"5629632759480322\",\"network\":\"mastercard\",\"purchaseId\":\"5629632759480323\",\"status\":\"created\",\"tags\":[\"labs\"],\"transactionIds\":[],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"created\",\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "installmentIds=5629632759480322&limit=5&types=created",
+          "queryRaw": "limit=5&types=created&installmentIds=5629632759480322",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-installment/log"
+        }
+      ]
+    },
+    "merchantinstallment.page": {
+      "hydrated": [
+        "{\"amount\":5000,\"created\":\"2026-09-16T12:00:00+00:00\",\"due\":\"2026-10-28T00:00:00+00:00\",\"fee\":100,\"fundingType\":\"credit\",\"id\":\"5629632759480322\",\"network\":\"mastercard\",\"purchaseId\":\"5629632759480323\",\"status\":\"created\",\"tags\":[\"labs\"],\"transactionIds\":[],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-installment"
+        }
+      ]
+    },
+    "merchantinstallment.query": {
+      "hydrated": [
+        "{\"amount\":5000,\"created\":\"2026-09-16T12:00:00+00:00\",\"due\":\"2026-10-28T00:00:00+00:00\",\"fee\":100,\"fundingType\":\"credit\",\"id\":\"5629632759480322\",\"network\":\"mastercard\",\"purchaseId\":\"5629632759480323\",\"status\":\"created\",\"tags\":[\"labs\"],\"transactionIds\":[],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&purchaseIds=5629632759480323&status=created&tags=labs",
+          "queryRaw": "limit=5&status=created&tags=labs&purchaseIds=5629632759480323",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-installment"
+        }
+      ]
+    },
+    "merchantpurchase.create": {
+      "hydrated": "{\"amount\":10000,\"billingCity\":\"\",\"billingCountryCode\":\"\",\"billingStateCode\":\"\",\"billingStreetLine1\":\"\",\"billingStreetLine2\":\"\",\"billingZipCode\":\"\",\"cardEnding\":\"1234\",\"cardExpiration\":\"\",\"cardId\":\"5629632759480320\",\"cardNumber\":\"\",\"cardSecurityCode\":\"\",\"challengeMode\":\"enabled\",\"challengeUrl\":\"\",\"created\":\"2026-09-16T12:00:00+00:00\",\"currencyCode\":\"BRL\",\"endToEndId\":\"\",\"fee\":200,\"fundingType\":\"credit\",\"holderEmail\":\"\",\"holderId\":\"\",\"holderName\":\"\",\"holderPhone\":\"\",\"id\":\"5629632759480323\",\"installmentCount\":1,\"metadata\":{},\"network\":\"mastercard\",\"softDescriptor\":\"starkbank\",\"source\":\"merchant-session/901e71f2447c43c886f58366a5432c4b\",\"status\":\"approved\",\"tags\":[\"labs\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "{\"amount\":10000,\"cardId\":\"5629632759480320\",\"fundingType\":\"credit\",\"installmentCount\":1,\"tags\":[\"labs\"]}",
+          "bodyRaw": "{\"amount\": 10000, \"cardId\": \"5629632759480320\", \"fundingType\": \"credit\", \"installmentCount\": 1, \"tags\": [\"labs\"]}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-purchase"
+        }
+      ]
+    },
+    "merchantpurchase.get": {
+      "hydrated": "{\"amount\":10000,\"billingCity\":\"\",\"billingCountryCode\":\"\",\"billingStateCode\":\"\",\"billingStreetLine1\":\"\",\"billingStreetLine2\":\"\",\"billingZipCode\":\"\",\"cardEnding\":\"1234\",\"cardExpiration\":\"\",\"cardId\":\"5629632759480320\",\"cardNumber\":\"\",\"cardSecurityCode\":\"\",\"challengeMode\":\"enabled\",\"challengeUrl\":\"\",\"created\":\"2026-09-16T12:00:00+00:00\",\"currencyCode\":\"BRL\",\"endToEndId\":\"\",\"fee\":200,\"fundingType\":\"credit\",\"holderEmail\":\"\",\"holderId\":\"\",\"holderName\":\"\",\"holderPhone\":\"\",\"id\":\"5629632759480323\",\"installmentCount\":1,\"metadata\":{},\"network\":\"mastercard\",\"softDescriptor\":\"starkbank\",\"source\":\"merchant-session/901e71f2447c43c886f58366a5432c4b\",\"status\":\"approved\",\"tags\":[\"labs\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-purchase/5629632759480323"
+        }
+      ]
+    },
+    "merchantpurchase.log.get": {
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"5629632759480325\",\"purchase\":{\"amount\":10000,\"billingCity\":\"\",\"billingCountryCode\":\"\",\"billingStateCode\":\"\",\"billingStreetLine1\":\"\",\"billingStreetLine2\":\"\",\"billingZipCode\":\"\",\"cardEnding\":\"1234\",\"cardExpiration\":\"\",\"cardId\":\"5629632759480320\",\"cardNumber\":\"\",\"cardSecurityCode\":\"\",\"challengeMode\":\"enabled\",\"challengeUrl\":\"\",\"created\":\"2026-09-16T12:00:00+00:00\",\"currencyCode\":\"BRL\",\"endToEndId\":\"\",\"fee\":200,\"fundingType\":\"credit\",\"holderEmail\":\"\",\"holderId\":\"\",\"holderName\":\"\",\"holderPhone\":\"\",\"id\":\"5629632759480323\",\"installmentCount\":1,\"metadata\":{},\"network\":\"mastercard\",\"softDescriptor\":\"starkbank\",\"source\":\"merchant-session/901e71f2447c43c886f58366a5432c4b\",\"status\":\"approved\",\"tags\":[\"labs\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"approved\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-purchase/log/5629632759480325"
+        }
+      ]
+    },
+    "merchantpurchase.log.page": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"5629632759480325\",\"purchase\":{\"amount\":10000,\"billingCity\":\"\",\"billingCountryCode\":\"\",\"billingStateCode\":\"\",\"billingStreetLine1\":\"\",\"billingStreetLine2\":\"\",\"billingZipCode\":\"\",\"cardEnding\":\"1234\",\"cardExpiration\":\"\",\"cardId\":\"5629632759480320\",\"cardNumber\":\"\",\"cardSecurityCode\":\"\",\"challengeMode\":\"enabled\",\"challengeUrl\":\"\",\"created\":\"2026-09-16T12:00:00+00:00\",\"currencyCode\":\"BRL\",\"endToEndId\":\"\",\"fee\":200,\"fundingType\":\"credit\",\"holderEmail\":\"\",\"holderId\":\"\",\"holderName\":\"\",\"holderPhone\":\"\",\"id\":\"5629632759480323\",\"installmentCount\":1,\"metadata\":{},\"network\":\"mastercard\",\"softDescriptor\":\"starkbank\",\"source\":\"merchant-session/901e71f2447c43c886f58366a5432c4b\",\"status\":\"approved\",\"tags\":[\"labs\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"approved\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-purchase/log"
+        }
+      ]
+    },
+    "merchantpurchase.log.query": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"5629632759480325\",\"purchase\":{\"amount\":10000,\"billingCity\":\"\",\"billingCountryCode\":\"\",\"billingStateCode\":\"\",\"billingStreetLine1\":\"\",\"billingStreetLine2\":\"\",\"billingZipCode\":\"\",\"cardEnding\":\"1234\",\"cardExpiration\":\"\",\"cardId\":\"5629632759480320\",\"cardNumber\":\"\",\"cardSecurityCode\":\"\",\"challengeMode\":\"enabled\",\"challengeUrl\":\"\",\"created\":\"2026-09-16T12:00:00+00:00\",\"currencyCode\":\"BRL\",\"endToEndId\":\"\",\"fee\":200,\"fundingType\":\"credit\",\"holderEmail\":\"\",\"holderId\":\"\",\"holderName\":\"\",\"holderPhone\":\"\",\"id\":\"5629632759480323\",\"installmentCount\":1,\"metadata\":{},\"network\":\"mastercard\",\"softDescriptor\":\"starkbank\",\"source\":\"merchant-session/901e71f2447c43c886f58366a5432c4b\",\"status\":\"approved\",\"tags\":[\"labs\"],\"updated\":\"2026-09-17T12:00:00+00:00\"},\"type\":\"approved\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&purchaseIds=5629632759480323&types=approved",
+          "queryRaw": "limit=5&types=approved&purchaseIds=5629632759480323",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-purchase/log"
+        }
+      ]
+    },
+    "merchantpurchase.page": {
+      "hydrated": [
+        "{\"amount\":10000,\"billingCity\":\"\",\"billingCountryCode\":\"\",\"billingStateCode\":\"\",\"billingStreetLine1\":\"\",\"billingStreetLine2\":\"\",\"billingZipCode\":\"\",\"cardEnding\":\"1234\",\"cardExpiration\":\"\",\"cardId\":\"5629632759480320\",\"cardNumber\":\"\",\"cardSecurityCode\":\"\",\"challengeMode\":\"enabled\",\"challengeUrl\":\"\",\"created\":\"2026-09-16T12:00:00+00:00\",\"currencyCode\":\"BRL\",\"endToEndId\":\"\",\"fee\":200,\"fundingType\":\"credit\",\"holderEmail\":\"\",\"holderId\":\"\",\"holderName\":\"\",\"holderPhone\":\"\",\"id\":\"5629632759480323\",\"installmentCount\":1,\"metadata\":{},\"network\":\"mastercard\",\"softDescriptor\":\"starkbank\",\"source\":\"merchant-session/901e71f2447c43c886f58366a5432c4b\",\"status\":\"approved\",\"tags\":[\"labs\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-purchase"
+        }
+      ]
+    },
+    "merchantpurchase.query": {
+      "hydrated": [
+        "{\"amount\":10000,\"billingCity\":\"\",\"billingCountryCode\":\"\",\"billingStateCode\":\"\",\"billingStreetLine1\":\"\",\"billingStreetLine2\":\"\",\"billingZipCode\":\"\",\"cardEnding\":\"1234\",\"cardExpiration\":\"\",\"cardId\":\"5629632759480320\",\"cardNumber\":\"\",\"cardSecurityCode\":\"\",\"challengeMode\":\"enabled\",\"challengeUrl\":\"\",\"created\":\"2026-09-16T12:00:00+00:00\",\"currencyCode\":\"BRL\",\"endToEndId\":\"\",\"fee\":200,\"fundingType\":\"credit\",\"holderEmail\":\"\",\"holderId\":\"\",\"holderName\":\"\",\"holderPhone\":\"\",\"id\":\"5629632759480323\",\"installmentCount\":1,\"metadata\":{},\"network\":\"mastercard\",\"softDescriptor\":\"starkbank\",\"source\":\"merchant-session/901e71f2447c43c886f58366a5432c4b\",\"status\":\"approved\",\"tags\":[\"labs\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "holderId=5729405850615808&limit=5&status=approved&tags=labs",
+          "queryRaw": "limit=5&status=approved&tags=labs&holderId=5729405850615808",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-purchase"
+        }
+      ]
+    },
+    "merchantpurchase.update": {
+      "hydrated": "{\"amount\":10000,\"billingCity\":\"\",\"billingCountryCode\":\"\",\"billingStateCode\":\"\",\"billingStreetLine1\":\"\",\"billingStreetLine2\":\"\",\"billingZipCode\":\"\",\"cardEnding\":\"1234\",\"cardExpiration\":\"\",\"cardId\":\"5629632759480320\",\"cardNumber\":\"\",\"cardSecurityCode\":\"\",\"challengeMode\":\"enabled\",\"challengeUrl\":\"\",\"created\":\"2026-09-16T12:00:00+00:00\",\"currencyCode\":\"BRL\",\"endToEndId\":\"\",\"fee\":200,\"fundingType\":\"credit\",\"holderEmail\":\"\",\"holderId\":\"\",\"holderName\":\"\",\"holderPhone\":\"\",\"id\":\"5629632759480323\",\"installmentCount\":1,\"metadata\":{},\"network\":\"mastercard\",\"softDescriptor\":\"starkbank\",\"source\":\"merchant-session/901e71f2447c43c886f58366a5432c4b\",\"status\":\"approved\",\"tags\":[\"labs\"],\"updated\":\"2026-09-17T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "{\"amount\":0,\"status\":\"canceled\"}",
+          "bodyRaw": "{\"status\": \"canceled\", \"amount\": 0}",
+          "method": "PATCH",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-purchase/5629632759480323"
+        }
+      ]
+    },
+    "merchantsession.create": {
+      "hydrated": "{\"allowedFundingTypes\":[\"credit\",\"debit\"],\"allowedInstallments\":[{\"count\":1,\"totalAmount\":100},{\"count\":2,\"totalAmount\":51}],\"allowedIps\":[],\"challengeMode\":\"enabled\",\"created\":\"2026-09-16T12:00:00+00:00\",\"expiration\":3600,\"holderId\":\"\",\"id\":\"6234161654976512\",\"softDescriptor\":\"\",\"status\":\"created\",\"tags\":[\"labs\"],\"updated\":\"2026-09-16T12:00:00+00:00\",\"uuid\":\"901e71f2447c43c886f58366a5432c4b\"}",
+      "requests": [
+        {
+          "body": "{\"allowedFundingTypes\":[\"credit\",\"debit\"],\"allowedInstallments\":[{\"count\":1,\"totalAmount\":100},{\"count\":2,\"totalAmount\":51}],\"expiration\":3600,\"tags\":[\"labs\"]}",
+          "bodyRaw": "{\"allowedFundingTypes\": [\"credit\", \"debit\"], \"allowedInstallments\": [{\"count\": 1, \"totalAmount\": 100}, {\"count\": 2, \"totalAmount\": 51}], \"expiration\": 3600, \"tags\": [\"labs\"]}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-session"
+        }
+      ]
+    },
+    "merchantsession.get": {
+      "hydrated": "{\"allowedFundingTypes\":[\"credit\",\"debit\"],\"allowedInstallments\":[{\"count\":1,\"totalAmount\":100},{\"count\":2,\"totalAmount\":51}],\"allowedIps\":[],\"challengeMode\":\"enabled\",\"created\":\"2026-09-16T12:00:00+00:00\",\"expiration\":3600,\"holderId\":\"\",\"id\":\"6234161654976512\",\"softDescriptor\":\"\",\"status\":\"created\",\"tags\":[\"labs\"],\"updated\":\"2026-09-16T12:00:00+00:00\",\"uuid\":\"901e71f2447c43c886f58366a5432c4b\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-session/6234161654976512"
+        }
+      ]
+    },
+    "merchantsession.log.get": {
+      "hydrated": "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6357482625564672\",\"session\":{\"allowedFundingTypes\":[\"credit\",\"debit\"],\"allowedInstallments\":[{\"count\":1,\"totalAmount\":100},{\"count\":2,\"totalAmount\":51}],\"allowedIps\":[],\"challengeMode\":\"enabled\",\"created\":\"2026-09-16T12:00:00+00:00\",\"expiration\":3600,\"holderId\":\"\",\"id\":\"6234161654976512\",\"softDescriptor\":\"\",\"status\":\"created\",\"tags\":[\"labs\"],\"updated\":\"2026-09-16T12:00:00+00:00\",\"uuid\":\"901e71f2447c43c886f58366a5432c4b\"},\"type\":\"created\"}",
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-session/log/6357482625564672"
+        }
+      ]
+    },
+    "merchantsession.log.page": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6357482625564672\",\"session\":{\"allowedFundingTypes\":[\"credit\",\"debit\"],\"allowedInstallments\":[{\"count\":1,\"totalAmount\":100},{\"count\":2,\"totalAmount\":51}],\"allowedIps\":[],\"challengeMode\":\"enabled\",\"created\":\"2026-09-16T12:00:00+00:00\",\"expiration\":3600,\"holderId\":\"\",\"id\":\"6234161654976512\",\"softDescriptor\":\"\",\"status\":\"created\",\"tags\":[\"labs\"],\"updated\":\"2026-09-16T12:00:00+00:00\",\"uuid\":\"901e71f2447c43c886f58366a5432c4b\"},\"type\":\"created\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-session/log"
+        }
+      ]
+    },
+    "merchantsession.log.query": {
+      "hydrated": [
+        "{\"created\":\"2026-09-16T12:00:00+00:00\",\"errors\":[],\"id\":\"6357482625564672\",\"session\":{\"allowedFundingTypes\":[\"credit\",\"debit\"],\"allowedInstallments\":[{\"count\":1,\"totalAmount\":100},{\"count\":2,\"totalAmount\":51}],\"allowedIps\":[],\"challengeMode\":\"enabled\",\"created\":\"2026-09-16T12:00:00+00:00\",\"expiration\":3600,\"holderId\":\"\",\"id\":\"6234161654976512\",\"softDescriptor\":\"\",\"status\":\"created\",\"tags\":[\"labs\"],\"updated\":\"2026-09-16T12:00:00+00:00\",\"uuid\":\"901e71f2447c43c886f58366a5432c4b\"},\"type\":\"created\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5&sessionIds=6234161654976512&types=created",
+          "queryRaw": "limit=5&types=created&sessionIds=6234161654976512",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-session/log"
+        }
+      ]
+    },
+    "merchantsession.page": {
+      "hydrated": [
+        "{\"allowedFundingTypes\":[\"credit\",\"debit\"],\"allowedInstallments\":[{\"count\":1,\"totalAmount\":100},{\"count\":2,\"totalAmount\":51}],\"allowedIps\":[],\"challengeMode\":\"enabled\",\"created\":\"2026-09-16T12:00:00+00:00\",\"expiration\":3600,\"holderId\":\"\",\"id\":\"6234161654976512\",\"softDescriptor\":\"\",\"status\":\"created\",\"tags\":[\"labs\"],\"updated\":\"2026-09-16T12:00:00+00:00\",\"uuid\":\"901e71f2447c43c886f58366a5432c4b\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "limit=5",
+          "queryRaw": "limit=5",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-session"
+        }
+      ]
+    },
+    "merchantsession.purchase": {
+      "hydrated": "{\"amount\":1000,\"billingCity\":\"Sao Paulo\",\"billingCountryCode\":\"BRA\",\"billingStateCode\":\"SP\",\"billingStreetLine1\":\"Av. Paulista, 200\",\"billingStreetLine2\":\"\",\"billingZipCode\":\"01311-200\",\"cardEnding\":\"1234\",\"cardExpiration\":\"2032-12\",\"cardId\":\"5629632759480320\",\"cardNumber\":\"\",\"cardSecurityCode\":\"\",\"challengeMode\":\"enabled\",\"challengeUrl\":\"https://sandbox.starkbank.com/challenge/abc\",\"created\":\"2026-09-16T12:00:00+00:00\",\"currencyCode\":\"BRL\",\"endToEndId\":\"E79457883202101262140HHX553UPqeq\",\"fee\":0,\"fundingType\":\"credit\",\"holderEmail\":\"tony@starkbank.com\",\"holderId\":\"\",\"holderName\":\"Tony Stark\",\"holderPhone\":\"11999998888\",\"id\":\"6234161654976513\",\"installmentCount\":1,\"metadata\":{\"language\":\"pt-BR\",\"timezoneOffset\":180,\"userAgent\":\"python-requests\",\"userIp\":\"191.9.0.0\"},\"network\":\"mastercard\",\"softDescriptor\":\"starkbank\",\"source\":\"merchant-session/901e71f2447c43c886f58366a5432c4b\",\"status\":\"approved\",\"tags\":[],\"updated\":\"2026-09-16T12:00:00+00:00\"}",
+      "requests": [
+        {
+          "body": "{\"amount\":1000,\"billingCity\":\"Sao Paulo\",\"billingCountryCode\":\"BRA\",\"billingStateCode\":\"SP\",\"billingStreetLine1\":\"Av. Paulista, 200\",\"billingZipCode\":\"01311-200\",\"cardExpiration\":\"2032-12\",\"cardNumber\":\"5579433276352001\",\"cardSecurityCode\":\"123\",\"fundingType\":\"credit\",\"holderEmail\":\"tony@starkbank.com\",\"holderName\":\"Tony Stark\",\"holderPhone\":\"11999998888\",\"installmentCount\":1,\"metadata\":{\"language\":\"pt-BR\",\"timezoneOffset\":180,\"userAgent\":\"python-requests\",\"userIp\":\"191.9.0.0\"}}",
+          "bodyRaw": "{\"amount\": 1000, \"billingCity\": \"Sao Paulo\", \"billingCountryCode\": \"BRA\", \"billingStateCode\": \"SP\", \"billingStreetLine1\": \"Av. Paulista, 200\", \"billingZipCode\": \"01311-200\", \"cardExpiration\": \"2032-12\", \"cardNumber\": \"5579433276352001\", \"cardSecurityCode\": \"123\", \"fundingType\": \"credit\", \"holderEmail\": \"tony@starkbank.com\", \"holderName\": \"Tony Stark\", \"holderPhone\": \"11999998888\", \"installmentCount\": 1, \"metadata\": {\"userAgent\": \"python-requests\", \"timezoneOffset\": 180, \"userIp\": \"191.9.0.0\", \"language\": \"pt-BR\"}}",
+          "method": "POST",
+          "query": "",
+          "queryRaw": "",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-session/901e71f2447c43c886f58366a5432c4b/purchase"
+        }
+      ]
+    },
+    "merchantsession.query": {
+      "hydrated": [
+        "{\"allowedFundingTypes\":[\"credit\",\"debit\"],\"allowedInstallments\":[{\"count\":1,\"totalAmount\":100},{\"count\":2,\"totalAmount\":51}],\"allowedIps\":[],\"challengeMode\":\"enabled\",\"created\":\"2026-09-16T12:00:00+00:00\",\"expiration\":3600,\"holderId\":\"\",\"id\":\"6234161654976512\",\"softDescriptor\":\"\",\"status\":\"created\",\"tags\":[\"labs\"],\"updated\":\"2026-09-16T12:00:00+00:00\",\"uuid\":\"901e71f2447c43c886f58366a5432c4b\"}"
+      ],
+      "requests": [
+        {
+          "body": "",
+          "bodyRaw": "",
+          "method": "GET",
+          "query": "holderId=5729405850615808&limit=5&status=created&tags=labs",
+          "queryRaw": "limit=5&status=created&tags=labs&holderId=5729405850615808",
+          "url": "https://sandbox.api.starkbank.com/v2/merchant-session"
+        }
+      ]
+    },
     "paymentpreview.create": {
       "hydrated": [
         "{\"id\":\"00020126580014br.gov.bcb.pix0136a629532e-7693-4846-852d-1bbff817b5a8520400005303986540510.005802BR5908T'Challa6009Sao Paulo62090505123456304B14A\",\"payment\":{\"accountType\":\"checking\",\"allowChange\":true,\"amount\":1000,\"bankCode\":\"20018183\",\"description\":\"Payment for service #1234\",\"discountAmount\":0,\"fineAmount\":50,\"interestAmount\":50,\"name\":\"Tony Stark\",\"nominalAmount\":900,\"reconciliationId\":\"tx-123\",\"reductionAmount\":0,\"status\":\"created\",\"taxId\":\"012.345.678-90\"},\"scheduled\":\"2026-10-28\",\"type\":\"brcode-payment\"}",
@@ -2388,6 +2829,16 @@
           ],
           "type": "dynamic",
           "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ]
+    },
+    "cardMethods": {
+      "cursor": "",
+      "methods": [
+        {
+          "code": "chip",
+          "name": "Chip",
+          "number": "05"
         }
       ]
     },
@@ -3501,6 +3952,380 @@
         }
       ]
     },
+    "merchantCard": {
+      "card": {
+        "created": "2026-09-16T12:00:00+00:00",
+        "ending": "1234",
+        "expiration": "2032-12-01T00:00:00+00:00",
+        "fundingType": "credit",
+        "holderName": "Tony Stark",
+        "id": "5629632759480320",
+        "network": "mastercard",
+        "status": "active",
+        "tags": [
+          "labs"
+        ],
+        "updated": "2026-09-17T12:00:00+00:00"
+      }
+    },
+    "merchantCardLog": {
+      "log": {
+        "card": {
+          "created": "2026-09-16T12:00:00+00:00",
+          "ending": "1234",
+          "expiration": "2032-12-01T00:00:00+00:00",
+          "fundingType": "credit",
+          "holderName": "Tony Stark",
+          "id": "5629632759480320",
+          "network": "mastercard",
+          "status": "active",
+          "tags": [
+            "labs"
+          ],
+          "updated": "2026-09-17T12:00:00+00:00"
+        },
+        "created": "2026-09-16T12:00:00+00:00",
+        "errors": [
+          {
+            "code": "invalidCvv",
+            "message": "CVV is invalid"
+          }
+        ],
+        "id": "5629632759480321",
+        "type": "created",
+        "updated": "2026-09-17T12:00:00+00:00"
+      }
+    },
+    "merchantCards": {
+      "cards": [
+        {
+          "created": "2026-09-16T12:00:00+00:00",
+          "ending": "1234",
+          "expiration": "2032-12-01T00:00:00+00:00",
+          "fundingType": "credit",
+          "holderName": "Tony Stark",
+          "id": "5629632759480320",
+          "network": "mastercard",
+          "status": "active",
+          "tags": [
+            "labs"
+          ],
+          "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ],
+      "cursor": ""
+    },
+    "merchantCategories": {
+      "categories": [
+        {
+          "code": "fastFoodRestaurants",
+          "name": "Fast food restaurants",
+          "number": "5814",
+          "type": "food"
+        }
+      ],
+      "cursor": ""
+    },
+    "merchantCountries": {
+      "countries": [
+        {
+          "code": "BRA",
+          "name": "Brazil",
+          "number": "076",
+          "shortCode": "BR"
+        }
+      ],
+      "cursor": ""
+    },
+    "merchantInstallment": {
+      "installment": {
+        "amount": 5000,
+        "created": "2026-09-16T12:00:00+00:00",
+        "due": "2026-10-28T00:00:00+00:00",
+        "fee": 100,
+        "fundingType": "credit",
+        "id": "5629632759480322",
+        "network": "mastercard",
+        "purchaseId": "5629632759480323",
+        "status": "created",
+        "tags": [
+          "labs"
+        ],
+        "transactionIds": [],
+        "updated": "2026-09-17T12:00:00+00:00"
+      }
+    },
+    "merchantInstallmentLog": {
+      "log": {
+        "created": "2026-09-16T12:00:00+00:00",
+        "errors": [],
+        "id": "5629632759480324",
+        "installment": {
+          "amount": 5000,
+          "created": "2026-09-16T12:00:00+00:00",
+          "due": "2026-10-28T00:00:00+00:00",
+          "fee": 100,
+          "fundingType": "credit",
+          "id": "5629632759480322",
+          "network": "mastercard",
+          "purchaseId": "5629632759480323",
+          "status": "created",
+          "tags": [
+            "labs"
+          ],
+          "transactionIds": [],
+          "updated": "2026-09-17T12:00:00+00:00"
+        },
+        "type": "created",
+        "updated": "2026-09-17T12:00:00+00:00"
+      }
+    },
+    "merchantInstallments": {
+      "cursor": "",
+      "installments": [
+        {
+          "amount": 5000,
+          "created": "2026-09-16T12:00:00+00:00",
+          "due": "2026-10-28T00:00:00+00:00",
+          "fee": 100,
+          "fundingType": "credit",
+          "id": "5629632759480322",
+          "network": "mastercard",
+          "purchaseId": "5629632759480323",
+          "status": "created",
+          "tags": [
+            "labs"
+          ],
+          "transactionIds": [],
+          "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ]
+    },
+    "merchantPurchase": {
+      "purchase": {
+        "amount": 10000,
+        "billingCity": "",
+        "billingCountryCode": "",
+        "billingStateCode": "",
+        "billingStreetLine1": "",
+        "billingStreetLine2": "",
+        "billingZipCode": "",
+        "cardEnding": "1234",
+        "cardExpiration": "",
+        "cardId": "5629632759480320",
+        "cardNumber": "",
+        "cardSecurityCode": "",
+        "challengeMode": "enabled",
+        "challengeUrl": "",
+        "created": "2026-09-16T12:00:00+00:00",
+        "currencyCode": "BRL",
+        "endToEndId": "",
+        "fee": 200,
+        "fundingType": "credit",
+        "holderEmail": "",
+        "holderId": "",
+        "holderName": "",
+        "holderPhone": "",
+        "id": "5629632759480323",
+        "installmentCount": 1,
+        "metadata": {},
+        "network": "mastercard",
+        "softDescriptor": "starkbank",
+        "source": "merchant-session/901e71f2447c43c886f58366a5432c4b",
+        "status": "approved",
+        "tags": [
+          "labs"
+        ],
+        "updated": "2026-09-17T12:00:00+00:00"
+      }
+    },
+    "merchantPurchaseLog": {
+      "log": {
+        "created": "2026-09-16T12:00:00+00:00",
+        "errors": [],
+        "id": "5629632759480325",
+        "purchase": {
+          "amount": 10000,
+          "billingCity": "",
+          "billingCountryCode": "",
+          "billingStateCode": "",
+          "billingStreetLine1": "",
+          "billingStreetLine2": "",
+          "billingZipCode": "",
+          "cardEnding": "1234",
+          "cardExpiration": "",
+          "cardId": "5629632759480320",
+          "cardNumber": "",
+          "cardSecurityCode": "",
+          "challengeMode": "enabled",
+          "challengeUrl": "",
+          "created": "2026-09-16T12:00:00+00:00",
+          "currencyCode": "BRL",
+          "endToEndId": "",
+          "fee": 200,
+          "fundingType": "credit",
+          "holderEmail": "",
+          "holderId": "",
+          "holderName": "",
+          "holderPhone": "",
+          "id": "5629632759480323",
+          "installmentCount": 1,
+          "metadata": {},
+          "network": "mastercard",
+          "softDescriptor": "starkbank",
+          "source": "merchant-session/901e71f2447c43c886f58366a5432c4b",
+          "status": "approved",
+          "tags": [
+            "labs"
+          ],
+          "updated": "2026-09-17T12:00:00+00:00"
+        },
+        "type": "approved"
+      }
+    },
+    "merchantPurchases": {
+      "cursor": "",
+      "purchases": [
+        {
+          "amount": 10000,
+          "billingCity": "",
+          "billingCountryCode": "",
+          "billingStateCode": "",
+          "billingStreetLine1": "",
+          "billingStreetLine2": "",
+          "billingZipCode": "",
+          "cardEnding": "1234",
+          "cardExpiration": "",
+          "cardId": "5629632759480320",
+          "cardNumber": "",
+          "cardSecurityCode": "",
+          "challengeMode": "enabled",
+          "challengeUrl": "",
+          "created": "2026-09-16T12:00:00+00:00",
+          "currencyCode": "BRL",
+          "endToEndId": "",
+          "fee": 200,
+          "fundingType": "credit",
+          "holderEmail": "",
+          "holderId": "",
+          "holderName": "",
+          "holderPhone": "",
+          "id": "5629632759480323",
+          "installmentCount": 1,
+          "metadata": {},
+          "network": "mastercard",
+          "softDescriptor": "starkbank",
+          "source": "merchant-session/901e71f2447c43c886f58366a5432c4b",
+          "status": "approved",
+          "tags": [
+            "labs"
+          ],
+          "updated": "2026-09-17T12:00:00+00:00"
+        }
+      ]
+    },
+    "merchantSession": {
+      "session": {
+        "allowedFundingTypes": [
+          "credit",
+          "debit"
+        ],
+        "allowedInstallments": [
+          {
+            "count": 1,
+            "totalAmount": 100
+          },
+          {
+            "count": 2,
+            "totalAmount": 51
+          }
+        ],
+        "allowedIps": [],
+        "challengeMode": "enabled",
+        "created": "2026-09-16T12:00:00+00:00",
+        "expiration": 3600,
+        "holderId": "",
+        "id": "6234161654976512",
+        "softDescriptor": "",
+        "status": "created",
+        "tags": [
+          "labs"
+        ],
+        "updated": "2026-09-16T12:00:00+00:00",
+        "uuid": "901e71f2447c43c886f58366a5432c4b"
+      }
+    },
+    "merchantSessionLog": {
+      "log": {
+        "created": "2026-09-16T12:00:00+00:00",
+        "errors": [],
+        "id": "6357482625564672",
+        "session": {
+          "allowedFundingTypes": [
+            "credit",
+            "debit"
+          ],
+          "allowedInstallments": [
+            {
+              "count": 1,
+              "totalAmount": 100
+            },
+            {
+              "count": 2,
+              "totalAmount": 51
+            }
+          ],
+          "allowedIps": [],
+          "challengeMode": "enabled",
+          "created": "2026-09-16T12:00:00+00:00",
+          "expiration": 3600,
+          "holderId": "",
+          "id": "6234161654976512",
+          "softDescriptor": "",
+          "status": "created",
+          "tags": [
+            "labs"
+          ],
+          "updated": "2026-09-16T12:00:00+00:00",
+          "uuid": "901e71f2447c43c886f58366a5432c4b"
+        },
+        "type": "created"
+      }
+    },
+    "merchantSessions": {
+      "cursor": "",
+      "sessions": [
+        {
+          "allowedFundingTypes": [
+            "credit",
+            "debit"
+          ],
+          "allowedInstallments": [
+            {
+              "count": 1,
+              "totalAmount": 100
+            },
+            {
+              "count": 2,
+              "totalAmount": 51
+            }
+          ],
+          "allowedIps": [],
+          "challengeMode": "enabled",
+          "created": "2026-09-16T12:00:00+00:00",
+          "expiration": 3600,
+          "holderId": "",
+          "id": "6234161654976512",
+          "softDescriptor": "",
+          "status": "created",
+          "tags": [
+            "labs"
+          ],
+          "updated": "2026-09-16T12:00:00+00:00",
+          "uuid": "901e71f2447c43c886f58366a5432c4b"
+        }
+      ]
+    },
     "previewUnknown": {
       "previews": [
         {
@@ -3584,6 +4409,47 @@
           "type": "utility-payment"
         }
       ]
+    },
+    "sessionPurchase": {
+      "purchase": {
+        "amount": 1000,
+        "billingCity": "Sao Paulo",
+        "billingCountryCode": "BRA",
+        "billingStateCode": "SP",
+        "billingStreetLine1": "Av. Paulista, 200",
+        "billingStreetLine2": "",
+        "billingZipCode": "01311-200",
+        "cardEnding": "1234",
+        "cardExpiration": "2032-12",
+        "cardId": "5629632759480320",
+        "cardNumber": "",
+        "cardSecurityCode": "",
+        "challengeMode": "enabled",
+        "challengeUrl": "https://sandbox.starkbank.com/challenge/abc",
+        "created": "2026-09-16T12:00:00+00:00",
+        "currencyCode": "BRL",
+        "endToEndId": "E79457883202101262140HHX553UPqeq",
+        "fee": 0,
+        "fundingType": "credit",
+        "holderEmail": "tony@starkbank.com",
+        "holderId": "",
+        "holderName": "Tony Stark",
+        "holderPhone": "11999998888",
+        "id": "6234161654976513",
+        "installmentCount": 1,
+        "metadata": {
+          "language": "pt-BR",
+          "timezoneOffset": 180,
+          "userAgent": "python-requests",
+          "userIp": "191.9.0.0"
+        },
+        "network": "mastercard",
+        "softDescriptor": "starkbank",
+        "source": "merchant-session/901e71f2447c43c886f58366a5432c4b",
+        "status": "approved",
+        "tags": [],
+        "updated": "2026-09-16T12:00:00+00:00"
+      }
     },
     "taxPayment": {
       "payment": {

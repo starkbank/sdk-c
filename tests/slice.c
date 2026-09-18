@@ -482,18 +482,24 @@ static void testRegistry(void)
     static const char *const expected[] = {
         "Balance", "Boleto", "BoletoLog", "BoletoPayment", "BoletoPaymentLog",
         "BrcodePayment", "BrcodePaymentLog", "BrcodePayment.Rule",
+        "CardMethod",
         "CorporateBalance", "CorporateCard", "CorporateCardLog",
         "CorporateHolder", "CorporateHolderLog", "CorporateInvoice",
         "CorporatePurchase", "CorporatePurchaseLog", "CorporateRule",
         "CorporateTransaction", "CorporateWithdrawal",
         "DarfPayment", "DarfPaymentLog", "Deposit", "DepositLog", "DictKey",
         "Event", "EventAttempt", "Institution", "Invoice", "InvoiceLog",
-        "Invoice.Payment", "Invoice.Rule", "PaymentPreview",
+        "Invoice.Payment", "Invoice.Rule",
+        "MerchantCard", "MerchantCardLog", "MerchantCategory",
+        "MerchantCountry", "MerchantInstallment", "MerchantInstallmentLog",
+        "MerchantPurchase", "MerchantPurchaseLog", "MerchantSession",
+        "MerchantSession.AllowedInstallment", "MerchantSessionLog",
+        "PaymentPreview",
         "PaymentPreview.BoletoPreview", "PaymentPreview.BrcodePreview",
         "PaymentPreview.TaxPreview", "PaymentPreview.UtilityPreview",
-        "Permission", "Split", "TaxPayment", "TaxPaymentLog", "Transaction",
-        "Transfer", "TransferLog", "Transfer.Rule", "UtilityPayment",
-        "UtilityPaymentLog", "Webhook", "Workspace"
+        "Permission", "Purchase", "Split", "TaxPayment", "TaxPaymentLog",
+        "Transaction", "Transfer", "TransferLog", "Transfer.Rule",
+        "UtilityPayment", "UtilityPaymentLog", "Webhook", "Workspace"
     };
     char label[160];
     size_t index;
@@ -3564,6 +3570,608 @@ static void testCorporateWithdrawal(void)
     starkbank_client_free(client);
 }
 
+/* ============================================================ MerchantSession */
+
+static void testMerchantSession(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *session = NULL;
+    starkbank_entity *created = NULL;
+    starkbank_entity *installment = NULL;
+    starkbank_entity *installment2 = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_entity *purchase = NULL;
+    starkbank_entity *purchased = NULL;
+    starkbank_list *page = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *nested = NULL;
+    int size = 0;
+
+    startGroup("MerchantSession - create is post_single");
+    client = newClient(&fake);
+    replies(&fake, responseBody("merchantSession"), NULL);
+    starkbank_merchant_session_new(&session);
+    starkbank_entity_append_string(session, STARKBANK_MERCHANT_SESSION_ALLOWED_FUNDING_TYPES,
+                                   "credit");
+    starkbank_entity_append_string(session, STARKBANK_MERCHANT_SESSION_ALLOWED_FUNDING_TYPES,
+                                   "debit");
+    starkbank_allowed_installment_new(&installment);
+    starkbank_entity_set_amount(installment, STARKBANK_ALLOWED_INSTALLMENT_TOTAL_AMOUNT, 100);
+    starkbank_entity_set_number(installment, STARKBANK_ALLOWED_INSTALLMENT_COUNT, 1);
+    starkbank_entity_append_entity(session, STARKBANK_MERCHANT_SESSION_ALLOWED_INSTALLMENTS,
+                                   installment);
+    starkbank_allowed_installment_new(&installment2);
+    starkbank_entity_set_amount(installment2, STARKBANK_ALLOWED_INSTALLMENT_TOTAL_AMOUNT, 51);
+    starkbank_entity_set_number(installment2, STARKBANK_ALLOWED_INSTALLMENT_COUNT, 2);
+    starkbank_entity_append_entity(session, STARKBANK_MERCHANT_SESSION_ALLOWED_INSTALLMENTS,
+                                   installment2);
+    starkbank_entity_set_number(session, STARKBANK_MERCHANT_SESSION_EXPIRATION, 3600);
+    starkbank_entity_append_string(session, STARKBANK_MERCHANT_SESSION_TAGS, "labs");
+    check("create posts the session itself, not a list",
+          starkbank_merchant_session_create(client, session, &created, NULL) == STARKBANK_OK,
+          NULL);
+    checkRequests("merchantsession.create", &fake);
+    checkHydration("merchantsession.create", 0, created);
+    check("no unknown key: the table matches python field for field",
+          starkbank_entity_unknown_count(created) == 0, NULL);
+    check("allowedInstallments is a LIST_RESOURCE tagged MerchantSession.AllowedInstallment",
+          starkbank_entity_list_size(created, STARKBANK_MERCHANT_SESSION_ALLOWED_INSTALLMENTS,
+                                     &size) == STARKBANK_OK && size == 2
+          && starkbank_entity_list_entity_at(created,
+                 STARKBANK_MERCHANT_SESSION_ALLOWED_INSTALLMENTS, 0, &nested) == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested),
+                          "MerchantSession.AllowedInstallment"), NULL);
+    starkbank_entity_free(session);
+    starkbank_entity_free(created);
+    session = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("merchantSession"), NULL);
+    starkbank_merchant_session_get(client, "6234161654976512", &session, NULL);
+    checkRequests("merchantsession.get", &fake);
+    checkHydration("merchantsession.get", 0, session);
+    starkbank_entity_free(session);
+    session = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"sessions\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_merchant_session_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_set_string(params, "status", "created");
+    starkbank_entity_append_string(params, "tags", "labs");
+    starkbank_entity_set_string(params, "holderId", "5729405850615808");
+    starkbank_merchant_session_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("merchantsession.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"sessions\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_merchant_session_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_merchant_session_page(client, params, &page, NULL, NULL);
+    checkRequests("merchantsession.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+
+    startGroup("MerchantSession.purchase - the new POST_SUB_RESOURCE verb");
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("sessionPurchase"), NULL);
+    starkbank_purchase_new(&purchase);
+    starkbank_entity_set_amount(purchase, STARKBANK_PURCHASE_AMOUNT, 1000);
+    starkbank_entity_set_string(purchase, STARKBANK_PURCHASE_CARD_EXPIRATION, "2032-12");
+    starkbank_entity_set_string(purchase, STARKBANK_PURCHASE_CARD_NUMBER, "5579433276352001");
+    starkbank_entity_set_string(purchase, STARKBANK_PURCHASE_CARD_SECURITY_CODE, "123");
+    starkbank_entity_set_string(purchase, STARKBANK_PURCHASE_HOLDER_NAME, "Tony Stark");
+    starkbank_entity_set_string(purchase, STARKBANK_PURCHASE_FUNDING_TYPE, "credit");
+    starkbank_entity_set_string(purchase, STARKBANK_PURCHASE_HOLDER_EMAIL,
+                                "tony@starkbank.com");
+    starkbank_entity_set_string(purchase, STARKBANK_PURCHASE_HOLDER_PHONE, "11999998888");
+    starkbank_entity_set_number(purchase, STARKBANK_PURCHASE_INSTALLMENT_COUNT, 1);
+    starkbank_entity_set_string(purchase, STARKBANK_PURCHASE_BILLING_COUNTRY_CODE, "BRA");
+    starkbank_entity_set_string(purchase, STARKBANK_PURCHASE_BILLING_CITY, "Sao Paulo");
+    starkbank_entity_set_string(purchase, STARKBANK_PURCHASE_BILLING_STATE_CODE, "SP");
+    starkbank_entity_set_string(purchase, STARKBANK_PURCHASE_BILLING_STREET_LINE_1,
+                                "Av. Paulista, 200");
+    starkbank_entity_set_string(purchase, STARKBANK_PURCHASE_BILLING_ZIP_CODE, "01311-200");
+    /* metadata is OBJECT, a single map with no dedicated typed setter (only
+       LIST_OBJECT/LIST_RESOURCE fields take starkbank_entity_append_entity);
+       set_json_raw is the documented way to write one, and it is still
+       validated at dehydrate time because the table already declares this
+       key CREATE. */
+    starkbank_entity_set_json_raw(purchase, STARKBANK_PURCHASE_METADATA,
+        "{\"userAgent\":\"python-requests\",\"timezoneOffset\":180,"
+        "\"userIp\":\"191.9.0.0\",\"language\":\"pt-BR\"}");
+    check("purchase posts to merchant-session/<uuid>/purchase and returns a Purchase with an id",
+          starkbank_merchant_session_purchase(client, "901e71f2447c43c886f58366a5432c4b",
+              purchase, &purchased, NULL) == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(purchased), "Purchase")
+          && starkbank_entity_id(purchased) != NULL, NULL);
+    checkRequests("merchantsession.purchase", &fake);
+    checkHydration("merchantsession.purchase", 0, purchased);
+    starkbank_entity_free(purchase);
+    starkbank_entity_free(purchased);
+    starkbank_client_free(client);
+}
+
+static void testMerchantSessionLog(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *log = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *nested = NULL;
+    starkbank_list *page = NULL;
+
+    startGroup("merchantsession.Log - errors is LIST_STRING");
+    client = newClient(&fake);
+    replies(&fake, responseBody("merchantSessionLog"), NULL);
+    starkbank_merchant_session_log_get(client, "6357482625564672", &log, NULL);
+    checkRequests("merchantsession.log.get", &fake);
+    checkHydration("merchantsession.log.get", 0, log);
+    check("the nested session is tagged",
+          starkbank_entity_entity(log, STARKBANK_MERCHANT_SESSION_LOG_SESSION, &nested)
+              == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested), "MerchantSession"), NULL);
+    starkbank_entity_free(log);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_merchant_session_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_append_string(params, "types", "created");
+    starkbank_entity_append_string(params, "sessionIds", "6234161654976512");
+    starkbank_merchant_session_log_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("merchantsession.log.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_merchant_session_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_merchant_session_log_page(client, params, &page, NULL, NULL);
+    checkRequests("merchantsession.log.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+/* =============================================================== MerchantCard */
+
+static void testMerchantCard(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *card = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_list *page = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+
+    startGroup("MerchantCard - every field is RO, get/query/page only");
+    client = newClient(&fake);
+    replies(&fake, responseBody("merchantCard"), NULL);
+    starkbank_merchant_card_get(client, "5629632759480320", &card, NULL);
+    checkRequests("merchantcard.get", &fake);
+    checkHydration("merchantcard.get", 0, card);
+    check("no unknown key: the table matches python field for field",
+          starkbank_entity_unknown_count(card) == 0, NULL);
+    starkbank_entity_free(card);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"cards\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_merchant_card_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_set_string(params, "status", "active");
+    starkbank_entity_append_string(params, "tags", "labs");
+    starkbank_merchant_card_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("merchantcard.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"cards\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_merchant_card_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_merchant_card_page(client, params, &page, NULL, NULL);
+    checkRequests("merchantcard.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+static void testMerchantCardLog(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *log = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *nested = NULL;
+    starkbank_list *page = NULL;
+
+    startGroup("merchantcard.Log - errors is a real LIST_OBJECT");
+    client = newClient(&fake);
+    replies(&fake, responseBody("merchantCardLog"), NULL);
+    starkbank_merchant_card_log_get(client, "5629632759480321", &log, NULL);
+    checkRequests("merchantcard.log.get", &fake);
+    checkHydration("merchantcard.log.get", 0, log);
+    check("the nested card is tagged",
+          starkbank_entity_entity(log, STARKBANK_MERCHANT_CARD_LOG_CARD, &nested)
+              == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested), "MerchantCard"), NULL);
+    starkbank_entity_free(log);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_merchant_card_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_append_string(params, "cardIds", "5629632759480320");
+    starkbank_entity_append_string(params, "types", "created");
+    starkbank_merchant_card_log_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("merchantcard.log.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_merchant_card_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_merchant_card_log_page(client, params, &page, NULL, NULL);
+    checkRequests("merchantcard.log.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+/* ========================================================== MerchantInstallment */
+
+static void testMerchantInstallment(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *installment = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_list *page = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+
+    startGroup("MerchantInstallment - every field is RO, generated by the API");
+    client = newClient(&fake);
+    replies(&fake, responseBody("merchantInstallment"), NULL);
+    starkbank_merchant_installment_get(client, "5629632759480322", &installment, NULL);
+    checkRequests("merchantinstallment.get", &fake);
+    checkHydration("merchantinstallment.get", 0, installment);
+    check("no unknown key: the table matches python field for field",
+          starkbank_entity_unknown_count(installment) == 0, NULL);
+    starkbank_entity_free(installment);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"installments\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_merchant_installment_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_set_string(params, "status", "created");
+    starkbank_entity_append_string(params, "tags", "labs");
+    starkbank_entity_append_string(params, "purchaseIds", "5629632759480323");
+    starkbank_merchant_installment_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("merchantinstallment.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"installments\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_merchant_installment_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_merchant_installment_page(client, params, &page, NULL, NULL);
+    checkRequests("merchantinstallment.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+static void testMerchantInstallmentLog(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *log = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *nested = NULL;
+    starkbank_list *page = NULL;
+
+    startGroup("merchantinstallment.Log - errors is a real LIST_OBJECT");
+    client = newClient(&fake);
+    replies(&fake, responseBody("merchantInstallmentLog"), NULL);
+    starkbank_merchant_installment_log_get(client, "5629632759480324", &log, NULL);
+    checkRequests("merchantinstallment.log.get", &fake);
+    checkHydration("merchantinstallment.log.get", 0, log);
+    check("the nested installment is tagged",
+          starkbank_entity_entity(log, STARKBANK_MERCHANT_INSTALLMENT_LOG_INSTALLMENT, &nested)
+              == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested), "MerchantInstallment"), NULL);
+    starkbank_entity_free(log);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_merchant_installment_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_append_string(params, "types", "created");
+    starkbank_entity_append_string(params, "installmentIds", "5629632759480322");
+    starkbank_merchant_installment_log_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("merchantinstallment.log.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_merchant_installment_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_merchant_installment_log_page(client, params, &page, NULL, NULL);
+    checkRequests("merchantinstallment.log.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+/* ============================================================ MerchantPurchase */
+
+static void testMerchantPurchase(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *purchase = NULL;
+    starkbank_entity *created = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_list *page = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+
+    startGroup("MerchantPurchase - create is post_single");
+    client = newClient(&fake);
+    replies(&fake, responseBody("merchantPurchase"), NULL);
+    starkbank_merchant_purchase_new(&purchase);
+    starkbank_entity_set_amount(purchase, STARKBANK_MERCHANT_PURCHASE_AMOUNT, 10000);
+    starkbank_entity_set_string(purchase, STARKBANK_MERCHANT_PURCHASE_CARD_ID,
+                                "5629632759480320");
+    starkbank_entity_set_string(purchase, STARKBANK_MERCHANT_PURCHASE_FUNDING_TYPE, "credit");
+    starkbank_entity_set_number(purchase, STARKBANK_MERCHANT_PURCHASE_INSTALLMENT_COUNT, 1);
+    starkbank_entity_append_string(purchase, STARKBANK_MERCHANT_PURCHASE_TAGS, "labs");
+    check("create posts the purchase itself, not a list",
+          starkbank_merchant_purchase_create(client, purchase, &created, NULL) == STARKBANK_OK,
+          NULL);
+    checkRequests("merchantpurchase.create", &fake);
+    checkHydration("merchantpurchase.create", 0, created);
+    check("no unknown key: the table matches python field for field",
+          starkbank_entity_unknown_count(created) == 0, NULL);
+    starkbank_entity_free(purchase);
+    starkbank_entity_free(created);
+    purchase = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("merchantPurchase"), NULL);
+    starkbank_merchant_purchase_get(client, "5629632759480323", &purchase, NULL);
+    checkRequests("merchantpurchase.get", &fake);
+    checkHydration("merchantpurchase.get", 0, purchase);
+    starkbank_entity_free(purchase);
+    purchase = NULL;
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"purchases\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_merchant_purchase_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_set_string(params, "status", "approved");
+    starkbank_entity_append_string(params, "tags", "labs");
+    starkbank_entity_set_string(params, "holderId", "5729405850615808");
+    starkbank_merchant_purchase_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("merchantpurchase.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"purchases\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_merchant_purchase_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_merchant_purchase_page(client, params, &page, NULL, NULL);
+    checkRequests("merchantpurchase.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, responseBody("merchantPurchase"), NULL);
+    starkbank_merchant_purchase_params_new(&params);
+    starkbank_entity_set_string(params, STARKBANK_MERCHANT_PURCHASE_STATUS, "canceled");
+    starkbank_entity_set_amount(params, STARKBANK_MERCHANT_PURCHASE_AMOUNT, 0);
+    check("update patches status and amount only",
+          starkbank_merchant_purchase_update(client, "5629632759480323", params, &purchase,
+                                             NULL) == STARKBANK_OK, NULL);
+    checkRequests("merchantpurchase.update", &fake);
+    starkbank_entity_free(purchase);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+static void testMerchantPurchaseLog(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *log = NULL;
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+    const starkbank_entity *nested = NULL;
+    starkbank_list *page = NULL;
+
+    startGroup("merchantpurchase.Log - errors is a real LIST_OBJECT");
+    client = newClient(&fake);
+    replies(&fake, responseBody("merchantPurchaseLog"), NULL);
+    starkbank_merchant_purchase_log_get(client, "5629632759480325", &log, NULL);
+    checkRequests("merchantpurchase.log.get", &fake);
+    checkHydration("merchantpurchase.log.get", 0, log);
+    check("the nested purchase is tagged",
+          starkbank_entity_entity(log, STARKBANK_MERCHANT_PURCHASE_LOG_PURCHASE, &nested)
+              == STARKBANK_OK
+          && equalStrings(starkbank_entity_resource(nested), "MerchantPurchase"), NULL);
+    starkbank_entity_free(log);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_merchant_purchase_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_entity_append_string(params, "types", "approved");
+    starkbank_entity_append_string(params, "purchaseIds", "5629632759480323");
+    starkbank_merchant_purchase_log_query(client, params, 5, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        ;
+    }
+    checkRequests("merchantpurchase.log.query", &fake);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+
+    starkbank_client_free(client);
+    client = newClient(&fake);
+    replies(&fake, "{\"logs\":[{\"id\":\"1\"}],\"cursor\":\"\"}", NULL);
+    starkbank_merchant_purchase_log_params_new(&params);
+    starkbank_entity_set_number(params, "limit", 5);
+    starkbank_merchant_purchase_log_page(client, params, &page, NULL, NULL);
+    checkRequests("merchantpurchase.log.page", &fake);
+    starkbank_list_free(page);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+/* ================================================= CardMethod / MerchantCategory / MerchantCountry */
+
+static void testCardMethod(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *params = NULL;
+    starkbank_entity *first = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+
+    startGroup("CardMethod - query only, no limit keyword");
+    client = newClient(&fake);
+    replies(&fake, responseBody("cardMethods"), NULL);
+    starkbank_card_method_params_new(&params);
+    starkbank_entity_set_string(params, "search", "chip");
+    starkbank_card_method_query(client, params, 0, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        if (first == NULL) {
+            starkbank_entity_clone(item, &first);
+        }
+    }
+    checkRequests("cardmethod.query", &fake);
+    checkHydration("cardmethod.query", 0, first);
+    starkbank_entity_free(first);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+static void testMerchantCategory(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *params = NULL;
+    starkbank_entity *first = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+
+    startGroup("MerchantCategory - query only, no limit keyword");
+    client = newClient(&fake);
+    replies(&fake, responseBody("merchantCategories"), NULL);
+    starkbank_merchant_category_params_new(&params);
+    starkbank_entity_set_string(params, "search", "food");
+    starkbank_merchant_category_query(client, params, 0, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        if (first == NULL) {
+            starkbank_entity_clone(item, &first);
+        }
+    }
+    checkRequests("merchantcategory.query", &fake);
+    checkHydration("merchantcategory.query", 0, first);
+    starkbank_entity_free(first);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
+static void testMerchantCountry(void)
+{
+    starkbank_client *client = NULL;
+    Fake fake;
+    starkbank_entity *params = NULL;
+    starkbank_entity *first = NULL;
+    starkbank_iter *iter = NULL;
+    const starkbank_entity *item = NULL;
+
+    startGroup("MerchantCountry - query only, no limit keyword");
+    client = newClient(&fake);
+    replies(&fake, responseBody("merchantCountries"), NULL);
+    starkbank_merchant_country_params_new(&params);
+    starkbank_entity_set_string(params, "search", "brazil");
+    starkbank_merchant_country_query(client, params, 0, &iter);
+    while (starkbank_iter_next(iter, &item, NULL) == STARKBANK_OK && item != NULL) {
+        if (first == NULL) {
+            starkbank_entity_clone(item, &first);
+        }
+    }
+    checkRequests("merchantcountry.query", &fake);
+    checkHydration("merchantcountry.query", 0, first);
+    starkbank_entity_free(first);
+    starkbank_iter_free(iter);
+    starkbank_entity_free(params);
+    starkbank_client_free(client);
+}
+
 /* ============================================================== driver */
 
 int main(void)
@@ -3627,6 +4235,17 @@ int main(void)
     testCorporateInvoice();
     testCorporateTransaction();
     testCorporateWithdrawal();
+    testMerchantSession();
+    testMerchantSessionLog();
+    testMerchantCard();
+    testMerchantCardLog();
+    testMerchantInstallment();
+    testMerchantInstallmentLog();
+    testMerchantPurchase();
+    testMerchantPurchaseLog();
+    testCardMethod();
+    testMerchantCategory();
+    testMerchantCountry();
     testNegatives();
     testErrorsAndAbi();
 
