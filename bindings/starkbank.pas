@@ -455,6 +455,46 @@ const
   STARKBANK_INVOICE_PAYMENT_NAME = 'name';
   STARKBANK_INVOICE_PAYMENT_TAX_ID = 'taxId';
   STARKBANK_INVOICE_PDF = 'pdf';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_AMOUNT = 'amount';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_AMOUNT_MIN_LIMIT = 'amountMinLimit';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_BACEN_ID = 'bacenId';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_BRCODE = 'brcode';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_CREATED = 'created';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_DATA = 'data';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_DISPLAY_DESCRIPTION = 'displayDescription';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_DUE = 'due';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_END = 'end';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_EXTERNAL_ID = 'externalId';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_ID = 'id';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_INTERVAL = 'interval';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_INTERVAL_MONTH = 'month';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_INTERVAL_QUARTER = 'quarter';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_INTERVAL_SEMESTER = 'semester';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_INTERVAL_WEEK = 'week';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_INTERVAL_YEAR = 'year';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_LOG_CREATED = 'created';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_LOG_ERRORS = 'errors';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_LOG_ID = 'id';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_LOG_SUBSCRIPTION = 'subscription';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_LOG_TYPE = 'type';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_NAME = 'name';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_PULL_MODE = 'pullMode';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_PULL_MODE_AUTOMATIC = 'automatic';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_PULL_MODE_MANUAL = 'manual';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_PULL_RETRY_LIMIT = 'pullRetryLimit';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_REFERENCE_CODE = 'referenceCode';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_START = 'start';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_STATUS = 'status';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_STATUS_ACTIVE = 'active';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_STATUS_CANCELED = 'canceled';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_TAGS = 'tags';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_TAX_ID = 'taxId';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_TYPE = 'type';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_TYPE_PAYMENT_AND_OR_QRCODE = 'paymentAndOrQrcode';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_TYPE_PUSH = 'push';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_TYPE_QRCODE = 'qrcode';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_TYPE_QRCODE_AND_PAYMENT = 'qrcodeAndPayment';
+  STARKBANK_INVOICE_PULL_SUBSCRIPTION_UPDATED = 'updated';
   STARKBANK_INVOICE_RULES = 'rules';
   STARKBANK_INVOICE_RULE_KEY = 'key';
   STARKBANK_INVOICE_RULE_VALUE = 'value';
@@ -1193,6 +1233,28 @@ function starkbank_invoice_params_new(&out: PPstarkbank_entity): Integer; cdecl;
 function starkbank_invoice_payment(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_payment';
 
 function starkbank_invoice_pdf(client: Pstarkbank_client; id: PAnsiChar; &out: PPByte; out_len: PNativeUInt; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_pdf';
+
+function starkbank_invoice_pull_subscription_create(client: Pstarkbank_client; subscriptions: Pstarkbank_list; &out: PPstarkbank_list; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_pull_subscription_create';
+
+function starkbank_invoice_pull_subscription_delete(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_pull_subscription_delete';
+
+function starkbank_invoice_pull_subscription_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_pull_subscription_get';
+
+function starkbank_invoice_pull_subscription_log_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_pull_subscription_log_get';
+
+function starkbank_invoice_pull_subscription_log_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_pull_subscription_log_page';
+
+function starkbank_invoice_pull_subscription_log_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_pull_subscription_log_params_new';
+
+function starkbank_invoice_pull_subscription_log_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_pull_subscription_log_query';
+
+function starkbank_invoice_pull_subscription_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_pull_subscription_new';
+
+function starkbank_invoice_pull_subscription_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_pull_subscription_page';
+
+function starkbank_invoice_pull_subscription_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_pull_subscription_params_new';
+
+function starkbank_invoice_pull_subscription_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_pull_subscription_query';
 
 function starkbank_invoice_qrcode(client: Pstarkbank_client; id: PAnsiChar; size: Integer; &out: PPByte; out_len: PNativeUInt; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_invoice_qrcode';
 

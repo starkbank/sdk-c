@@ -136,6 +136,8 @@ RESOURCE_SOURCES = \
 	starkbank/invoice/log.c \
 	starkbank/invoice/payment.c \
 	starkbank/invoice/rule.c \
+	starkbank/invoicepullsubscription/invoicepullsubscription.c \
+	starkbank/invoicepullsubscription/log.c \
 	starkbank/merchantcard/log.c \
 	starkbank/merchantcard/merchantcard.c \
 	starkbank/merchantcategory/merchantcategory.c \

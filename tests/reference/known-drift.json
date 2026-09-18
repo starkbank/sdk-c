@@ -275,6 +275,36 @@
       "key": "endpoint.changed:MerchantSession:purchase",
       "owner": "eduardo.santos@starkbank.com",
       "reason": "verbEndpoint() has no way to learn a real path-parameter name for a named verb - every other named shape (CONTENT/CONTENT_INT/CONTENT_QUERY/SUB_RESOURCE) is spelled base + '/:id/' + verbName, and POST /v2/merchant-session/:uuid/purchase is the first docs endpoint to call that same slot ':uuid' instead of ':id'. This is the placeholder's name, not the route: the docs' own POST /v2/merchant-session, GET /v2/merchant-session/:id and GET /v2/dynamic-brcode/:uuid pair show ':uuid' and ':id' are used interchangeably across the docs for the same kind of slot (a server-assigned id in the path), never as two different parameters on one route. The method and the rest of the path (POST /v2/merchant-session/.../purchase) match exactly."
+    },
+    {
+      "key": "verb.new:InvoicePullSubscription:cancel",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "sdk-python spells the DELETE /v2/invoice-pull-subscription/:id call cancel(); sdk-c keeps every resource's DELETE_ID verb named starkbank_<resource>_delete for one consistent spelling across the whole SDK, the same choice already made for CorporateHolder and CorporateCard (see verb.new:CorporateHolder:cancel)."
+    },
+    {
+      "key": "verb.gone:InvoicePullSubscription:delete",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "The other half of verb.new:InvoicePullSubscription:cancel - sdk-c's starkbank_invoice_pull_subscription_delete is the same DELETE call sdk-python names cancel(), not a verb sdk-python lacks."
+    },
+    {
+      "key": "query.new:InvoicePullSubscription:expand",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "The docs list expand as a GET /v2/invoice-pull-subscription filter; sdk-python's query()/page() accept no such keyword. python is normative for the verb surface, the same shape as query.new:CorporateHolder:names."
+    },
+    {
+      "key": "query.gone:InvoicePullSubscription:invoiceIds",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "sdk-python's invoicepullsubscription.query()/page() accept invoice_ids and the docs' GET /v2/invoice-pull-subscription endpoint does not list it. python is normative for the verb surface, the same shape as query.gone:CorporateHolderLog:ids."
+    },
+    {
+      "key": "query.gone:InvoicePullSubscription:externalIds",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "As query.gone:InvoicePullSubscription:invoiceIds - sdk-python's query()/page() accept external_ids and the docs' GET /v2/invoice-pull-subscription endpoint does not list it."
+    },
+    {
+      "key": "query.new:InvoicePullSubscriptionLog:tags",
+      "owner": "eduardo.santos@starkbank.com",
+      "reason": "The docs list tags as a GET /v2/invoice-pull-subscription/log filter; sdk-python's invoicepullsubscription.log.query()/page() accept no such keyword. python is normative for the verb surface, the same shape as query.new:InvoicePullSubscription:expand."
     }
   ]
 }

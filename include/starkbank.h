@@ -3287,6 +3287,128 @@ STARKBANK_API int STARKBANK_CALL starkbank_merchant_country_params_new(starkbank
 STARKBANK_API int STARKBANK_CALL starkbank_merchant_country_query(const starkbank_client *client,
     const starkbank_entity *params, int limit, starkbank_iter **out);
 
+/* =========================================================================
+ *                         InvoicePullSubscription
+ * =========================================================================
+ *
+ * Fields (wire keys; * = required on create). No update verb, so nothing
+ * here is patchable.
+ *
+ *   start* DATE_OR_DATETIME
+ *   interval* pullMode* type* STRING           pullRetryLimit* NUMBER
+ *   amount amountMinLimit AMOUNT
+ *   displayDescription due externalId referenceCode end name taxId STRING
+ *   data OBJECT                                tags LIST_STRING
+ *   status bacenId brcode id STRING (ro)       created updated DATETIME (ro)
+ *
+ * Query keys: limit, after, before, status, invoiceIds, externalIds, tags, ids.
+ *
+ * due and end are STRING rather than DATE_OR_DATETIME: see
+ * starkbank/invoicepullsubscription/invoicepullsubscription.h for why
+ * sdk-python's own conditional-expression coercion is invisible to
+ * tools/drift.py's checker and this table follows the real wire behaviour
+ * rather than manufacturing a type-safe reading the checker cannot verify.
+ * amount and amountMinLimit are each individually optional even though the
+ * API requires at least one of the two - a cross-field rule no per-field
+ * flag can express.
+ */
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_START               "start"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_INTERVAL            "interval"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_PULL_MODE           "pullMode"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_PULL_RETRY_LIMIT    "pullRetryLimit"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_TYPE                "type"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_AMOUNT              "amount"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_AMOUNT_MIN_LIMIT    "amountMinLimit"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_DISPLAY_DESCRIPTION "displayDescription"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_DUE                 "due"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_EXTERNAL_ID         "externalId"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_REFERENCE_CODE      "referenceCode"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_END                 "end"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_DATA                "data"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_NAME                "name"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_TAX_ID              "taxId"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_TAGS                "tags"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_STATUS              "status"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_BACEN_ID            "bacenId"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_BRCODE              "brcode"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_ID                  "id"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_CREATED             "created"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_UPDATED             "updated"
+
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_INTERVAL_WEEK      "week"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_INTERVAL_MONTH     "month"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_INTERVAL_QUARTER   "quarter"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_INTERVAL_SEMESTER  "semester"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_INTERVAL_YEAR      "year"
+
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_PULL_MODE_MANUAL     "manual"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_PULL_MODE_AUTOMATIC  "automatic"
+
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_TYPE_PUSH                  "push"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_TYPE_QRCODE                "qrcode"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_TYPE_QRCODE_AND_PAYMENT    "qrcodeAndPayment"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_TYPE_PAYMENT_AND_OR_QRCODE "paymentAndOrQrcode"
+
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_STATUS_ACTIVE    "active"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_STATUS_CANCELED  "canceled"
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_subscription_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_subscription_params_new(
+    starkbank_entity **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_subscription_create(
+    const starkbank_client *client, const starkbank_list *subscriptions,
+    starkbank_list **out, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_subscription_get(
+    const starkbank_client *client, const char *id, starkbank_entity **out,
+    starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_subscription_query(
+    const starkbank_client *client, const starkbank_entity *params, int limit,
+    starkbank_iter **out);
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_subscription_page(
+    const starkbank_client *client, const starkbank_entity *params, starkbank_list **out,
+    char **out_cursor, starkbank_errors **errors);
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_subscription_delete(
+    const starkbank_client *client, const char *id, starkbank_entity **out,
+    starkbank_errors **errors);
+/* sdk-python names this cancel(); the subscription must be "active" for the
+   API to accept it. See the section header for why the C symbol still says
+   delete. */
+
+/* ---------------------------------------------- InvoicePullSubscriptionLog */
+/*
+ * Resource "InvoicePullSubscriptionLog"; endpoint
+ * "invoice-pull-subscription/log", derived at run time.
+ * Fields: id type STRING (ro), errors LIST_OBJECT (ro),
+ *         subscription RESOURCE("InvoicePullSubscription") (ro),
+ *         created DATETIME (ro).
+ * Query keys: limit, after, before, types, subscriptionIds.
+ *
+ * errors is a list of {code, message} objects, not strings - see
+ * invoicepullsubscription.h. There is no invoicepullsubscription.Log pdf.
+ */
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_LOG_ID           "id"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_LOG_CREATED      "created"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_LOG_TYPE         "type"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_LOG_ERRORS       "errors"
+#define STARKBANK_INVOICE_PULL_SUBSCRIPTION_LOG_SUBSCRIPTION "subscription"
+
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_subscription_log_params_new(
+    starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_subscription_log_get(
+    const starkbank_client *client, const char *id, starkbank_entity **out,
+    starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_subscription_log_query(
+    const starkbank_client *client, const starkbank_entity *params, int limit,
+    starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_invoice_pull_subscription_log_page(
+    const starkbank_client *client, const starkbank_entity *params, starkbank_list **out,
+    char **out_cursor, starkbank_errors **errors);
+
 #ifdef __cplusplus
 }
 #endif

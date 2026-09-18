@@ -46,6 +46,8 @@
     R(invoice)                 \
     R(invoice_log)             \
     R(invoice_payment)         \
+    R(invoice_pull_subscription) \
+    R(invoice_pull_subscription_log) \
     R(invoice_rule)            \
     R(merchant_card)           \
     R(merchant_card_log)       \

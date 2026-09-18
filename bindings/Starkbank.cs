@@ -450,6 +450,46 @@ namespace StarkBank
         public const string StarkbankInvoicePaymentName = "name";
         public const string StarkbankInvoicePaymentTaxId = "taxId";
         public const string StarkbankInvoicePdf = "pdf";
+        public const string StarkbankInvoicePullSubscriptionAmount = "amount";
+        public const string StarkbankInvoicePullSubscriptionAmountMinLimit = "amountMinLimit";
+        public const string StarkbankInvoicePullSubscriptionBacenId = "bacenId";
+        public const string StarkbankInvoicePullSubscriptionBrcode = "brcode";
+        public const string StarkbankInvoicePullSubscriptionCreated = "created";
+        public const string StarkbankInvoicePullSubscriptionData = "data";
+        public const string StarkbankInvoicePullSubscriptionDisplayDescription = "displayDescription";
+        public const string StarkbankInvoicePullSubscriptionDue = "due";
+        public const string StarkbankInvoicePullSubscriptionEnd = "end";
+        public const string StarkbankInvoicePullSubscriptionExternalId = "externalId";
+        public const string StarkbankInvoicePullSubscriptionId = "id";
+        public const string StarkbankInvoicePullSubscriptionInterval = "interval";
+        public const string StarkbankInvoicePullSubscriptionIntervalMonth = "month";
+        public const string StarkbankInvoicePullSubscriptionIntervalQuarter = "quarter";
+        public const string StarkbankInvoicePullSubscriptionIntervalSemester = "semester";
+        public const string StarkbankInvoicePullSubscriptionIntervalWeek = "week";
+        public const string StarkbankInvoicePullSubscriptionIntervalYear = "year";
+        public const string StarkbankInvoicePullSubscriptionLogCreated = "created";
+        public const string StarkbankInvoicePullSubscriptionLogErrors = "errors";
+        public const string StarkbankInvoicePullSubscriptionLogId = "id";
+        public const string StarkbankInvoicePullSubscriptionLogSubscription = "subscription";
+        public const string StarkbankInvoicePullSubscriptionLogType = "type";
+        public const string StarkbankInvoicePullSubscriptionName = "name";
+        public const string StarkbankInvoicePullSubscriptionPullMode = "pullMode";
+        public const string StarkbankInvoicePullSubscriptionPullModeAutomatic = "automatic";
+        public const string StarkbankInvoicePullSubscriptionPullModeManual = "manual";
+        public const string StarkbankInvoicePullSubscriptionPullRetryLimit = "pullRetryLimit";
+        public const string StarkbankInvoicePullSubscriptionReferenceCode = "referenceCode";
+        public const string StarkbankInvoicePullSubscriptionStart = "start";
+        public const string StarkbankInvoicePullSubscriptionStatus = "status";
+        public const string StarkbankInvoicePullSubscriptionStatusActive = "active";
+        public const string StarkbankInvoicePullSubscriptionStatusCanceled = "canceled";
+        public const string StarkbankInvoicePullSubscriptionTags = "tags";
+        public const string StarkbankInvoicePullSubscriptionTaxId = "taxId";
+        public const string StarkbankInvoicePullSubscriptionType = "type";
+        public const string StarkbankInvoicePullSubscriptionTypePaymentAndOrQrcode = "paymentAndOrQrcode";
+        public const string StarkbankInvoicePullSubscriptionTypePush = "push";
+        public const string StarkbankInvoicePullSubscriptionTypeQrcode = "qrcode";
+        public const string StarkbankInvoicePullSubscriptionTypeQrcodeAndPayment = "qrcodeAndPayment";
+        public const string StarkbankInvoicePullSubscriptionUpdated = "updated";
         public const string StarkbankInvoiceRules = "rules";
         public const string StarkbankInvoiceRuleKey = "key";
         public const string StarkbankInvoiceRuleValue = "value";
@@ -1356,6 +1396,39 @@ namespace StarkBank
 
         [DllImport(Library, EntryPoint = "starkbank_invoice_pdf", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankInvoicePdf(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out UIntPtr out_len, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_invoice_pull_subscription_create", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankInvoicePullSubscriptionCreate(IntPtr client, IntPtr subscriptions, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_invoice_pull_subscription_delete", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankInvoicePullSubscriptionDelete(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_invoice_pull_subscription_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankInvoicePullSubscriptionGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_invoice_pull_subscription_log_get", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankInvoicePullSubscriptionLogGet(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, out IntPtr @out, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_invoice_pull_subscription_log_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankInvoicePullSubscriptionLogPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_invoice_pull_subscription_log_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankInvoicePullSubscriptionLogParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_invoice_pull_subscription_log_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankInvoicePullSubscriptionLogQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_invoice_pull_subscription_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankInvoicePullSubscriptionNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_invoice_pull_subscription_page", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankInvoicePullSubscriptionPage(IntPtr client, IntPtr @params, out IntPtr @out, out IntPtr out_cursor, out IntPtr errors);
+
+        [DllImport(Library, EntryPoint = "starkbank_invoice_pull_subscription_params_new", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankInvoicePullSubscriptionParamsNew(out IntPtr @out);
+
+        [DllImport(Library, EntryPoint = "starkbank_invoice_pull_subscription_query", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int StarkbankInvoicePullSubscriptionQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
 
         [DllImport(Library, EntryPoint = "starkbank_invoice_qrcode", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankInvoiceQrcode(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string id, int size, out IntPtr @out, out UIntPtr out_len, out IntPtr errors);
