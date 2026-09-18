@@ -2922,6 +2922,78 @@ STARKBANK_API int STARKBANK_CALL starkbank_merchant_session_log_page(const stark
     const starkbank_entity *params, starkbank_list **out, char **out_cursor,
     starkbank_errors **errors);
 
+/* =========================================================================
+ *                                MerchantCard
+ * =========================================================================
+ *
+ * Every field is RO: sdk-python's module has no create(); a card is stored
+ * once a MerchantSession Purchase or MerchantPurchase succeeds, never posted
+ * directly. get/query/page are the whole verb surface.
+ *
+ * Fields (wire keys; every field is return-only).
+ *
+ *   id ending fundingType holderName network status STRING (ro)
+ *   tags LIST_STRING (ro)
+ *   expiration DATE_OR_DATETIME (ro)
+ *   created updated DATETIME (ro)
+ *
+ * Query keys: limit, after, before, status, tags, ids.
+ */
+#define STARKBANK_MERCHANT_CARD_ID            "id"
+#define STARKBANK_MERCHANT_CARD_ENDING        "ending"
+#define STARKBANK_MERCHANT_CARD_FUNDING_TYPE  "fundingType"
+#define STARKBANK_MERCHANT_CARD_HOLDER_NAME   "holderName"
+#define STARKBANK_MERCHANT_CARD_NETWORK       "network"
+#define STARKBANK_MERCHANT_CARD_STATUS        "status"
+#define STARKBANK_MERCHANT_CARD_TAGS          "tags"
+#define STARKBANK_MERCHANT_CARD_EXPIRATION    "expiration"
+#define STARKBANK_MERCHANT_CARD_CREATED       "created"
+#define STARKBANK_MERCHANT_CARD_UPDATED       "updated"
+
+/* Statuses, from sdk-python's docstring examples. */
+#define STARKBANK_MERCHANT_CARD_STATUS_ACTIVE    "active"
+#define STARKBANK_MERCHANT_CARD_STATUS_EXPIRED   "expired"
+#define STARKBANK_MERCHANT_CARD_STATUS_CANCELED  "canceled"
+#define STARKBANK_MERCHANT_CARD_STATUS_BLOCKED   "blocked"
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_card_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_card_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_card_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_card_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
+/* --------------------------------------------------------- MerchantCardLog */
+/*
+ * Resource "MerchantCardLog"; endpoint "merchant-card/log", derived at run
+ * time.
+ * Fields: id type STRING (ro), errors LIST_OBJECT (ro),
+ *         card RESOURCE("MerchantCard") (ro),
+ *         created updated DATETIME (ro).
+ * Query keys: limit, cardIds, after, before, types.
+ *
+ * errors is a real LIST_OBJECT of {code, message} pairs, the same shape
+ * CorporatePurchase.Log already established, unlike MerchantSessionLog's
+ * plain LIST_STRING - see MerchantSession's section above.
+ */
+#define STARKBANK_MERCHANT_CARD_LOG_ID       "id"
+#define STARKBANK_MERCHANT_CARD_LOG_CREATED  "created"
+#define STARKBANK_MERCHANT_CARD_LOG_UPDATED  "updated"
+#define STARKBANK_MERCHANT_CARD_LOG_TYPE     "type"
+#define STARKBANK_MERCHANT_CARD_LOG_ERRORS   "errors"
+#define STARKBANK_MERCHANT_CARD_LOG_CARD     "card"
+
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_card_log_params_new(starkbank_entity **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_card_log_get(const starkbank_client *client,
+    const char *id, starkbank_entity **out, starkbank_errors **errors);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_card_log_query(const starkbank_client *client,
+    const starkbank_entity *params, int limit, starkbank_iter **out);
+STARKBANK_API int STARKBANK_CALL starkbank_merchant_card_log_page(const starkbank_client *client,
+    const starkbank_entity *params, starkbank_list **out, char **out_cursor,
+    starkbank_errors **errors);
+
 
 #ifdef __cplusplus
 }

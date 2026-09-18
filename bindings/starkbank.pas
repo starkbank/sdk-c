@@ -464,6 +464,26 @@ const
   STARKBANK_INVOICE_UPDATED = 'updated';
   STARKBANK_LANGUAGE_EN_US = 0;
   STARKBANK_LANGUAGE_PT_BR = 1;
+  STARKBANK_MERCHANT_CARD_CREATED = 'created';
+  STARKBANK_MERCHANT_CARD_ENDING = 'ending';
+  STARKBANK_MERCHANT_CARD_EXPIRATION = 'expiration';
+  STARKBANK_MERCHANT_CARD_FUNDING_TYPE = 'fundingType';
+  STARKBANK_MERCHANT_CARD_HOLDER_NAME = 'holderName';
+  STARKBANK_MERCHANT_CARD_ID = 'id';
+  STARKBANK_MERCHANT_CARD_LOG_CARD = 'card';
+  STARKBANK_MERCHANT_CARD_LOG_CREATED = 'created';
+  STARKBANK_MERCHANT_CARD_LOG_ERRORS = 'errors';
+  STARKBANK_MERCHANT_CARD_LOG_ID = 'id';
+  STARKBANK_MERCHANT_CARD_LOG_TYPE = 'type';
+  STARKBANK_MERCHANT_CARD_LOG_UPDATED = 'updated';
+  STARKBANK_MERCHANT_CARD_NETWORK = 'network';
+  STARKBANK_MERCHANT_CARD_STATUS = 'status';
+  STARKBANK_MERCHANT_CARD_STATUS_ACTIVE = 'active';
+  STARKBANK_MERCHANT_CARD_STATUS_BLOCKED = 'blocked';
+  STARKBANK_MERCHANT_CARD_STATUS_CANCELED = 'canceled';
+  STARKBANK_MERCHANT_CARD_STATUS_EXPIRED = 'expired';
+  STARKBANK_MERCHANT_CARD_TAGS = 'tags';
+  STARKBANK_MERCHANT_CARD_UPDATED = 'updated';
   STARKBANK_MERCHANT_SESSION_ALLOWED_FUNDING_TYPES = 'allowedFundingTypes';
   STARKBANK_MERCHANT_SESSION_ALLOWED_INSTALLMENTS = 'allowedInstallments';
   STARKBANK_MERCHANT_SESSION_ALLOWED_IPS = 'allowedIps';
@@ -1113,6 +1133,22 @@ function starkbank_list_count(list: Pstarkbank_list): Integer; cdecl; external S
 procedure starkbank_list_free(list: Pstarkbank_list); cdecl; external StarkbankLib name 'starkbank_list_free';
 
 function starkbank_list_new(&out: PPstarkbank_list): Integer; cdecl; external StarkbankLib name 'starkbank_list_new';
+
+function starkbank_merchant_card_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_card_get';
+
+function starkbank_merchant_card_log_get(client: Pstarkbank_client; id: PAnsiChar; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_card_log_get';
+
+function starkbank_merchant_card_log_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_card_log_page';
+
+function starkbank_merchant_card_log_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_card_log_params_new';
+
+function starkbank_merchant_card_log_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_card_log_query';
+
+function starkbank_merchant_card_page(client: Pstarkbank_client; params: Pstarkbank_entity; &out: PPstarkbank_list; out_cursor: PPAnsiChar; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_card_page';
+
+function starkbank_merchant_card_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_card_params_new';
+
+function starkbank_merchant_card_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_card_query';
 
 function starkbank_merchant_session_create(client: Pstarkbank_client; session: Pstarkbank_entity; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_session_create';
 
