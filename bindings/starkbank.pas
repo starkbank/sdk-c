@@ -1574,8 +1574,6 @@ function starkbank_merchant_session_page(client: Pstarkbank_client; params: Psta
 
 function starkbank_merchant_session_params_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_session_params_new';
 
-function starkbank_merchant_session_purchase(client: Pstarkbank_client; uuid: PAnsiChar; purchase: Pstarkbank_entity; &out: PPstarkbank_entity; errors: PPstarkbank_errors): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_session_purchase';
-
 function starkbank_merchant_session_query(client: Pstarkbank_client; params: Pstarkbank_entity; limit: Integer; &out: PPstarkbank_iter): Integer; cdecl; external StarkbankLib name 'starkbank_merchant_session_query';
 
 function starkbank_object_new(&out: PPstarkbank_entity): Integer; cdecl; external StarkbankLib name 'starkbank_object_new';

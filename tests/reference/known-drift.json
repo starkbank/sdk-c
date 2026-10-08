@@ -152,6 +152,11 @@
       "reason": "sdk-python's create() is deprecated since v2.31.0 and unconditionally raises StarkError('deprecated'); it is a tombstone, not a working verb. Adding a create here would let a C caller do, over the wire, exactly what sdk-python refuses to do at all - so sdk-c has no create verb for Transaction and none is planned unless python's own create() starts working again."
     },
     {
+      "key": "verb.new:MerchantSession:purchase",
+      "owner": "nicolas.almeida@starkbank.com",
+      "reason": "sdk-python's merchantsession.purchase() is deprecated and unconditionally raises StarkError('deprecated'): POST /v2/merchant-session/:uuid/purchase carries raw card data (PAN, expiration, CVV) and must be called from the payer's front-end, never from the merchant's back-end (PCI). It is a tombstone, not a working verb - the same call as verb.new:Transaction:create. sdk-c keeps the Purchase table, since sdk-python still exports the class, but has no verb that sends it."
+    },
+    {
       "key": "flag.conflict:Transaction:amount",
       "owner": "eduardo.santos@starkbank.com",
       "resolution": "table",
@@ -314,11 +319,6 @@
       "reason": "sdk-python's merchantpurchase.query()/page() accept holder_id and the docs' GET /v2/merchant-purchase endpoint does not list it, the same shape as query.gone:MerchantSession:holderId. python is normative for the verb surface."
     },
     {
-      "key": "endpoint.changed:MerchantSession:purchase",
-      "owner": "eduardo.santos@starkbank.com",
-      "reason": "verbEndpoint() has no way to learn a real path-parameter name for a named verb - every other named shape (CONTENT/CONTENT_INT/CONTENT_QUERY/SUB_RESOURCE) is spelled base + '/:id/' + verbName, and POST /v2/merchant-session/:uuid/purchase is the first docs endpoint to call that same slot ':uuid' instead of ':id'. This is the placeholder's name, not the route: the docs' own POST /v2/merchant-session, GET /v2/merchant-session/:id and GET /v2/dynamic-brcode/:uuid pair show ':uuid' and ':id' are used interchangeably across the docs for the same kind of slot (a server-assigned id in the path), never as two different parameters on one route. The method and the rest of the path (POST /v2/merchant-session/.../purchase) match exactly."
-    },
-    {
       "key": "verb.new:InvoicePullSubscription:cancel",
       "owner": "eduardo.santos@starkbank.com",
       "reason": "sdk-python spells the DELETE /v2/invoice-pull-subscription/:id call cancel(); sdk-c keeps every resource's DELETE_ID verb named starkbank_<resource>_delete for one consistent spelling across the whole SDK, the same choice already made for CorporateHolder and CorporateCard (see verb.new:CorporateHolder:cancel)."
@@ -361,7 +361,7 @@
     {
       "key": "endpoint.changed:DynamicBrcode:get",
       "owner": "eduardo.santos@starkbank.com",
-      "reason": "starkbank_dynamic_brcode_get reaches GET /v2/dynamic-brcode/:uuid; verbEndpoint() always names a GET_ID shape's path slot ':id'. The route and method match; only the placeholder's name differs, exactly the gap endpoint.changed:MerchantSession:purchase already documents for this same docs pair - that entry names GET /v2/dynamic-brcode/:uuid outright as one half of the evidence that ':uuid' and ':id' are the same kind of slot spelled two ways across the docs."
+      "reason": "starkbank_dynamic_brcode_get reaches GET /v2/dynamic-brcode/:uuid; verbEndpoint() always names a GET_ID shape's path slot ':id'. The route and method match; only the placeholder's name differs. The docs use ':uuid' and ':id' interchangeably for the same kind of slot (a server-assigned id in the path), never as two different parameters on one route: POST /v2/merchant-session/:uuid/purchase and GET /v2/merchant-session/:id name the same session slot two ways."
     }
   ]
 }

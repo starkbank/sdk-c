@@ -2,20 +2,14 @@
  * MerchantSession, its Purchase and AllowedInstallment sub-resources, and its
  * Log.
  *
- * purchase(uuid, purchase) is the reason this family needed new engine work.
- * sdk-python calls rest.post_sub_resource(resource=MerchantSession,
- * id=uuid, sub_resource=Purchase, entity=purchase): POST the given Purchase
- * to merchant-session/<uuid>/purchase, and unwrap the reply by PURCHASE's own
- * singular name, not MerchantSession's. Neither existing sub-path macro fits:
- * STARKBANK_VERB_POST_SINGLE_SUB (CorporateCard.create) posts to a literal
- * path segment with no id in the URL and unwraps by the OWNING resource's own
- * name; STARKBANK_VERB_SUB_RESOURCE (Invoice.payment) has an id in the URL
- * but is a GET with no body. core-c already has the exact shape python calls,
- * though - starkcore_rest_post_sub_resource, unused anywhere in this SDK
- * until now - so the new engine work is one shim
- * (starkbankVerbCreateSubResource in starkc/verb.c) plus one macro
- * (STARKBANK_VERB_POST_SUB_RESOURCE in starkc/verbs.h), both thin wrappers
- * over a call core-c already exposed; nothing in starkinfra/core-c changed.
+ * There is no purchase verb. sdk-python's merchantsession.purchase() is
+ * deprecated and unconditionally raises StarkError("deprecated"): POST
+ * merchant-session/<uuid>/purchase carries raw card data (PAN, expiration,
+ * CVV) and must be called from the payer's front-end, never from the
+ * merchant's back-end. Offering it here would let a C caller do, over the
+ * wire, exactly what sdk-python refuses to do - the same reasoning as
+ * Transaction.create, recorded as verb.new:MerchantSession:purchase in
+ * tests/reference/known-drift.json.
  *
  * Purchase registers under its own bare python name ("Purchase"): its module
  * assigns a plain _resource = {"class": Purchase, "name": "Purchase"}, the
@@ -42,8 +36,8 @@
  * python's Resource.__init__ stores it) even though nothing ever calls
  * starkbank_purchase_get/query/page on it - sdk-python's Purchase module
  * exports no such functions, so this table gets no GET_ID/QUERY/PAGE verb to
- * match, only STARKBANK_VERB_NEW to build one to hand to
- * starkbank_merchant_session_purchase.
+ * match, only STARKBANK_VERB_NEW. It stays because sdk-python still exports
+ * the class.
  *
  * Purchase.metadata is the first CREATE-writable single OBJECT field in this
  * SDK - every earlier OBJECT field (Transfer.metadata) is RO. A single
@@ -104,8 +98,8 @@
     F("totalAmount",          AMOUNT,            NULL,  REQUIRED | CREATE)             \
     F("count",                NUMBER,            NULL,  REQUIRED | CREATE)
 
-/* Resource in python (has an id); built with starkbank_purchase_new and sent
-   through starkbank_merchant_session_purchase - see this file's header. */
+/* Resource in python (has an id); built with starkbank_purchase_new. There is
+   no verb that sends it - see this file's header. */
 #define STARKBANK_PURCHASE_FIELDS(F)                                                  \
 /*    wire key                type               ref     flags                    */ \
     F("amount",                AMOUNT,    NULL,  REQUIRED | CREATE)                    \

@@ -2289,19 +2289,6 @@
         }
       ]
     },
-    "merchantsession.purchase": {
-      "hydrated": "{\"amount\":1000,\"billingCity\":\"Sao Paulo\",\"billingCountryCode\":\"BRA\",\"billingStateCode\":\"SP\",\"billingStreetLine1\":\"Av. Paulista, 200\",\"billingStreetLine2\":\"\",\"billingZipCode\":\"01311-200\",\"cardEnding\":\"1234\",\"cardExpiration\":\"2032-12\",\"cardId\":\"5629632759480320\",\"cardNumber\":\"\",\"cardSecurityCode\":\"\",\"challengeMode\":\"enabled\",\"challengeUrl\":\"https://sandbox.starkbank.com/challenge/abc\",\"created\":\"2026-09-16T12:00:00+00:00\",\"currencyCode\":\"BRL\",\"endToEndId\":\"E79457883202101262140HHX553UPqeq\",\"fee\":0,\"fundingType\":\"credit\",\"holderEmail\":\"tony@starkbank.com\",\"holderId\":\"\",\"holderName\":\"Tony Stark\",\"holderPhone\":\"11999998888\",\"id\":\"6234161654976513\",\"installmentCount\":1,\"metadata\":{\"language\":\"pt-BR\",\"timezoneOffset\":180,\"userAgent\":\"python-requests\",\"userIp\":\"191.9.0.0\"},\"network\":\"mastercard\",\"softDescriptor\":\"starkbank\",\"source\":\"merchant-session/901e71f2447c43c886f58366a5432c4b\",\"status\":\"approved\",\"tags\":[],\"updated\":\"2026-09-16T12:00:00+00:00\"}",
-      "requests": [
-        {
-          "body": "{\"amount\":1000,\"billingCity\":\"Sao Paulo\",\"billingCountryCode\":\"BRA\",\"billingStateCode\":\"SP\",\"billingStreetLine1\":\"Av. Paulista, 200\",\"billingZipCode\":\"01311-200\",\"cardExpiration\":\"2032-12\",\"cardNumber\":\"5579433276352001\",\"cardSecurityCode\":\"123\",\"fundingType\":\"credit\",\"holderEmail\":\"tony@starkbank.com\",\"holderName\":\"Tony Stark\",\"holderPhone\":\"11999998888\",\"installmentCount\":1,\"metadata\":{\"language\":\"pt-BR\",\"timezoneOffset\":180,\"userAgent\":\"python-requests\",\"userIp\":\"191.9.0.0\"}}",
-          "bodyRaw": "{\"amount\": 1000, \"billingCity\": \"Sao Paulo\", \"billingCountryCode\": \"BRA\", \"billingStateCode\": \"SP\", \"billingStreetLine1\": \"Av. Paulista, 200\", \"billingZipCode\": \"01311-200\", \"cardExpiration\": \"2032-12\", \"cardNumber\": \"5579433276352001\", \"cardSecurityCode\": \"123\", \"fundingType\": \"credit\", \"holderEmail\": \"tony@starkbank.com\", \"holderName\": \"Tony Stark\", \"holderPhone\": \"11999998888\", \"installmentCount\": 1, \"metadata\": {\"userAgent\": \"python-requests\", \"timezoneOffset\": 180, \"userIp\": \"191.9.0.0\", \"language\": \"pt-BR\"}}",
-          "method": "POST",
-          "query": "",
-          "queryRaw": "",
-          "url": "https://sandbox.api.starkbank.com/v2/merchant-session/901e71f2447c43c886f58366a5432c4b/purchase"
-        }
-      ]
-    },
     "merchantsession.query": {
       "hydrated": [
         "{\"allowedFundingTypes\":[\"credit\",\"debit\"],\"allowedInstallments\":[{\"count\":1,\"totalAmount\":100},{\"count\":2,\"totalAmount\":51}],\"allowedIps\":[],\"challengeMode\":\"enabled\",\"created\":\"2026-09-16T12:00:00+00:00\",\"expiration\":3600,\"holderId\":\"\",\"id\":\"6234161654976512\",\"softDescriptor\":\"\",\"status\":\"created\",\"tags\":[\"labs\"],\"updated\":\"2026-09-16T12:00:00+00:00\",\"uuid\":\"901e71f2447c43c886f58366a5432c4b\"}"
@@ -5813,47 +5800,6 @@
           "type": "utility-payment"
         }
       ]
-    },
-    "sessionPurchase": {
-      "purchase": {
-        "amount": 1000,
-        "billingCity": "Sao Paulo",
-        "billingCountryCode": "BRA",
-        "billingStateCode": "SP",
-        "billingStreetLine1": "Av. Paulista, 200",
-        "billingStreetLine2": "",
-        "billingZipCode": "01311-200",
-        "cardEnding": "1234",
-        "cardExpiration": "2032-12",
-        "cardId": "5629632759480320",
-        "cardNumber": "",
-        "cardSecurityCode": "",
-        "challengeMode": "enabled",
-        "challengeUrl": "https://sandbox.starkbank.com/challenge/abc",
-        "created": "2026-09-16T12:00:00+00:00",
-        "currencyCode": "BRL",
-        "endToEndId": "E79457883202101262140HHX553UPqeq",
-        "fee": 0,
-        "fundingType": "credit",
-        "holderEmail": "tony@starkbank.com",
-        "holderId": "",
-        "holderName": "Tony Stark",
-        "holderPhone": "11999998888",
-        "id": "6234161654976513",
-        "installmentCount": 1,
-        "metadata": {
-          "language": "pt-BR",
-          "timezoneOffset": 180,
-          "userAgent": "python-requests",
-          "userIp": "191.9.0.0"
-        },
-        "network": "mastercard",
-        "softDescriptor": "starkbank",
-        "source": "merchant-session/901e71f2447c43c886f58366a5432c4b",
-        "status": "approved",
-        "tags": [],
-        "updated": "2026-09-16T12:00:00+00:00"
-      }
     },
     "split": {
       "split": {

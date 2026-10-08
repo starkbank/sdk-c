@@ -8,14 +8,14 @@
  * merchantsession.h).
  *
  * starkbank_dynamic_brcode_get reaches GET /v2/dynamic-brcode/:uuid, but
- * STARKBANK_VERB_GET_ID always names its path slot ":id" - the identical
- * placeholder-naming gap tests/reference/known-drift.json's
- * endpoint.changed:MerchantSession:purchase entry already documents for this
- * exact docs pair (that entry calls out GET /v2/dynamic-brcode/:uuid by name
- * as one half of the evidence that ":uuid" and ":id" are the same kind of
- * slot spelled two ways across the docs). The route and method match; only
- * the placeholder's name differs, which is not a fact drift.py's endpoint
- * check can see through, so it is a separate accepted entry here.
+ * STARKBANK_VERB_GET_ID always names its path slot ":id". The docs use
+ * ":uuid" and ":id" interchangeably for the same kind of slot (a
+ * server-assigned id in the path), never as two different parameters on one
+ * route - POST /v2/merchant-session/:uuid/purchase and
+ * GET /v2/merchant-session/:id name the same session slot two ways. The
+ * route and method match; only the placeholder's name differs, which is not
+ * a fact drift.py's endpoint check can see through, so it is an accepted
+ * entry in tests/reference/known-drift.json.
  *
  * Rule.value is LIST_STRING, not STRING: sdk-python's Rule.__init__ stores it
  * with no coercion at all, but the docs' own worked example for "rules" is

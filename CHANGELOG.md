@@ -31,8 +31,8 @@ name-keyed accessors.
 - BoletoHolmes (+ Log): no errors field and no pdf verb, either - sdk-python's
   Log has neither
 - DynamicBrcode (+ Rule): `get` reaches `GET /v2/dynamic-brcode/:uuid`, not
-  `:id`, the same `:uuid`/`:id` placeholder gap `MerchantSession.purchase`'s
-  endpoint already documents
+  `:id`, the same `:uuid`/`:id` placeholder gap the docs show between
+  `POST /v2/merchant-session/:uuid/purchase` and `GET /v2/merchant-session/:id`
 - PaymentRequest: the first CREATE-writable polymorphic RESOURCE field in
   this SDK. `payment` hydrates as whichever of `Transfer`, `Transaction`,
   `BoletoPayment`, `BrcodePayment`, `UtilityPayment`, `DarfPayment` or
@@ -94,6 +94,16 @@ name-keyed accessors.
   reachable independently, as before. `errors` on both Logs is `LIST_STRING` -
   the api-v2-ms-split service never emits the key, unlike VerifiedAccount's
   api-v2-ms-transfer
+
+### Removed
+- `starkbank_merchant_session_purchase`: sdk-python's
+  `merchantsession.purchase()` is now deprecated and always raises, because
+  `POST /v2/merchant-session/:uuid/purchase` carries raw card data and must
+  be called from the payer's front-end, never from the merchant's back-end.
+  sdk-c drops the verb rather than keep a working one python refuses to
+  offer - the same call as Transaction's missing `create`. The `Purchase`
+  table stays, since sdk-python still exports the class, and
+  `STARKBANK_VERB_POST_SUB_RESOURCE` stays in the engine with no table using it
 
 ### Fixed
 - `starkbankVerbCreate` and `starkbankVerbPutMulti` (`starkc/verb.c`) now free
