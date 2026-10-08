@@ -2863,13 +2863,11 @@ STARKBANK_API int STARKBANK_CALL starkbank_merchant_session_page(const starkbank
     const starkbank_entity *params, starkbank_list **out, char **out_cursor,
     starkbank_errors **errors);
 
-STARKBANK_API int STARKBANK_CALL starkbank_merchant_session_purchase(const starkbank_client *client,
-    const char *uuid, const starkbank_entity *purchase, starkbank_entity **out,
-    starkbank_errors **errors);
-/* rest.post_sub_resource: POST purchase to merchant-session/<uuid>/purchase.
-   purchase must be tagged "Purchase" (starkbank_purchase_new); the entity
-   that comes back is tagged "Purchase" too and carries an id. Borrows
-   purchase; free *out with starkbank_entity_free. */
+/* No purchase verb: sdk-python's merchantsession.purchase() is deprecated
+   and unconditionally raises StarkError("deprecated"). POST
+   merchant-session/<uuid>/purchase carries raw card data and must be called
+   from the payer's front-end, never from the merchant's back-end, so sdk-c
+   does not offer it at all - the same call it made for Transaction.create. */
 
 /* ---------------------------------------- MerchantSession.AllowedInstallment */
 /* SubResource (no id); embedded in MerchantSession.allowedInstallments.
@@ -2886,9 +2884,9 @@ STARKBANK_API int STARKBANK_CALL starkbank_merchant_session_purchase(const stark
 STARKBANK_API int STARKBANK_CALL starkbank_allowed_installment_new(starkbank_entity **out);
 
 /* ---------------------------------------------------------------- Purchase */
-/* Resource (has an id), reached only through
- * starkbank_merchant_session_purchase - sdk-python's Purchase module exports
- * no get/query/page of its own.
+/* Resource (has an id) with no verb of its own: sdk-python's Purchase module
+ * exports no get/query/page, and the session's purchase verb is deprecated -
+ * see MerchantSession above. Kept so the shape still matches sdk-python's.
  * Fields: amount* AMOUNT; cardExpiration* cardNumber* cardSecurityCode*
  *         holderName* fundingType* STRING; holderEmail holderPhone holderId
  *         STRING; installmentCount NUMBER; billingCountryCode billingCity
@@ -2932,8 +2930,7 @@ STARKBANK_API int STARKBANK_CALL starkbank_allowed_installment_new(starkbank_ent
 #define STARKBANK_PURCHASE_UPDATED               "updated"
 
 STARKBANK_API int STARKBANK_CALL starkbank_purchase_new(starkbank_entity **out);
-/* Free it, or hand it to starkbank_merchant_session_purchase, which borrows
-   it and does not take ownership. */
+/* Free it with starkbank_entity_free. */
 
 /* ------------------------------------------------------- MerchantSessionLog */
 /*

@@ -56,7 +56,7 @@ an FFI generator and MSVC can all read it. `make check-header` proves that.
 | MerchantCountry | query | query-only lookup for `CorporateRule.countries`; no `limit` keyword and no `page` |
 | MerchantInstallment | get query page | every field is RO: generated automatically when a MerchantPurchase is split. + `merchantinstallment.Log` (get query page), whose `errors` is a real LIST_OBJECT |
 | MerchantPurchase | create get query page update | `create` is `post_single`. `update` sends only `status`/`amount`, to cancel an approved purchase or reverse a confirmed one. + `merchantpurchase.Log` (get query page), whose `errors` is a real LIST_OBJECT |
-| MerchantSession | create get query page purchase | `create` is `post_single`. `purchase` is new: `STARKBANK_VERB_POST_SUB_RESOURCE`, built on `starkcore_rest_post_sub_resource`, POSTs a `Purchase` to `merchant-session/<uuid>/purchase` and returns it with an id. + `MerchantSession.AllowedInstallment`, `Purchase`, `merchantsession.Log` (get query page), whose `errors` is LIST_STRING, unlike the other merchant logs |
+| MerchantSession | create get query page | `create` is `post_single`. No `purchase`: sdk-python's `purchase()` is deprecated and always raises, because `merchant-session/<uuid>/purchase` carries raw card data and must be called from the payer's front-end, never from the merchant's back-end - the same call as Transaction's missing `create`. + `MerchantSession.AllowedInstallment`, `Purchase`, `merchantsession.Log` (get query page), whose `errors` is LIST_STRING, unlike the other merchant logs |
 | DarfPayment | create get delete query page pdf | + `darfpayment.Log` (get query page). Fully structured: no conditionally-required line/barCode pair, and no `type` attribute |
 | Invoice | create get query page update pdf qrcode payment | + `invoice.Log` (get query page pdf), `Invoice.Rule`, `Invoice.Payment`, `Split` |
 | TaxPayment | create get delete query page pdf | + `taxpayment.Log` (get query page). `line`/`barCode` are the conditionally-required pair; `scheduled` is a plain DATE |
@@ -89,8 +89,8 @@ The table's resources between them use every `starkcore_rest_*` shape the
 bank SDK needs, including `put_multi`:
 `post_multi`, `post_single`, `get_id`, `get_page`, the stream, `patch_id`,
 `delete_id`, `get_content` and `get_sub_resource` - joined later by
-`post_sub_resource` for `MerchantSession.purchase` and `put_multi` for
-`SplitProfile.put`. The remaining bank resources are tables on top of exactly
+`post_sub_resource`, written for `MerchantSession.purchase` and unused since
+that verb was removed, and `put_multi` for `SplitProfile.put`. The remaining bank resources are tables on top of exactly
 this engine.
 
 Three fields in the surface are polymorphic - Event.log, PaymentPreview.payment

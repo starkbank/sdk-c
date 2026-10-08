@@ -668,7 +668,8 @@ int starkbankVerbSubResource(const starkbank_client *client, const starkbankReso
 }
 
 /*
- * MerchantSession.purchase: rest.post_sub_resource, in full agreement with
+ * Written for MerchantSession.purchase, whose verb sdk-c no longer exposes;
+ * no table uses it today. rest.post_sub_resource, in full agreement with
  * core-c's starkcore_rest_post_sub_resource - POST to
  * endpoint(resource)/id/endpoint(subResourceName), body the dehydrated
  * entity, response unwrapped by the SUB resource's own singular name. Unlike

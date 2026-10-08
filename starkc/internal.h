@@ -234,7 +234,8 @@ int starkbankVerbSubResource(const starkbank_client *client, const starkbankReso
                              const char *id, const char *subResourceName, const char *tagName,
                              starkbank_entity **out, starkbank_errors **errors);
 /*
- * MerchantSession.purchase's shape: rest.post_sub_resource, POST to
+ * The shape written for MerchantSession.purchase, whose verb sdk-c no longer
+ * exposes; no table uses it today. rest.post_sub_resource, POST to
  * endpoint(resource) + "/" + id + "/" + endpoint(subResourceName), body the
  * given entity, unwrapped by the SUB resource's own singular name rather
  * than the owning resource's - core-c's starkcore_rest_post_sub_resource is

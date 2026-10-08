@@ -3591,8 +3591,6 @@ static void testMerchantSession(void)
     starkbank_entity *installment = NULL;
     starkbank_entity *installment2 = NULL;
     starkbank_entity *params = NULL;
-    starkbank_entity *purchase = NULL;
-    starkbank_entity *purchased = NULL;
     starkbank_list *page = NULL;
     starkbank_iter *iter = NULL;
     const starkbank_entity *item = NULL;
@@ -3672,44 +3670,6 @@ static void testMerchantSession(void)
     starkbank_list_free(page);
     starkbank_entity_free(params);
 
-    startGroup("MerchantSession.purchase - the new POST_SUB_RESOURCE verb");
-    starkbank_client_free(client);
-    client = newClient(&fake);
-    replies(&fake, responseBody("sessionPurchase"), NULL);
-    starkbank_purchase_new(&purchase);
-    starkbank_entity_set_amount(purchase, STARKBANK_PURCHASE_AMOUNT, 1000);
-    starkbank_entity_set_string(purchase, STARKBANK_PURCHASE_CARD_EXPIRATION, "2032-12");
-    starkbank_entity_set_string(purchase, STARKBANK_PURCHASE_CARD_NUMBER, "5579433276352001");
-    starkbank_entity_set_string(purchase, STARKBANK_PURCHASE_CARD_SECURITY_CODE, "123");
-    starkbank_entity_set_string(purchase, STARKBANK_PURCHASE_HOLDER_NAME, "Tony Stark");
-    starkbank_entity_set_string(purchase, STARKBANK_PURCHASE_FUNDING_TYPE, "credit");
-    starkbank_entity_set_string(purchase, STARKBANK_PURCHASE_HOLDER_EMAIL,
-                                "tony@starkbank.com");
-    starkbank_entity_set_string(purchase, STARKBANK_PURCHASE_HOLDER_PHONE, "11999998888");
-    starkbank_entity_set_number(purchase, STARKBANK_PURCHASE_INSTALLMENT_COUNT, 1);
-    starkbank_entity_set_string(purchase, STARKBANK_PURCHASE_BILLING_COUNTRY_CODE, "BRA");
-    starkbank_entity_set_string(purchase, STARKBANK_PURCHASE_BILLING_CITY, "Sao Paulo");
-    starkbank_entity_set_string(purchase, STARKBANK_PURCHASE_BILLING_STATE_CODE, "SP");
-    starkbank_entity_set_string(purchase, STARKBANK_PURCHASE_BILLING_STREET_LINE_1,
-                                "Av. Paulista, 200");
-    starkbank_entity_set_string(purchase, STARKBANK_PURCHASE_BILLING_ZIP_CODE, "01311-200");
-    /* metadata is OBJECT, a single map with no dedicated typed setter (only
-       LIST_OBJECT/LIST_RESOURCE fields take starkbank_entity_append_entity);
-       set_json_raw is the documented way to write one, and it is still
-       validated at dehydrate time because the table already declares this
-       key CREATE. */
-    starkbank_entity_set_json_raw(purchase, STARKBANK_PURCHASE_METADATA,
-        "{\"userAgent\":\"python-requests\",\"timezoneOffset\":180,"
-        "\"userIp\":\"191.9.0.0\",\"language\":\"pt-BR\"}");
-    check("purchase posts to merchant-session/<uuid>/purchase and returns a Purchase with an id",
-          starkbank_merchant_session_purchase(client, "901e71f2447c43c886f58366a5432c4b",
-              purchase, &purchased, NULL) == STARKBANK_OK
-          && equalStrings(starkbank_entity_resource(purchased), "Purchase")
-          && starkbank_entity_id(purchased) != NULL, NULL);
-    checkRequests("merchantsession.purchase", &fake);
-    checkHydration("merchantsession.purchase", 0, purchased);
-    starkbank_entity_free(purchase);
-    starkbank_entity_free(purchased);
     starkbank_client_free(client);
 }
 

@@ -897,42 +897,6 @@ MERCHANT_SESSION_LOG = {
     "session": MERCHANT_SESSION,
 }
 
-SESSION_PURCHASE = {
-    "id": "6234161654976513",
-    "amount": 1000,
-    "cardExpiration": "2032-12",
-    "cardNumber": "",
-    "cardSecurityCode": "",
-    "holderName": "Tony Stark",
-    "fundingType": "credit",
-    "holderEmail": "tony@starkbank.com",
-    "holderPhone": "11999998888",
-    "holderId": "",
-    "installmentCount": 1,
-    "billingCountryCode": "BRA",
-    "billingCity": "Sao Paulo",
-    "billingStateCode": "SP",
-    "billingStreetLine1": "Av. Paulista, 200",
-    "billingStreetLine2": "",
-    "billingZipCode": "01311-200",
-    "metadata": {"userAgent": "python-requests", "timezoneOffset": 180,
-                "userIp": "191.9.0.0", "language": "pt-BR"},
-    "cardEnding": "1234",
-    "cardId": "5629632759480320",
-    "challengeMode": "enabled",
-    "challengeUrl": "https://sandbox.starkbank.com/challenge/abc",
-    "currencyCode": "BRL",
-    "endToEndId": "E79457883202101262140HHX553UPqeq",
-    "fee": 0,
-    "network": "mastercard",
-    "source": "merchant-session/901e71f2447c43c886f58366a5432c4b",
-    "softDescriptor": "starkbank",
-    "status": "approved",
-    "tags": [],
-    "created": "2026-09-16T12:00:00+00:00",
-    "updated": "2026-09-16T12:00:00+00:00",
-}
-
 MERCHANT_CARD = {
     "id": "5629632759480320",
     "ending": "1234",
@@ -1779,27 +1743,6 @@ def main():
                holder_id="5729405850615808")))
     record("merchantsession.page", [{"sessions": [MERCHANT_SESSION], "cursor": ""}],
            lambda: starkbank.merchantsession.page(limit=5)[0])
-    session_purchase = starkbank.merchantsession.Purchase(
-        amount=1000,
-        card_expiration="2032-12",
-        card_number="5579433276352001",
-        card_security_code="123",
-        holder_name="Tony Stark",
-        funding_type="credit",
-        holder_email="tony@starkbank.com",
-        holder_phone="11999998888",
-        installment_count=1,
-        billing_country_code="BRA",
-        billing_city="Sao Paulo",
-        billing_state_code="SP",
-        billing_street_line_1="Av. Paulista, 200",
-        billing_zip_code="01311-200",
-        metadata={"userAgent": "python-requests", "timezoneOffset": 180,
-                  "userIp": "191.9.0.0", "language": "pt-BR"},
-    )
-    record("merchantsession.purchase", [{"purchase": SESSION_PURCHASE}],
-           lambda: starkbank.merchantsession.purchase(
-               "901e71f2447c43c886f58366a5432c4b", session_purchase))
     record("merchantsession.log.get", [{"log": MERCHANT_SESSION_LOG}],
            lambda: starkbank.merchantsession.log.get("6357482625564672"))
     record("merchantsession.log.query", [{"logs": [MERCHANT_SESSION_LOG], "cursor": ""}],
@@ -2163,7 +2106,6 @@ def main():
             "merchantSession": {"session": MERCHANT_SESSION},
             "merchantSessions": {"sessions": [MERCHANT_SESSION], "cursor": ""},
             "merchantSessionLog": {"log": MERCHANT_SESSION_LOG},
-            "sessionPurchase": {"purchase": SESSION_PURCHASE},
             "merchantCard": {"card": MERCHANT_CARD},
             "merchantCards": {"cards": [MERCHANT_CARD], "cursor": ""},
             "merchantCardLog": {"log": MERCHANT_CARD_LOG},

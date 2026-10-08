@@ -1828,9 +1828,6 @@ namespace StarkBank
         [DllImport(Library, EntryPoint = "starkbank_merchant_session_params_new", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankMerchantSessionParamsNew(out IntPtr @out);
 
-        [DllImport(Library, EntryPoint = "starkbank_merchant_session_purchase", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int StarkbankMerchantSessionPurchase(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string uuid, IntPtr purchase, out IntPtr @out, out IntPtr errors);
-
         [DllImport(Library, EntryPoint = "starkbank_merchant_session_query", CallingConvention = CallingConvention.Cdecl)]
         public static extern int StarkbankMerchantSessionQuery(IntPtr client, IntPtr @params, int limit, out IntPtr @out);
 
