@@ -254,11 +254,15 @@ jobs:
           ref: ${{ env.ECDSA_C_REF }}
           path: starkbank/ecdsa-c
 
-      - uses: ilammy/msvc-dev-cmd@v1
+      # The organization's Actions policy allows GitHub-owned actions only, so the
+      # MSVC environment is entered with vswhere and vcvars64 from the runner
+      # image rather than through a third-party action. Each cmd step is its
+      # own shell, so each one enters it again.
 
       - name: Public header as its own translation unit
         shell: cmd
         run: |
+          for /f "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do call "%%i\VC\Auxiliary\Build\vcvars64.bat"
           cd starkbank\sdk-c
           echo #include "starkbank.h" > %TEMP%\header.c
           echo int main(void) { return starkbank_abi_version(); } >> %TEMP%\header.c
@@ -267,6 +271,7 @@ jobs:
       - name: Every source under /TC /W4 /permissive-
         shell: cmd
         run: |
+          for /f "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do call "%%i\VC\Auxiliary\Build\vcvars64.bat"
           cd starkbank\sdk-c
           cl /nologo /TC /W4 /permissive- /c /Iinclude /Istarkc /Istarkbank /I..\..\starkinfra\core-c\include /I..\ecdsa-c\include starkc\*.c handwritten\*.c /Fo%TEMP%\
           for /d %%d in (starkbank\*) do cl /nologo /TC /W4 /permissive- /c /Iinclude /Istarkc /Istarkbank /I..\..\starkinfra\core-c\include /I..\ecdsa-c\include %%d\*.c /Fo%TEMP%\\
