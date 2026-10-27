@@ -95,6 +95,11 @@ name-keyed accessors.
   the api-v2-ms-split service never emits the key, unlike VerifiedAccount's
   api-v2-ms-transfer
 
+### Changed
+- Release tarballs bundle ecdsa-c 0.1.1, whose static archive is now
+  position-independent on its own, so CI and the release jobs no longer
+  build it with `CFLAGS="-O2 -fPIC"`
+
 ### Removed
 - `starkbank_merchant_session_purchase`: sdk-python's
   `merchantsession.purchase()` is now deprecated and always raises, because
