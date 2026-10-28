@@ -50,6 +50,31 @@ void expectFirst(const char *name, int status, starkbank_iter *iter);
    it prints skip with the reason in missing instead of FAIL. */
 void firstOrSkip(const char *name, int status, starkbank_iter *iter, const char *missing);
 
+/* The list-create, query and delete shapes every resource family shares, so
+   a group passes starkbank_<family>_create and friends straight in. */
+typedef int (STARKBANK_CALL *SandboxCreateFn)(const starkbank_client *client,
+                                              const starkbank_list *items, starkbank_list **out,
+                                              starkbank_errors **errors);
+typedef int (STARKBANK_CALL *SandboxParamsFn)(starkbank_entity **out);
+typedef int (STARKBANK_CALL *SandboxQueryFn)(const starkbank_client *client,
+                                             const starkbank_entity *params, int limit,
+                                             starkbank_iter **out);
+typedef int (STARKBANK_CALL *SandboxDeleteFn)(const starkbank_client *client, const char *id,
+                                              starkbank_entity **out, starkbank_errors **errors);
+
+/* Creates item, which it takes, and returns the created entity with an id,
+   yours to free, after printing ok under name; or NULL after printing FAIL. */
+starkbank_entity *createOne(const starkbank_client *client, const char *name,
+                            SandboxCreateFn create, starkbank_entity *item);
+
+/* expectFirst over the log query that filters key (ex: "boletoIds") by id. */
+void expectLog(const starkbank_client *client, const char *name, SandboxParamsFn newParams,
+               SandboxQueryFn query, const char *key, const char *id);
+
+/* Deletes id, printing ok or FAIL under name. */
+void deleteOne(const starkbank_client *client, const char *name, SandboxDeleteFn remove,
+               const char *id);
+
 void sandboxAuth(const starkbank_client *client, const starkbank_user *organization);
 void sandboxSignature(const starkbank_client *client, const starkbank_user *organization);
 void sandboxCore(const starkbank_client *client, const starkbank_user *organization);
@@ -59,5 +84,6 @@ void sandboxNonBoleto(const starkbank_client *client, const starkbank_user *orga
 void sandboxAccount(const starkbank_client *client, const starkbank_user *organization);
 void sandboxCorporate(const starkbank_client *client, const starkbank_user *organization);
 void sandboxMerchant(const starkbank_client *client, const starkbank_user *organization);
+void sandboxPull(const starkbank_client *client, const starkbank_user *organization);
 
 #endif
