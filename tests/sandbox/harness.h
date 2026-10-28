@@ -51,5 +51,6 @@ void sandboxSignature(const starkbank_client *client, const starkbank_user *orga
 void sandboxCore(const starkbank_client *client, const starkbank_user *organization);
 void sandboxWebhookPreview(const starkbank_client *client, const starkbank_user *organization);
 void sandboxBoleto(const starkbank_client *client, const starkbank_user *organization);
+void sandboxNonBoleto(const starkbank_client *client, const starkbank_user *organization);
 
 #endif
