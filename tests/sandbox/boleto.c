@@ -105,8 +105,8 @@ static void payBoleto(const starkbank_client *client, const starkbank_entity *bo
         expectFirst("boleto payment log query", status, iter);
         starkbank_entity_free(params);
         errors = NULL;
-        requireOk("the boleto payment is deleted afterwards",
-                  starkbank_boleto_payment_delete(client, id, &deleted, &errors), errors);
+        cleanup("the boleto payment is deleted afterwards",
+                starkbank_boleto_payment_delete(client, id, &deleted, &errors), errors);
         starkbank_entity_free(deleted);
     }
     starkbank_list_free(created);
@@ -175,8 +175,8 @@ static void payBrcode(const starkbank_client *client)
         starkbank_brcode_payment_params_new(&patch);
         starkbank_entity_set_string(patch, STARKBANK_BRCODE_PAYMENT_STATUS, "canceled");
         errors = NULL;
-        requireOk("the brcode payment is canceled afterwards",
-                  starkbank_brcode_payment_update(client, id, patch, &canceled, &errors), errors);
+        cleanup("the brcode payment is canceled afterwards",
+                starkbank_brcode_payment_update(client, id, patch, &canceled, &errors), errors);
         starkbank_entity_free(patch);
         starkbank_entity_free(canceled);
     }

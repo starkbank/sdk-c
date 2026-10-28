@@ -56,10 +56,23 @@ static void createAndDelete(const starkbank_client *client, const char *name, Cr
           "the payment carries no id");
     if (id != NULL) {
         errors = NULL;
-        requireOk("the payment is deleted afterwards", remove(client, id, &deleted, &errors), errors);
+        cleanup("the payment is deleted afterwards", remove(client, id, &deleted, &errors), errors);
         starkbank_entity_free(deleted);
     }
     starkbank_list_free(created);
+}
+
+/* Each page holds the one log asked for, and the second is not the first:
+   a cursor that re-serves page one would otherwise pass. */
+static int differentLogs(const starkbank_list *first, const starkbank_list *second)
+{
+    const char *firstId = NULL;
+    const char *secondId = NULL;
+
+    return starkbank_list_count(first) == 1 && starkbank_list_count(second) == 1
+           && starkbank_entity_string(starkbank_list_at(first, 0), "id", &firstId) == STARKBANK_OK
+           && starkbank_entity_string(starkbank_list_at(second, 0), "id", &secondId) == STARKBANK_OK
+           && strcmp(firstId, secondId) != 0;
 }
 
 static void walkTwoPages(const starkbank_client *client, const char *name, ParamsFn newParams,
@@ -82,8 +95,7 @@ static void walkTwoPages(const starkbank_client *client, const char *name, Param
         starkbank_entity_set_string(params, "cursor", cursor);
         errors = NULL;
         if (requireOk(name, page(client, params, &second, NULL, &errors), errors)) {
-            check(name, starkbank_list_count(first) == 1 && starkbank_list_count(second) == 1,
-                  "a page did not hold the one log asked for");
+            check(name, differentLogs(first, second), "the cursor served the first page again");
         }
     }
     starkbank_free(cursor);

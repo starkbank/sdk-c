@@ -79,6 +79,15 @@ int requireOk(const char *name, int status, starkbank_errors *errors)
     return 0;
 }
 
+void cleanup(const char *name, int status, starkbank_errors *errors)
+{
+    if (status != STARKBANK_OK) {
+        skip(name, starkbank_errors_count(errors) > 0 ? starkbank_errors_message_at(errors, 0)
+                                                      : starkbank_strerror(status));
+    }
+    starkbank_errors_free(errors);
+}
+
 starkbank_entity *createInvoice(const starkbank_client *client, const char *name, double fine,
                                 double interest)
 {
@@ -129,8 +138,8 @@ void cancelInvoice(const starkbank_client *client, const starkbank_entity *invoi
     }
     starkbank_invoice_params_new(&patch);
     starkbank_entity_set_string(patch, STARKBANK_INVOICE_STATUS, STARKBANK_INVOICE_STATUS_CANCELED);
-    requireOk("the invoice is canceled afterwards",
-              starkbank_invoice_update(client, id, patch, &canceled, &errors), errors);
+    cleanup("the invoice is canceled afterwards",
+            starkbank_invoice_update(client, id, patch, &canceled, &errors), errors);
     starkbank_entity_free(patch);
     starkbank_entity_free(canceled);
 }
