@@ -46,6 +46,10 @@ void cancelInvoice(const starkbank_client *client, const starkbank_entity *invoi
    *_query call returned) and passes when there is one; frees iter. */
 void expectFirst(const char *name, int status, starkbank_iter *iter);
 
+/* Like expectFirst, but an empty answer is sandbox data that is missing, so
+   it prints skip with the reason in missing instead of FAIL. */
+void firstOrSkip(const char *name, int status, starkbank_iter *iter, const char *missing);
+
 void sandboxAuth(const starkbank_client *client, const starkbank_user *organization);
 void sandboxSignature(const starkbank_client *client, const starkbank_user *organization);
 void sandboxCore(const starkbank_client *client, const starkbank_user *organization);
@@ -53,5 +57,6 @@ void sandboxWebhookPreview(const starkbank_client *client, const starkbank_user 
 void sandboxBoleto(const starkbank_client *client, const starkbank_user *organization);
 void sandboxNonBoleto(const starkbank_client *client, const starkbank_user *organization);
 void sandboxAccount(const starkbank_client *client, const starkbank_user *organization);
+void sandboxCorporate(const starkbank_client *client, const starkbank_user *organization);
 
 #endif
