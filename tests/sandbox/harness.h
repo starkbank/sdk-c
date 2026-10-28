@@ -33,5 +33,6 @@ void skip(const char *name, const char *reason);
 int requireOk(const char *name, int status, starkbank_errors *errors);
 
 void sandboxAuth(const starkbank_client *client, const starkbank_user *organization);
+void sandboxSignature(const starkbank_client *client, const starkbank_user *organization);
 
 #endif
