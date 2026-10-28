@@ -31,7 +31,7 @@ permissions:
 
 env:
   CORE_C_REF: v0.1.1
-  ECDSA_C_REF: v0.1.0
+  ECDSA_C_REF: v0.1.1
 
 jobs:
   dist-linux:
@@ -92,7 +92,7 @@ jobs:
       - name: Build the siblings
         run: |
           prefix="$PWD/secp256k1-prefix"
-          make -C starkbank/ecdsa-c SECP256K1_PREFIX="$prefix" CFLAGS="-O2 -fPIC"
+          make -C starkbank/ecdsa-c SECP256K1_PREFIX="$prefix"
           make -C starkinfra/core-c SECP256K1_PREFIX="$prefix"
           make -C starkinfra/core-c SECP256K1_PREFIX="$prefix" curl
 
@@ -161,7 +161,7 @@ jobs:
 
       - name: Build the siblings
         run: |
-          make -C starkbank/ecdsa-c CFLAGS="-O2 -fPIC"
+          make -C starkbank/ecdsa-c
           make -C starkinfra/core-c
           make -C starkinfra/core-c curl
 

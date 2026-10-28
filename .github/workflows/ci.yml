@@ -17,7 +17,7 @@ on:
 # contents:read on core-c), falling back to the automatic token once public. A fork PR has neither and stays red.
 env:
   CORE_C_REF: v0.1.1
-  ECDSA_C_REF: v0.1.0
+  ECDSA_C_REF: v0.1.1
   # The drift checker reads sdk-python at the sha tests/reference/sdk-python.sha
   # pins and app-docs at its default branch. Neither is imported and neither is
   # written; both are inputs.
@@ -61,7 +61,7 @@ jobs:
 
       - name: Build the siblings
         run: |
-          make -C starkbank/ecdsa-c CFLAGS="-O2 -fPIC"
+          make -C starkbank/ecdsa-c
           make -C starkinfra/core-c
           make -C starkinfra/core-c curl
 
@@ -148,7 +148,7 @@ jobs:
 
       - name: Build the siblings
         run: |
-          make -C starkbank/ecdsa-c CFLAGS="-O2 -fPIC"
+          make -C starkbank/ecdsa-c
           make -C starkinfra/core-c
 
       - name: One client, eight threads
@@ -215,7 +215,7 @@ jobs:
 
       - name: Build the siblings
         run: |
-          make -C starkbank/ecdsa-c CFLAGS="-O2 -fPIC"
+          make -C starkbank/ecdsa-c
           make -C starkinfra/core-c
 
       - name: Tables against sdk-python and the docs JSON
