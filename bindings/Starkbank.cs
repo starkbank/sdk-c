@@ -951,7 +951,7 @@ namespace StarkBank
         public const string StarkbankVerifiedTransferTags = "tags";
         public const string StarkbankVerifiedTransferTransactionIds = "transactionIds";
         public const string StarkbankVerifiedTransferUpdated = "updated";
-        public const string StarkbankVersion = "0.1.0";
+        public const string StarkbankVersion = "0.2.0";
         public const string StarkbankWebhookId = "id";
         public const string StarkbankWebhookSubscriptions = "subscriptions";
         public const string StarkbankWebhookSubscriptionBoleto = "boleto";

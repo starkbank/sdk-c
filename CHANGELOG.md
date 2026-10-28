@@ -17,6 +17,9 @@ never bumps it: fields are not part of the ABI, which is the point of the
 name-keyed accessors.
 
 ## [Unreleased]
+
+## [0.2.0] - 2026-10-28
+
 ### Added
 - InvoicePullSubscription (+ Log): `cancel` keeps sdk-c's uniform `*_delete`
   spelling. `due`/`end` are STRING, not DATE_OR_DATETIME: sdk-python's own
@@ -42,7 +45,6 @@ name-keyed accessors.
   rather than a new setter, the same choice `MerchantSession`'s
   `Purchase.metadata` already made for a single CREATE-writable object field.
   `due` is STRING for the same reason as InvoicePullSubscription's `due`/`end`
-### Added
 - `STARKBANK_VERB_PUT_MULTI`: `rest.put_multi`, structurally identical to
   `POST_MULTI` (the same `{plural: [...]}` envelope, the same REQUIRED
   pre-flight, list in and list out) but for the HTTP verb, built on core-c's
