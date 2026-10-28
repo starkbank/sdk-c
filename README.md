@@ -251,6 +251,7 @@ make sandbox-dist DIST=/path/to/unpacked/tarball   # the same, against a release
 | `webhookPreview` | sdk-c#1 |
 | `boleto` | sdk-c#3 |
 | `nonBoleto` | sdk-c#4 |
+| `account` | sdk-c#5 |
 
 It exits 0 when no check failed (a `skip` names the sandbox data it lacked), 1
 when a check failed, and 2 when a credential is missing or invalid or

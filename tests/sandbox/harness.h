@@ -52,5 +52,6 @@ void sandboxCore(const starkbank_client *client, const starkbank_user *organizat
 void sandboxWebhookPreview(const starkbank_client *client, const starkbank_user *organization);
 void sandboxBoleto(const starkbank_client *client, const starkbank_user *organization);
 void sandboxNonBoleto(const starkbank_client *client, const starkbank_user *organization);
+void sandboxAccount(const starkbank_client *client, const starkbank_user *organization);
 
 #endif
