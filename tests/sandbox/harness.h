@@ -85,5 +85,6 @@ void sandboxAccount(const starkbank_client *client, const starkbank_user *organi
 void sandboxCorporate(const starkbank_client *client, const starkbank_user *organization);
 void sandboxMerchant(const starkbank_client *client, const starkbank_user *organization);
 void sandboxPull(const starkbank_client *client, const starkbank_user *organization);
+void sandboxVerifiedSplit(const starkbank_client *client, const starkbank_user *organization);
 
 #endif

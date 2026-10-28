@@ -255,6 +255,7 @@ make sandbox-dist DIST=/path/to/unpacked/tarball   # the same, against a release
 | `corporate` | sdk-c#6 |
 | `merchant` | sdk-c#10 |
 | `pull` | sdk-c#13 |
+| `verifiedSplit` | sdk-c#14 |
 
 It exits 0 when no check failed (a `skip` names the sandbox data it lacked), 1
 when a check failed, and 2 when a credential is missing or invalid or

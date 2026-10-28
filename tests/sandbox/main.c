@@ -29,7 +29,8 @@ static const GroupRow groups[] = {
     {"account", "sdk-c#5", sandboxAccount},
     {"corporate", "sdk-c#6", sandboxCorporate},
     {"merchant", "sdk-c#10", sandboxMerchant},
-    {"pull", "sdk-c#13", sandboxPull}
+    {"pull", "sdk-c#13", sandboxPull},
+    {"verifiedSplit", "sdk-c#14", sandboxVerifiedSplit}
 };
 
 #define GROUP_COUNT ((int)(sizeof(groups) / sizeof(groups[0])))
