@@ -28,7 +28,8 @@ static const GroupRow groups[] = {
     {"nonBoleto", "sdk-c#4", sandboxNonBoleto},
     {"account", "sdk-c#5", sandboxAccount},
     {"corporate", "sdk-c#6", sandboxCorporate},
-    {"merchant", "sdk-c#10", sandboxMerchant}
+    {"merchant", "sdk-c#10", sandboxMerchant},
+    {"pull", "sdk-c#13", sandboxPull}
 };
 
 #define GROUP_COUNT ((int)(sizeof(groups) / sizeof(groups[0])))
@@ -162,6 +163,64 @@ void firstOrSkip(const char *name, int status, starkbank_iter *iter, const char 
         check(name, 1, NULL);
     }
     starkbank_iter_free(iter);
+}
+
+starkbank_entity *createOne(const starkbank_client *client, const char *name,
+                            SandboxCreateFn create, starkbank_entity *item)
+{
+    starkbank_list *batch = NULL;
+    starkbank_list *created = NULL;
+    starkbank_entity *out = NULL;
+    starkbank_errors *errors = NULL;
+    const char *id = NULL;
+    int status;
+
+    starkbank_list_new(&batch);
+    starkbank_list_append(batch, item);
+    status = create(client, batch, &created, &errors);
+    starkbank_list_free(batch);
+    if (!requireOk(name, status, errors)) {
+        return NULL;
+    }
+    if (starkbank_list_count(created) == 1) {
+        starkbank_entity_clone(starkbank_list_at(created, 0), &out);
+    }
+    starkbank_list_free(created);
+    check(name, out != NULL && starkbank_entity_string(out, "id", &id) == STARKBANK_OK,
+          "the API answered with nothing carrying an id");
+    if (id == NULL) {
+        starkbank_entity_free(out);
+        return NULL;
+    }
+    return out;
+}
+
+void expectLog(const starkbank_client *client, const char *name, SandboxParamsFn newParams,
+               SandboxQueryFn query, const char *key, const char *id)
+{
+    starkbank_entity *params = NULL;
+    starkbank_iter *iter = NULL;
+    int status;
+
+    newParams(&params);
+    status = starkbank_entity_append_string(params, key, id);
+    if (status == STARKBANK_OK) {
+        status = query(client, params, 1, &iter);
+    }
+    expectFirst(name, status, iter);
+    starkbank_entity_free(params);
+}
+
+void deleteOne(const starkbank_client *client, const char *name, SandboxDeleteFn remove,
+               const char *id)
+{
+    starkbank_entity *deleted = NULL;
+    starkbank_errors *errors = NULL;
+
+    if (requireOk(name, remove(client, id, &deleted, &errors), errors)) {
+        check(name, 1, NULL);
+    }
+    starkbank_entity_free(deleted);
 }
 
 static const char *readEnv(const char *name)
