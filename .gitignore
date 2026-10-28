@@ -49,3 +49,4 @@ starkbank.pc
 
 # Left behind only by an interrupted `make check-goldens`.
 tests/reference/slice.json.committed
+tests/sandbox/build/
