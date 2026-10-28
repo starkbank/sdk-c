@@ -45,5 +45,6 @@ void cancelInvoice(const starkbank_client *client, const starkbank_entity *invoi
 void sandboxAuth(const starkbank_client *client, const starkbank_user *organization);
 void sandboxSignature(const starkbank_client *client, const starkbank_user *organization);
 void sandboxCore(const starkbank_client *client, const starkbank_user *organization);
+void sandboxWebhookPreview(const starkbank_client *client, const starkbank_user *organization);
 
 #endif
