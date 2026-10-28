@@ -32,7 +32,18 @@ void skip(const char *name, const char *reason);
    frees errors, and returns 0, so the caller skips what depended on it. */
 int requireOk(const char *name, int status, starkbank_errors *errors);
 
+/* One Invoice from sdk-python's tests/utils/invoice.py example: its REQUIRED
+   amount, CPF and name, plus fine and interest when non-zero. Returns the
+   created Invoice, yours to free, or NULL after printing FAIL under name. */
+starkbank_entity *createInvoice(const starkbank_client *client, const char *name, double fine,
+                                double interest);
+
+/* Invoices have no delete; canceling is the cleanup the API allows. NULL is
+   accepted, so a group can call it whatever its create returned. */
+void cancelInvoice(const starkbank_client *client, const starkbank_entity *invoice);
+
 void sandboxAuth(const starkbank_client *client, const starkbank_user *organization);
 void sandboxSignature(const starkbank_client *client, const starkbank_user *organization);
+void sandboxCore(const starkbank_client *client, const starkbank_user *organization);
 
 #endif
