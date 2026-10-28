@@ -21,7 +21,8 @@ typedef struct {
 
 static const GroupRow groups[] = {
     {"auth", "ecdsa-c#1", sandboxAuth},
-    {"signature", "ecdsa-c#1 core-c#1 sdk-c#6", sandboxSignature}
+    {"signature", "ecdsa-c#1 core-c#1 sdk-c#6", sandboxSignature},
+    {"core", "core-c#1", sandboxCore}
 };
 
 #define GROUP_COUNT ((int)(sizeof(groups) / sizeof(groups[0])))
@@ -68,6 +69,62 @@ int requireOk(const char *name, int status, starkbank_errors *errors)
     }
     starkbank_errors_free(errors);
     return 0;
+}
+
+starkbank_entity *createInvoice(const starkbank_client *client, const char *name, double fine,
+                                double interest)
+{
+    starkbank_entity *invoice = NULL;
+    starkbank_entity *out = NULL;
+    starkbank_list *batch = NULL;
+    starkbank_list *created = NULL;
+    starkbank_errors *errors = NULL;
+    int status;
+
+    starkbank_invoice_new(&invoice);
+    starkbank_entity_set_amount(invoice, STARKBANK_INVOICE_AMOUNT, 400);
+    starkbank_entity_set_string(invoice, STARKBANK_INVOICE_TAX_ID, "012.345.678-90");
+    starkbank_entity_set_string(invoice, STARKBANK_INVOICE_NAME, "Iron Bank S.A.");
+    if (fine != 0.0) {
+        starkbank_entity_set_number(invoice, STARKBANK_INVOICE_FINE, fine);
+    }
+    if (interest != 0.0) {
+        starkbank_entity_set_number(invoice, STARKBANK_INVOICE_INTEREST, interest);
+    }
+    starkbank_list_new(&batch);
+    starkbank_list_append(batch, invoice);
+    status = starkbank_invoice_create(client, batch, &created, &errors);
+    starkbank_list_free(batch);
+    if (!requireOk(name, status, errors)) {
+        return NULL;
+    }
+    if (starkbank_list_count(created) == 1) {
+        starkbank_entity_clone(starkbank_list_at(created, 0), &out);
+    }
+    starkbank_list_free(created);
+    if (out == NULL) {
+        check(name, 0, "the API answered with no invoice");
+    }
+    return out;
+}
+
+void cancelInvoice(const starkbank_client *client, const starkbank_entity *invoice)
+{
+    starkbank_entity *patch = NULL;
+    starkbank_entity *canceled = NULL;
+    starkbank_errors *errors = NULL;
+    const char *id = NULL;
+
+    if (invoice == NULL
+            || starkbank_entity_string(invoice, STARKBANK_INVOICE_ID, &id) != STARKBANK_OK) {
+        return;
+    }
+    starkbank_invoice_params_new(&patch);
+    starkbank_entity_set_string(patch, STARKBANK_INVOICE_STATUS, STARKBANK_INVOICE_STATUS_CANCELED);
+    requireOk("the invoice is canceled afterwards",
+              starkbank_invoice_update(client, id, patch, &canceled, &errors), errors);
+    starkbank_entity_free(patch);
+    starkbank_entity_free(canceled);
 }
 
 static const char *readEnv(const char *name)
