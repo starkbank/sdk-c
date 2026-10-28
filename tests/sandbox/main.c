@@ -22,7 +22,8 @@ typedef struct {
 static const GroupRow groups[] = {
     {"auth", "ecdsa-c#1", sandboxAuth},
     {"signature", "ecdsa-c#1 core-c#1 sdk-c#6", sandboxSignature},
-    {"core", "core-c#1", sandboxCore}
+    {"core", "core-c#1", sandboxCore},
+    {"webhookPreview", "sdk-c#1", sandboxWebhookPreview}
 };
 
 #define GROUP_COUNT ((int)(sizeof(groups) / sizeof(groups[0])))
