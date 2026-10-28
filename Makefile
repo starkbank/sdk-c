@@ -443,6 +443,10 @@ dist: $(DIST_DEPENDS)
 	cd dist && shasum -a 256 $(DIST_NAME).tar.gz | sed 's/ \*/  /' > $(DIST_NAME).tar.gz.sha256
 	@echo "dist: dist/$(DIST_NAME).tar.gz"
 
+# A bundle built where no static libsecp256k1 was found carries none, so a
+# program linking it needs the system one. The release jobs build it static.
+DIST_SECP256K1 = $(if $(SECP256K1_LIB),,-L$(SECP256K1_PREFIX)/lib -lsecp256k1)
+
 # 0.1.0's tarball could not be compiled against: starkbank.h includes
 # starkcore.h, and only starkbank.h went in. This builds tests/consumer.c
 # from the unpacked tree alone - its include/ and its full bundle, nothing from
@@ -454,7 +458,7 @@ check-dist:
 			echo "check-dist: no starkbank_full_curl.pc beside the curl bundle" >&2; exit 1; }; \
 	fi
 	$(CC) -std=c99 -pedantic -Wall -Werror -I$(DIST_DIR)/include -o dist/consumer-check \
-		tests/consumer.c $(DIST_DIR)/lib/libstarkbank_full.a $(SYSTEM_LIBS)
+		tests/consumer.c $(DIST_DIR)/lib/libstarkbank_full.a $(DIST_SECP256K1) $(SYSTEM_LIBS)
 	@rm -f dist/consumer-check dist/consumer-check.exe
 	@echo "check-dist: a program builds from $(DIST_DIR) alone"
 
