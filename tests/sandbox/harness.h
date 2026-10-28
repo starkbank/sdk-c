@@ -42,9 +42,14 @@ starkbank_entity *createInvoice(const starkbank_client *client, const char *name
    accepted, so a group can call it whatever its create returned. */
 void cancelInvoice(const starkbank_client *client, const starkbank_entity *invoice);
 
+/* Takes the first entity of a query the caller opened (status is what the
+   *_query call returned) and passes when there is one; frees iter. */
+void expectFirst(const char *name, int status, starkbank_iter *iter);
+
 void sandboxAuth(const starkbank_client *client, const starkbank_user *organization);
 void sandboxSignature(const starkbank_client *client, const starkbank_user *organization);
 void sandboxCore(const starkbank_client *client, const starkbank_user *organization);
 void sandboxWebhookPreview(const starkbank_client *client, const starkbank_user *organization);
+void sandboxBoleto(const starkbank_client *client, const starkbank_user *organization);
 
 #endif

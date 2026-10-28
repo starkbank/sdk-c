@@ -23,7 +23,8 @@ static const GroupRow groups[] = {
     {"auth", "ecdsa-c#1", sandboxAuth},
     {"signature", "ecdsa-c#1 core-c#1 sdk-c#6", sandboxSignature},
     {"core", "core-c#1", sandboxCore},
-    {"webhookPreview", "sdk-c#1", sandboxWebhookPreview}
+    {"webhookPreview", "sdk-c#1", sandboxWebhookPreview},
+    {"boleto", "sdk-c#3", sandboxBoleto}
 };
 
 #define GROUP_COUNT ((int)(sizeof(groups) / sizeof(groups[0])))
@@ -126,6 +127,20 @@ void cancelInvoice(const starkbank_client *client, const starkbank_entity *invoi
               starkbank_invoice_update(client, id, patch, &canceled, &errors), errors);
     starkbank_entity_free(patch);
     starkbank_entity_free(canceled);
+}
+
+void expectFirst(const char *name, int status, starkbank_iter *iter)
+{
+    const starkbank_entity *item = NULL;
+    starkbank_errors *errors = NULL;
+
+    if (status == STARKBANK_OK) {
+        status = starkbank_iter_next(iter, &item, &errors);
+    }
+    if (requireOk(name, status, errors)) {
+        check(name, item != NULL, "the query came back empty");
+    }
+    starkbank_iter_free(iter);
 }
 
 static const char *readEnv(const char *name)
