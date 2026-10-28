@@ -265,7 +265,7 @@ endif
         test-abi test-loose test-threads asan tsan leaks expand reflect \
         check-exports check-handwritten check-header check-drift check-goldens \
         check-drift-pinned check-tools \
-        samples samples-emit bindings print-ldflags dist clean version
+        samples samples-emit bindings print-ldflags dist check-dist clean version
 
 all: libstarkbank.a
 
@@ -411,7 +411,9 @@ endif
 dist: $(DIST_DEPENDS)
 	rm -rf $(DIST_DIR) dist/$(DIST_NAME).tar.gz dist/$(DIST_NAME).tar.gz.sha256
 	install -d $(DIST_DIR)/include $(DIST_DIR)/lib/pkgconfig $(DIST_DIR)/bindings
-	install -m 644 include/starkbank.h $(DIST_DIR)/include/
+	# starkbank.h includes starkcore.h, so the header ships with the bundle that
+	# already carries starkcore compiled in.
+	install -m 644 include/starkbank.h $(CORE_PREFIX)/include/starkcore.h $(DIST_DIR)/include/
 	install -m 644 $(DIST_STATIC) $(DIST_DIR)/lib/
 	install -m 755 $(DIST_SHARED) $(DIST_DIR)/lib/
 	sed -e 's#^prefix=.*#prefix=$${pcfiledir}/../..#' -e 's#^libdir=.*#libdir=$${prefix}/lib#' \
@@ -422,6 +424,13 @@ dist: $(DIST_DEPENDS)
 		>> $(DIST_DIR)/lib/pkgconfig/starkbank_full.pc
 	@printf 'Version: %s\nLibs: -L$${libdir} -lstarkbank_full\nCflags: -I$${includedir}\n' "$(VERSION)" \
 		>> $(DIST_DIR)/lib/pkgconfig/starkbank_full.pc
+	@if [ "$(PLATFORM)" != "windows" ]; then \
+		sed -e 's/^Name: starkbank_full$$/Name: starkbank_full_curl/' \
+		    -e 's/ and secp256k1 inside$$/, secp256k1 and the libcurl transport inside/' \
+		    -e 's/-lstarkbank_full$$/-lstarkbank_full_curl/' \
+		    $(DIST_DIR)/lib/pkgconfig/starkbank_full.pc > $(DIST_DIR)/lib/pkgconfig/starkbank_full_curl.pc; \
+		printf 'Libs.private: -lcurl\n' >> $(DIST_DIR)/lib/pkgconfig/starkbank_full_curl.pc; \
+	fi
 	install -m 644 bindings/Starkbank.cs bindings/starkbank.pas $(DIST_DIR)/bindings/
 	install -m 644 LICENSE THIRD-PARTY-NOTICES README.md CHANGELOG.md $(DIST_DIR)/
 	@if [ "$(PLATFORM)" = "linux" ]; then \
@@ -429,9 +438,25 @@ dist: $(DIST_DEPENDS)
 		ln -sf $(BUNDLE_SHARED_NAME) $(DIST_DIR)/lib/libstarkbank_full.so; \
 		ln -sf $(BUNDLE_CURL_SHARED_NAME) $(DIST_DIR)/lib/libstarkbank_full_curl.so; \
 	fi
+	@$(MAKE) --no-print-directory check-dist
 	tar -C dist -czf dist/$(DIST_NAME).tar.gz $(DIST_NAME)
 	cd dist && shasum -a 256 $(DIST_NAME).tar.gz | sed 's/ \*/  /' > $(DIST_NAME).tar.gz.sha256
 	@echo "dist: dist/$(DIST_NAME).tar.gz"
+
+# 0.1.0's tarball could not be compiled against: starkbank.h includes
+# starkcore.h, and only starkbank.h went in. This builds tests/consumer.c
+# from the unpacked tree alone - its include/ and its full bundle, nothing from
+# this checkout or the siblings - before the tree becomes a tarball.
+check-dist:
+	@test -d $(DIST_DIR) || { echo "check-dist: run make dist first" >&2; exit 1; }
+	@if [ "$(PLATFORM)" != "windows" ]; then \
+		test -f $(DIST_DIR)/lib/pkgconfig/starkbank_full_curl.pc || { \
+			echo "check-dist: no starkbank_full_curl.pc beside the curl bundle" >&2; exit 1; }; \
+	fi
+	$(CC) -std=c99 -pedantic -Wall -Werror -I$(DIST_DIR)/include -o dist/consumer-check \
+		tests/consumer.c $(DIST_DIR)/lib/libstarkbank_full.a $(SYSTEM_LIBS)
+	@rm -f dist/consumer-check dist/consumer-check.exe
+	@echo "check-dist: a program builds from $(DIST_DIR) alone"
 
 starkbank.pc: include/starkbank.h
 	@printf 'prefix=%s\nexec_prefix=$${prefix}\nlibdir=%s\nincludedir=%s\n\n' \
