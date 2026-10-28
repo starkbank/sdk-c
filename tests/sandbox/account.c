@@ -14,25 +14,6 @@
 #define PICTURE_DATA_URI \
     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGP4//8/AAX+Av4N70a4AAAAAElFTkSuQmCC"
 
-/* The first entity of a query, or a skip naming the data the sandbox lacks.
-   Unlike expectFirst, an empty answer here is missing data, not a failure. */
-static void firstOrSkip(const char *name, int status, starkbank_iter *iter, const char *missing)
-{
-    const starkbank_entity *item = NULL;
-    starkbank_errors *errors = NULL;
-
-    if (status == STARKBANK_OK) {
-        status = starkbank_iter_next(iter, &item, &errors);
-    }
-    if (requireOk(name, status, errors) && item == NULL) {
-        skip(name, missing);
-    }
-    if (item != NULL) {
-        check(name, 1, NULL);
-    }
-    starkbank_iter_free(iter);
-}
-
 static void depositAndLog(const starkbank_client *client)
 {
     const char *name = "deposit query and log query";

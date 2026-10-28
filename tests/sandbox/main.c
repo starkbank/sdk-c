@@ -26,7 +26,8 @@ static const GroupRow groups[] = {
     {"webhookPreview", "sdk-c#1", sandboxWebhookPreview},
     {"boleto", "sdk-c#3", sandboxBoleto},
     {"nonBoleto", "sdk-c#4", sandboxNonBoleto},
-    {"account", "sdk-c#5", sandboxAccount}
+    {"account", "sdk-c#5", sandboxAccount},
+    {"corporate", "sdk-c#6", sandboxCorporate}
 };
 
 #define GROUP_COUNT ((int)(sizeof(groups) / sizeof(groups[0])))
@@ -141,6 +142,23 @@ void expectFirst(const char *name, int status, starkbank_iter *iter)
     }
     if (requireOk(name, status, errors)) {
         check(name, item != NULL, "the query came back empty");
+    }
+    starkbank_iter_free(iter);
+}
+
+void firstOrSkip(const char *name, int status, starkbank_iter *iter, const char *missing)
+{
+    const starkbank_entity *item = NULL;
+    starkbank_errors *errors = NULL;
+
+    if (status == STARKBANK_OK) {
+        status = starkbank_iter_next(iter, &item, &errors);
+    }
+    if (requireOk(name, status, errors) && item == NULL) {
+        skip(name, missing);
+    }
+    if (item != NULL) {
+        check(name, 1, NULL);
     }
     starkbank_iter_free(iter);
 }
