@@ -239,6 +239,9 @@ export SANDBOX_ID=...                        # project id
 export SANDBOX_PRIVATE_KEY="$(cat key.pem)"  # project private key
 export SANDBOX_ORGANIZATION_ID=...           # optional, for workspace checks
 export SANDBOX_ORGANIZATION_PRIVATE_KEY=...  # optional
+export SANDBOX_WORKSPACE_ID=...              # optional: the workspace whose picture the
+                                             # account group may overwrite
+export SANDBOX_CENTER_ID=...                 # optional, for PaymentRequest
 SANDBOX_ONLY=auth make sandbox               # comma-separated groups; unset runs all
 make sandbox-dist DIST=/path/to/unpacked/tarball   # the same, against a release
 ```
@@ -257,9 +260,11 @@ make sandbox-dist DIST=/path/to/unpacked/tarball   # the same, against a release
 | `pull` | sdk-c#13 |
 | `verifiedSplit` | sdk-c#14 |
 
-It exits 0 when no check failed (a `skip` names the sandbox data it lacked), 1
-when a check failed, and 2 when a credential is missing or invalid or
-`SANDBOX_ONLY` names no group; exit 2 sends no request. The environment is
+The suite exits 0 when no check failed (a `skip` names the sandbox data it
+lacked), 1 when a check failed, and 2 when a credential is missing or invalid
+or `SANDBOX_ONLY` names no group; exit 2 sends no request. `make` reports any
+failure as 2, so a failing run ends with `sandbox: exit <code>`, and
+`tests/sandbox/build/run` returns the code itself. The environment is
 fixed to sandbox, and `check-sandbox-env` fails the build if a file in
 `tests/sandbox/` names production.
 

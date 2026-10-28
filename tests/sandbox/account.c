@@ -5,6 +5,7 @@
  * credential and skip without it.
  */
 
+#include <stdlib.h>
 #include <string.h>
 
 #include "harness.h"
@@ -124,8 +125,8 @@ static void institutionPage(const starkbank_client *client)
     starkbank_list_free(institutions);
 }
 
-/* A client on the organization, scoped to workspaceId, or to no workspace when
-   it is NULL. NULL after printing FAIL under name. */
+/* A client on the organization, scoped to workspaceId. NULL after printing
+   FAIL under name. */
 static starkbank_client *organizationClient(const starkbank_user *organization,
                                             const char *workspaceId, const char *name)
 {
@@ -165,53 +166,53 @@ static void patchWorkspace(const starkbank_client *client, const char *name, con
 }
 
 /* sdk-python's TestWorkspaceUpdate sends the workspace's own name and username
-   back, so the sandbox workspace QA shares keeps its identity. */
-static void updateWorkspace(const starkbank_client *client, const starkbank_entity *workspace)
+   back, so the workspace keeps its identity. The picture it replaces is not
+   restored, which is why the workspace is named explicitly. */
+static void updateWorkspace(const starkbank_client *client, const char *id)
 {
-    const char *id = NULL;
+    const char *name = "workspace update name and username";
+    starkbank_entity *workspace = NULL;
+    starkbank_errors *errors = NULL;
     const char *username = NULL;
     const char *workspaceName = NULL;
 
-    starkbank_entity_string(workspace, STARKBANK_WORKSPACE_ID, &id);
+    if (!requireOk(name, starkbank_workspace_get(client, id, &workspace, &errors), errors)) {
+        return;
+    }
     starkbank_entity_string(workspace, STARKBANK_WORKSPACE_USERNAME, &username);
     starkbank_entity_string(workspace, STARKBANK_WORKSPACE_NAME, &workspaceName);
-    patchWorkspace(client, "workspace update name and username", id, STARKBANK_WORKSPACE_NAME,
-                   workspaceName, STARKBANK_WORKSPACE_USERNAME, username);
+    patchWorkspace(client, name, id, STARKBANK_WORKSPACE_NAME, workspaceName,
+                   STARKBANK_WORKSPACE_USERNAME, username);
     patchWorkspace(client, "workspace update picture as data URI", id, STARKBANK_WORKSPACE_PICTURE,
                    PICTURE_DATA_URI, NULL, NULL);
+    starkbank_entity_free(workspace);
 }
 
+/* Only the workspace SANDBOX_WORKSPACE_ID names: the first one an organization
+   lists may be a workspace QA shares, and its picture would be overwritten. */
 static void workspaces(const starkbank_user *organization)
 {
     const char *name = "workspace update name and username";
-    starkbank_client *listing;
+    const char *picture = "workspace update picture as data URI";
+    const char *id = getenv("SANDBOX_WORKSPACE_ID");
     starkbank_client *scoped;
-    starkbank_list *page = NULL;
-    starkbank_errors *errors = NULL;
-    const char *id = NULL;
 
     if (organization == NULL) {
         skip(name, "SANDBOX_ORGANIZATION_ID is not set");
-        skip("workspace update picture as data URI", "SANDBOX_ORGANIZATION_ID is not set");
+        skip(picture, "SANDBOX_ORGANIZATION_ID is not set");
         return;
     }
-    listing = organizationClient(organization, NULL, name);
-    if (listing == NULL) {
+    if (id == NULL || id[0] == '\0') {
+        skip(name, "SANDBOX_WORKSPACE_ID is not set");
+        skip(picture, "SANDBOX_WORKSPACE_ID is not set");
         return;
     }
-    if (requireOk(name, starkbank_workspace_page(listing, NULL, &page, NULL, &errors), errors)
-            && (starkbank_list_count(page) == 0
-                || starkbank_entity_string(starkbank_list_at(page, 0), STARKBANK_WORKSPACE_ID, &id)
-                    != STARKBANK_OK)) {
-        skip(name, "the organization has no workspace");
+    scoped = organizationClient(organization, id, name);
+    if (scoped == NULL) {
+        return;
     }
-    scoped = id != NULL ? organizationClient(organization, id, name) : NULL;
-    if (scoped != NULL) {
-        updateWorkspace(scoped, starkbank_list_at(page, 0));
-    }
+    updateWorkspace(scoped, id);
     starkbank_client_free(scoped);
-    starkbank_list_free(page);
-    starkbank_client_free(listing);
 }
 
 static void transactionQuery(const starkbank_client *client)

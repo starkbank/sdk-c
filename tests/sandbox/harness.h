@@ -32,6 +32,11 @@ void skip(const char *name, const char *reason);
    frees errors, and returns 0, so the caller skips what depended on it. */
 int requireOk(const char *name, int status, starkbank_errors *errors);
 
+/* Cleanup after a check, not a check: a delete or cancel the sandbox refuses,
+   because a payment already settled, prints skip with the API's reason
+   instead of turning a good run red. Frees errors. */
+void cleanup(const char *name, int status, starkbank_errors *errors);
+
 /* One Invoice from sdk-python's tests/utils/invoice.py example: its REQUIRED
    amount, CPF and name, plus fine and interest when non-zero. Returns the
    created Invoice, yours to free, or NULL after printing FAIL under name. */

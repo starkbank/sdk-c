@@ -619,7 +619,9 @@ samples: libstarkbank.a $(SAMPLE_SOURCES)
 	done
 	@echo "samples: $(words $(SAMPLE_SOURCES)) compiled with -Werror"
 
-# The live suite QA runs per Plane card (tests/sandbox/harness.h). It needs the
+# The live suite QA runs per Plane card (tests/sandbox/harness.h). make reports
+# every failed recipe as 2, so the run prints the suite's own exit code on its
+# last line: 1 is a failed check, 2 a missing credential. It needs the
 # libcurl transport, so it links the curl bundle: libstarkbank.a's facade
 # answers NO_TRANSPORT. Not part of `test`, because CI holds no sandbox
 # credentials and a fork's PR must never reach any.
@@ -637,7 +639,7 @@ sandbox: check-sandbox-env libstarkbank_full_curl.a $(SANDBOX_SOURCES)
 	@mkdir -p tests/sandbox/build
 	$(CC) $(SANDBOX_CFLAGS) -Iinclude -I$(CORE_PREFIX)/include -o tests/sandbox/build/run \
 		$(SANDBOX_SOURCES) libstarkbank_full_curl.a -lcurl $(SYSTEM_LIBS)
-	./tests/sandbox/build/run
+	@./tests/sandbox/build/run; code=$$?; [ $$code -eq 0 ] || { echo "sandbox: exit $$code" >&2; exit $$code; }
 
 # The same sources against an unpacked release tarball and nothing else, the
 # way a tarball user builds: its pkg-config file, its shared curl bundle.
@@ -647,8 +649,8 @@ sandbox-dist: check-sandbox-env $(SANDBOX_SOURCES)
 	$(CC) $(SANDBOX_CFLAGS) -o tests/sandbox/build/run-dist $(SANDBOX_SOURCES) \
 		$$(PKG_CONFIG_PATH="$(DIST)/lib/pkgconfig" pkg-config --cflags --libs starkbank_full_curl)
 	$(DEPENDENCY_LISTING) tests/sandbox/build/run-dist
-	LD_LIBRARY_PATH="$(DIST)/lib" DYLD_LIBRARY_PATH="$(DIST)/lib" PATH="$(DIST)/lib:$$PATH" \
-		./tests/sandbox/build/run-dist
+	@LD_LIBRARY_PATH="$(DIST)/lib" DYLD_LIBRARY_PATH="$(DIST)/lib" PATH="$(DIST)/lib:$$PATH" \
+		./tests/sandbox/build/run-dist; code=$$?; [ $$code -eq 0 ] || { echo "sandbox: exit $$code" >&2; exit $$code; }
 
 # Production is unreachable by construction: no file in the suite may name it.
 check-sandbox-env:
