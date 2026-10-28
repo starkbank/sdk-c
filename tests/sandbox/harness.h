@@ -58,5 +58,6 @@ void sandboxBoleto(const starkbank_client *client, const starkbank_user *organiz
 void sandboxNonBoleto(const starkbank_client *client, const starkbank_user *organization);
 void sandboxAccount(const starkbank_client *client, const starkbank_user *organization);
 void sandboxCorporate(const starkbank_client *client, const starkbank_user *organization);
+void sandboxMerchant(const starkbank_client *client, const starkbank_user *organization);
 
 #endif
