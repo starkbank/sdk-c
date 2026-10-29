@@ -125,7 +125,7 @@ extern "C" {
 
 /* Release of the library. The Makefile parses this line for the archive
    version and the soname, so it is the single source. */
-#define STARKBANK_VERSION "0.1.0"
+#define STARKBANK_VERSION "0.2.0"
 
 /* ------------------------------------------------------------ enumerations */
 /* Re-declared rather than aliased so a host binds one header and one library.
