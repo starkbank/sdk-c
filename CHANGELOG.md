@@ -111,6 +111,12 @@ name-keyed accessors.
   `STARKBANK_VERB_POST_SUB_RESOURCE` stays in the engine with no table using it
 
 ### Fixed
+- The release tarball can be compiled against: `starkbank.h` includes
+  `starkcore.h`, and 0.1.0 shipped only `starkbank.h`, so every program
+  built from it stopped at `'starkcore.h' file not found`. The tarball now
+  carries `starkcore.h` and, beside the curl bundle, a `starkbank_full_curl.pc`.
+  `make dist` runs the new `check-dist`, which builds `tests/consumer.c`
+  from the unpacked tree alone before it becomes a tarball
 - `starkbankVerbCreate` and `starkbankVerbPutMulti` (`starkc/verb.c`) now free
   the dehydrated `item` when `starkcore_json_append(payload, item)` fails:
   `payload` never took ownership on a failed append, so `item` leaked on that
