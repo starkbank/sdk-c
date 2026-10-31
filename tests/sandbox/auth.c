@@ -1,7 +1,7 @@
 /*
  * ecdsa-c#1: a request signed by this build's ECDSA is one the sandbox
  * accepts, on a read and on a write. A signature the API rejects comes back
- * as invalidSignature or invalidAccessSignature, which requireOk prints.
+ * as invalidCredentials, which requireOk prints.
  */
 
 #include <stdio.h>

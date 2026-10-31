@@ -109,7 +109,7 @@ static void utilityPayments(const starkbank_client *client)
     starkbank_entity *payment = NULL;
     char code[45];
 
-    barCode(code, '2', "0846", 0);
+    barCode(code, '2', "0019", 0);
     starkbank_utility_payment_new(&payment);
     starkbank_entity_set_string(payment, STARKBANK_UTILITY_PAYMENT_BAR_CODE, code);
     starkbank_entity_set_string(payment, STARKBANK_UTILITY_PAYMENT_DESCRIPTION, "sdk-c sandbox suite");
@@ -117,7 +117,7 @@ static void utilityPayments(const starkbank_client *client)
     createAndDelete(client, "utility payment create", starkbank_utility_payment_create,
                     starkbank_utility_payment_delete, payment);
 
-    barCode(code, '2', "0846", 1);
+    barCode(code, '2', "0019", 1);
     starkbank_utility_payment_new(&payment);
     starkbank_entity_set_string(payment, STARKBANK_UTILITY_PAYMENT_BAR_CODE, code);
     starkbank_entity_set_string(payment, STARKBANK_UTILITY_PAYMENT_DESCRIPTION, "sdk-c sandbox suite");

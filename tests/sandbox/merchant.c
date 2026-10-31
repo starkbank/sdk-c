@@ -67,7 +67,9 @@ static void sessionLog(const starkbank_client *client, const starkbank_entity *s
     starkbank_entity_free(params);
 }
 
-/* An enum list filtered by sdk-python's own search term: never empty. */
+/* An enum list filtered by sdk-python's own search term: never empty. No
+   limit, as sdk-python sends none: these lookups refuse one with
+   invalidQueryString. */
 static void search(const starkbank_client *client, const char *name, ParamsFn newParams,
                    QueryFn query, const char *term)
 {
@@ -78,7 +80,7 @@ static void search(const starkbank_client *client, const char *name, ParamsFn ne
     newParams(&params);
     status = starkbank_entity_set_string(params, "search", term);
     if (status == STARKBANK_OK) {
-        status = query(client, params, 1, &iter);
+        status = query(client, params, 0, &iter);
     }
     expectFirst(name, status, iter);
     starkbank_entity_free(params);
