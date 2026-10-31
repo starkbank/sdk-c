@@ -268,6 +268,10 @@ failure as 2, so a failing run ends with `sandbox: exit <code>`, and
 fixed to sandbox, and `check-sandbox-env` fails the build if a file in
 `tests/sandbox/` names production.
 
+The Project needs admin permission in the workspace, and each group needs
+its product enabled there; without them the API answers invalidPermission,
+invalidProfile or invalidParticipant, and the check fails with that message.
+
 ### Drift
 
 The field tables are derived from `sdk-python` and are never a source of

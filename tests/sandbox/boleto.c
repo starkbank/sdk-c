@@ -112,16 +112,19 @@ static void payBoleto(const starkbank_client *client, const starkbank_entity *bo
     starkbank_list_free(created);
 }
 
+/* The answer is the boleto deleted, as sdk-python's TestBoletoPostAndDelete
+   reads it; its status is not checked, because the sandbox answers before the
+   cancel lands and returns a registered boleto as "registered". */
 static void deleteBoleto(const starkbank_client *client, const char *id)
 {
     starkbank_entity *deleted = NULL;
     starkbank_errors *errors = NULL;
-    const char *status = NULL;
+    const char *deletedId = NULL;
 
     if (requireOk("boleto delete", starkbank_boleto_delete(client, id, &deleted, &errors), errors)) {
         check("boleto delete",
-              starkbank_entity_string(deleted, STARKBANK_BOLETO_STATUS, &status) == STARKBANK_OK
-              && strcmp(status, STARKBANK_BOLETO_STATUS_CANCELED) == 0, status);
+              starkbank_entity_string(deleted, STARKBANK_BOLETO_ID, &deletedId) == STARKBANK_OK
+              && strcmp(deletedId, id) == 0, "a different boleto came back");
     }
     starkbank_entity_free(deleted);
 }

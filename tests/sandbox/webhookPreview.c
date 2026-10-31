@@ -13,9 +13,11 @@
 /* sdk-python's tests/utils/nonBoletoPayment.py builds these from one example
    bar code, with the business segment at 1, the amount at 4 and the business
    code at 15; here its random picks are fixed to the first tax business
-   (5701, segment 1), the first utility one (846, segment 2) and 1000 cents. */
+   (5701, segment 1), a utility one the sandbox preview recognises (19,
+   segment 2; it answers 846, the first, with "Unknown payment type") and
+   1000 cents. */
 #define TAX_BAR_CODE     "81660000000100057010074119002551100010601813"
-#define UTILITY_BAR_CODE "82660000000100008460074119002551100010601813"
+#define UTILITY_BAR_CODE "82660000000100000190074119002551100010601813"
 
 static void webhookLifecycle(const starkbank_client *client)
 {
