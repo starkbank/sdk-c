@@ -18,6 +18,11 @@ name-keyed accessors.
 
 ## [Unreleased]
 
+### Added
+- `make sandbox` / `make sandbox-dist`: the live sandbox suite QA runs per
+  card, one group per card under `tests/sandbox/`, built from the public
+  header against the curl bundle or an unpacked release tarball
+
 ## [0.2.0] - 2026-10-28
 
 ### Added
