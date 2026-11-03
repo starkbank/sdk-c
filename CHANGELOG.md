@@ -18,6 +18,11 @@ name-keyed accessors.
 
 ## [Unreleased]
 
+### Fixed
+- `starkbank_entity_datetime` returns `STARKBANK_ERROR_ABSENT` for the empty
+  string the API sends for a date it has not set, instead of an encoding
+  error, as the infra SDK does
+
 ## [0.2.0] - 2026-10-28
 
 ### Added

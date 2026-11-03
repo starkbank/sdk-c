@@ -355,8 +355,9 @@ STARKBANK_API void STARKBANK_CALL starkbank_errors_free(starkbank_errors *errors
  * A write to a key the table does not carry, or carries without the right
  * flag, is STARKBANK_ERROR_FIELD.
  *
- * Absent is not zero. STARKBANK_ERROR_ABSENT is returned for a missing key and
- * for JSON null, and *out is left untouched. This is not pedantry: an Invoice
+ * Absent is not zero. STARKBANK_ERROR_ABSENT is returned for a missing key, for
+ * JSON null and, on a date, for the empty string the API sends for a date it
+ * has not set; *out is left untouched. This is not pedantry: an Invoice
  * amount of 0 is legal and means "accept whatever the payer sends", so 0 and
  * absent must be distinguishable and no sentinel would be safe.
  *
@@ -379,7 +380,9 @@ STARKBANK_API const char * STARKBANK_CALL starkbank_entity_id(const starkbank_en
 
 STARKBANK_API int STARKBANK_CALL starkbank_entity_has(const starkbank_entity *entity, const char *field);
 /* Nonzero when the document carries a non-null value for field. The cheap
-   pre-check that keeps STARKBANK_ERROR_ABSENT out of a hot loop. */
+   pre-check that keeps STARKBANK_ERROR_ABSENT out of a hot loop, with one
+   exception: an empty-string date is carried, so this is nonzero, and
+   starkbank_entity_datetime still returns ABSENT for it. */
 
 STARKBANK_API int STARKBANK_CALL starkbank_entity_string(const starkbank_entity *entity,
     const char *field, const char **out);
@@ -414,7 +417,8 @@ STARKBANK_API int STARKBANK_CALL starkbank_entity_datetime(const starkbank_entit
    produces a scheduled invoice whose discounts the payer is shown. Every out
    pointer may be NULL if you do not want that component.
    STARKBANK_ERROR_MASKED when the server redacted the value, mirroring
-   checks.py:33 - a redaction, not a parse failure. */
+   checks.py:33 - a redaction, not a parse failure. STARKBANK_ERROR_ABSENT
+   for an empty string, which the API sends for a date it has not set. */
 
 STARKBANK_API int STARKBANK_CALL starkbank_entity_list_size(const starkbank_entity *entity,
     const char *field, int *out);
