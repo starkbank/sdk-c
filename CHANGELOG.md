@@ -18,6 +18,8 @@ name-keyed accessors.
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-11-03
+
 ### Fixed
 - `starkbank_entity_datetime` returns `STARKBANK_ERROR_ABSENT` for the empty
   string the API sends for a date it has not set, instead of an encoding
