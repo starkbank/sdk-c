@@ -416,6 +416,18 @@ static void testMasked(void)
           starkbank_entity_string(widget, "name", &text) == STARKBANK_OK
           && equalStrings(text, "***.345.678-**"), text);
     starkbank_entity_free(widget);
+    widget = NULL;
+
+    /* The API sends "" for a date it has not set; sdk-python, sdk-go and
+       sdk-elixir read it as unset, and so does the infra SDK's reader. */
+    fake.reply = "{\"widget\":{\"id\":\"1\",\"created\":\"\"}}";
+    starkbank_widget_get(client, "1", &widget, NULL);
+    year = -1;
+    check("an empty-string date is ABSENT, not an encoding failure",
+          starkbank_entity_datetime(widget, "created", &year, NULL, NULL,
+                                    NULL, NULL, NULL, NULL) == STARKBANK_ERROR_ABSENT
+          && year == -1, NULL);
+    starkbank_entity_free(widget);
     starkbank_client_free(client);
 }
 

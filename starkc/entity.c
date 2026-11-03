@@ -363,6 +363,10 @@ STARKBANK_API int STARKBANK_CALL starkbank_entity_datetime(const starkbank_entit
     if (text == NULL) {
         return STARKBANK_ERROR_TYPE;
     }
+    if (text[0] == '\0') {
+        /* The API's spelling of a date it has not set. */
+        return STARKBANK_ERROR_ABSENT;
+    }
     if (starkcore_datetime_is_masked(text)) {
         return STARKBANK_ERROR_MASKED;
     }
