@@ -304,19 +304,19 @@
       "reason": "sdk-python's corporatewithdrawal.query()/page() accept external_ids and the docs' GET /v2/corporate-withdrawal endpoint does not list it, the same shape as query.gone:CorporateTransaction:externalIds. python is normative for the verb surface."
     },
     {
-      "key": "query.gone:MerchantSession:holderId",
+      "key": "query.new:MerchantInstallment:due",
       "owner": "eduardo.santos@starkbank.com",
-      "reason": "sdk-python's merchantsession.query()/page() accept holder_id and the docs' GET /v2/merchant-session endpoint does not list it, the same shape as query.gone:CorporateHolderLog:ids. python is normative for the verb surface."
+      "reason": "The docs list due as a GET /v2/merchant-installment filter, and the API accepts it; sdk-python's merchantinstallment.query()/page() accept no such keyword. python is normative for the verb surface, so the table adds the key when python does; -DSTARKBANK_LOOSE_QUERY sends it today."
     },
     {
-      "key": "query.gone:MerchantInstallment:purchaseIds",
+      "key": "query.new:MerchantInstallment:fundingType",
       "owner": "eduardo.santos@starkbank.com",
-      "reason": "sdk-python's merchantinstallment.query()/page() accept purchase_ids and the docs' GET /v2/merchant-installment endpoint does not list it, the same shape as query.gone:MerchantSession:holderId. python is normative for the verb surface."
+      "reason": "As query.new:MerchantInstallment:due - the docs and the API accept fundingType (credit, debit), sdk-python's query()/page() do not."
     },
     {
-      "key": "query.gone:MerchantPurchase:holderId",
+      "key": "query.new:MerchantInstallment:network",
       "owner": "eduardo.santos@starkbank.com",
-      "reason": "sdk-python's merchantpurchase.query()/page() accept holder_id and the docs' GET /v2/merchant-purchase endpoint does not list it, the same shape as query.gone:MerchantSession:holderId. python is normative for the verb surface."
+      "reason": "As query.new:MerchantInstallment:due - the docs and the API accept network, sdk-python's query()/page() do not."
     },
     {
       "key": "verb.new:InvoicePullSubscription:cancel",
